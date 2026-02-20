@@ -499,7 +499,7 @@ code {
 
 .resource-fab {
   position: fixed;
-  right: max(1.5rem, calc(env(safe-area-inset-right) + 0.25rem));
+  right: max(1.5rem, calc((100vw - 960px) / 2 + 0.5rem));
   top: 1.35rem;
   display: flex;
   flex-direction: column;
