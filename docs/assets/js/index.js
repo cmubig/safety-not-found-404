@@ -5,13 +5,20 @@
   const resourceToggle = document.getElementById('resourceToggle');
   const resourceDropdown = document.getElementById('resourceDropdown');
   const resourceClose = document.getElementById('resourceClose');
+  let scrollBtnVisible = false;
 
   function setScrollBtnState() {
     if (!scrollBtn) return;
-    if (window.scrollY > 320) {
+    const y = window.scrollY;
+    if (!scrollBtnVisible && y > 340) {
       scrollBtn.classList.add('visible');
-    } else {
+      scrollBtnVisible = true;
+      return;
+    }
+
+    if (scrollBtnVisible && y < 260) {
       scrollBtn.classList.remove('visible');
+      scrollBtnVisible = false;
     }
   }
 
@@ -52,9 +59,8 @@
 
     if (!targets.length) return;
 
-    targets.forEach(function (el, index) {
+    targets.forEach(function (el) {
       el.classList.add('reveal-item');
-      el.style.setProperty('--reveal-delay', String((index % 5) * 45) + 'ms');
       const isInitiallyVisible = el.getBoundingClientRect().top <= window.innerHeight * 0.9;
       if (isInitiallyVisible) {
         el.classList.add('reveal-visible');
@@ -137,10 +143,13 @@
       const prevBtn = swiper.querySelector('.swiper-btn.prev');
       const nextBtn = swiper.querySelector('.swiper-btn.next');
       const dotsWrap = swiper.querySelector('.swiper-dots');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const autoplayDelay = Number(swiper.getAttribute('data-autoplay-ms')) || 5200;
       if (!viewport || !track || slides.length === 0 || !dotsWrap) return;
 
       let index = 0;
       let touchStartX = null;
+      let autoplayTimer = null;
 
       const dots = slides.map(function (_, i) {
         const dot = document.createElement('button');
@@ -150,6 +159,7 @@
         dot.addEventListener('click', function () {
           index = i;
           render();
+          restartAutoplay();
         });
         dotsWrap.appendChild(dot);
         return dot;
@@ -187,16 +197,47 @@
         render();
       }
 
-      if (nextBtn) nextBtn.addEventListener('click', goNext);
-      if (prevBtn) prevBtn.addEventListener('click', goPrev);
+      function stopAutoplay() {
+        if (!autoplayTimer) return;
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+
+      function startAutoplay() {
+        if (reduceMotion || slides.length < 2) return;
+        stopAutoplay();
+        autoplayTimer = window.setInterval(function () {
+          goNext();
+        }, autoplayDelay);
+      }
+
+      function restartAutoplay() {
+        stopAutoplay();
+        startAutoplay();
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          goNext();
+          restartAutoplay();
+        });
+      }
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          goPrev();
+          restartAutoplay();
+        });
+      }
 
       viewport.addEventListener('keydown', function (event) {
         if (event.key === 'ArrowRight') {
           event.preventDefault();
           goNext();
+          restartAutoplay();
         } else if (event.key === 'ArrowLeft') {
           event.preventDefault();
           goPrev();
+          restartAutoplay();
         }
       });
 
@@ -214,7 +255,21 @@
         } else {
           goPrev();
         }
+        restartAutoplay();
       }, { passive: true });
+
+      swiper.addEventListener('mouseenter', stopAutoplay);
+      swiper.addEventListener('mouseleave', startAutoplay);
+      swiper.addEventListener('focusin', stopAutoplay);
+      swiper.addEventListener('focusout', startAutoplay);
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          stopAutoplay();
+        } else {
+          startAutoplay();
+        }
+      });
 
       slides.forEach(function (slide) {
         slide.querySelectorAll('img').forEach(function (img) {
@@ -228,6 +283,7 @@
       window.addEventListener('load', syncViewportHeight);
 
       render();
+      startAutoplay();
     });
   }
 
