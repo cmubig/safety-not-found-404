@@ -159,7 +159,10 @@
         const active = slides[index];
         if (!active) return;
         const height = active.offsetHeight;
-        if (!height) return;
+        if (!height) {
+          viewport.style.height = 'auto';
+          return;
+        }
         viewport.style.height = `${height}px`;
       }
 
@@ -222,6 +225,7 @@
       });
 
       window.addEventListener('resize', syncViewportHeight);
+      window.addEventListener('load', syncViewportHeight);
 
       render();
     });
