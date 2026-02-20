@@ -499,47 +499,73 @@ code {
 
 .resource-fab {
   position: fixed;
-  right: max(1.5rem, calc((100vw - 960px) / 2 + 0.5rem));
-  top: 1.35rem;
+  top: 2rem;
+  right: 2rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  z-index: 1300;
+  z-index: 1000;
 }
 
 .resource-btn {
-  border: 1px solid #d1d9e4;
   background: #ffffff;
   color: #334155;
-  border-radius: 10px;
+  border: 2px solid #dbe2ea;
+  border-radius: 14px;
   font-weight: 600;
-  letter-spacing: normal;
-  padding: 0.56rem 0.82rem;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.2rem;
   cursor: pointer;
-  box-shadow: none;
-  transition: background var(--speed), border-color var(--speed), color var(--speed);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--speed), box-shadow var(--speed), background var(--speed), border-color var(--speed), color var(--speed);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resource-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #c2410c;
+  flex-shrink: 0;
+}
+
+.resource-btn .dropdown-arrow {
+  font-size: 0.72rem;
+  line-height: 1;
+  transition: transform var(--speed);
+}
+
+.resource-btn.active .dropdown-arrow {
+  transform: rotate(180deg);
 }
 
 .resource-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgb(15 23 42 / 0.12);
   background: #f8fafc;
-  border-color: #a8b6c8;
-  color: #1e293b;
+  border-color: #c2410c;
+  color: #1f2937;
 }
 
 .resource-dropdown {
   position: absolute;
   right: 0;
-  top: calc(100% + 0.65rem);
-  width: min(420px, calc(100vw - 2.5rem));
+  top: calc(100% + 0.5rem);
+  width: 400px;
+  max-width: 90vw;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: 0 8px 18px rgb(15 23 42 / 0.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 38px rgb(15 23 42 / 0.16);
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-8px);
+  transform: translateY(-10px);
   transition: opacity var(--speed), visibility var(--speed), transform var(--speed);
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .resource-dropdown.show {
@@ -770,15 +796,15 @@ code {
 
   .resource-fab {
     top: auto;
-    bottom: 1rem;
-    right: max(1rem, calc(env(safe-area-inset-right) + 0.25rem));
+    bottom: 2rem;
+    right: 1rem;
   }
 
   .resource-dropdown {
     position: absolute;
-    right: 0;
+    right: -1rem;
     top: auto;
-    bottom: calc(100% + 0.6rem);
+    bottom: calc(100% + 0.5rem);
     width: calc(100vw - 2rem);
   }
 

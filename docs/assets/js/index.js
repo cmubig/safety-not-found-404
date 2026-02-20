@@ -30,6 +30,7 @@
 
     resourceDropdown.classList.toggle('show', shouldOpen);
     resourceToggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    resourceToggle.classList.toggle('active', shouldOpen);
   }
 
   function initScrollReveal() {
