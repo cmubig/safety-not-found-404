@@ -512,10 +512,8 @@ code {
   color: #334155;
   border: 2px solid #dbe2ea;
   border-radius: 14px;
-  /*
   font-weight: 600;
   font-size: 0.9rem;
-  */
   padding: 0.75rem 1.2rem;
   cursor: pointer;
   box-shadow: var(--shadow-md);
@@ -534,10 +532,8 @@ code {
 }
 
 .resource-btn .dropdown-arrow {
-  /*
   font-size: 0.72rem;
   line-height: 1;
-  */
   transition: transform var(--speed);
 }
 
