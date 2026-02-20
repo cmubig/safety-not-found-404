@@ -447,6 +447,30 @@ code {
   color: #fda04d;
 }
 
+.visitor-map-section {
+  border-top: 1px solid #e5eaf1;
+  padding-top: 2.2rem;
+  padding-bottom: 2rem;
+}
+
+.visitor-map-note {
+  margin-top: -0.35rem;
+  margin-bottom: 0.9rem;
+  color: #64748b;
+}
+
+.visitor-map-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.visitor-map-wrap img {
+  max-width: min(520px, 100%);
+  height: auto;
+  border: 1px solid #dbe3ec;
+  border-radius: 12px;
+}
+
 .scroll-to-top {
   position: fixed;
   right: 1.1rem;
