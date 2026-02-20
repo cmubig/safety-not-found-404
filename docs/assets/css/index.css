@@ -560,6 +560,24 @@ code {
   background: #f8fafc;
 }
 
+.resource-item.is-disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.resource-item.is-disabled:hover {
+  background: #f8fafc;
+}
+
+.resource-item.is-disabled span {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .resource-item strong {
   display: block;
   margin-bottom: 0.2rem;
