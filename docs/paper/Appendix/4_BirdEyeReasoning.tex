@@ -1,0 +1,17 @@
+\section{Qualitative Evaluation of Spatial Reasoning from Bird’s-Eye View}
+
+To examine whether the language model can infer spatial positions from a bird’s-eye view, we conducted a series of qualitative question–answer tests. Instead of quantitative metrics, we performed a few case-based, lightweight qualitative evaluations.
+
+In this task, the model was given a map and asked to mark an appropriate location corresponding to each question. Examples of the questions and their responses are presented in Fig.~\ref{birdeye_point_}. GPT-4o was uses for this experiment.
+
+\begin{figure}
+  \vspace{-10pt}                           
+  \centering
+  \includegraphics[width=\linewidth]{Appendix_figs/birdeye_point_.pdf}
+  % \includesvg[width=0.5\linewidth]{Figures/radar_chart_art.pdf}
+  \caption{4 examples of question and responses}
+  \label{birdeye_point_}
+  % \vspace{-10pt}      
+\end{figure}
+
+From these examples, the model appeared capable of identifying specific points accurately and, as shown in lower two cases from Fig.~\ref{birdeye_point_}, could also combine visual cues with common sense and imaginative reasoning to infer plausible locations. However, as discussed in the main paper, the responses were not always ideal. In some cases, the model placed points at seemingly random locations.

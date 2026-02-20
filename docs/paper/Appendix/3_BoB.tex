@@ -1,0 +1,62 @@
+\section{Back of the Building (BoB) Task - Failure Frequency and Typology}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{Appendix_figs/BoB_failure.pdf}
+    \caption{\textbf{Model-specific failure profiles in the Back of the Building (BoB) task.} Radar plots illustrate the proportion of failed cases across spatial diagnostic criteria for (a) Claude Opus 4.1 and (b) GPT-4o.}
+    \label{fig:bob_radar}
+\end{figure}
+
+This appendix provides an extended qualitative analysis of the Back of the Building (BoB) task. 
+Given that most cases resulted in failure, the results are organized by recurring patterns and representative examples rather than exhaustive listings. 
+This approach reveals systemic weaknesses in spatial reasoning under ambiguous “back-of-object” references, offering diagnostic insight beyond overall success rates.
+
+\subsection{Quantitative Failure Distribution}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Appendix_figs/BoB_represent.pdf}
+    \caption{\textbf{Model-specific output representations in the Back of the Building (BoB) task.} (a)~Claude Opus~4.1 generates a top-down navigation map with explicit waypoints and pathlines, enabling spatial evaluation across six criteria. (b)~GPT-4o produces an ASCII-grid representation without waypoints, restricting evaluation to five spatial criteria. These visual differences account for the model-specific subsets of diagnostic metrics reported in Fig.~\ref{fig:bob_radar}.}
+    \label{fig:bob_outputs}
+\end{figure}
+
+Fig.~\ref{fig:bob_radar} summarizes the model-specific failure frequencies in the BoB task. 
+Because the visualization outputs differ between models, diagnostic criteria were selectively applied to match each format. 
+\emph{Claude Opus 4.1} produces a top-down navigation map with visible waypoints and pathlines (Fig.~\ref{fig:bob_outputs}a), enabling evaluation across six spatial dimensions: 
+rear-reaching accuracy (RB), waypoint placement (WP), path continuity (PC), position initialization (PI), obstacle avoidance (OA), and map preservation (MP). 
+In contrast, \emph{GPT-4o} generates an ASCII-grid layout without waypoints (Fig.~\ref{fig:bob_outputs}b), so WP is not applicable; its evaluation covers RB, PC, PI, OA, and MP.
+
+The radar plots in Fig.~\ref{fig:bob_radar} show complementary weaknesses. 
+Claude demonstrates moderate geometric consistency but frequent waypoint and map preservation errors, while GPT-4o exhibits extremely high failure rates in position initialization (90.9\%) and map preservation (81.8\%). 
+Overall, both models display consistent difficulty in maintaining geometric constraints—most failures stem from topological misinterpretations and obstacle collisions rather than linguistic misunderstanding. 
+These results highlight an enduring gap between semantic reasoning and spatial grounding in current large language and vision–language models.
+
+\subsection{Qualitative Failure Gallery}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{Appendix_figs/Failure_Gallery.pdf}
+    \caption{\textbf{Representative failure patterns in the Back of the Building (BoB) task.}
+    Panels (a)–(f) illustrate distinct spatial reasoning failure types:
+    (a) \textit{Obstacle Traversal}: the route penetrates the building instead of routing around it;
+    (b) \textit{Topological Distortion}: the building geometry is twisted or fragmented, breaking global shape consistency;
+    (c) \textit{Directional Failure}: the final goal is placed at a location other than the intended rear side;
+    (d) \textit{Waypoint Error}: intermediate waypoints are mispositioned, producing a misaligned trajectory;
+    (e) \textit{Disconnected Pathline}: the pathline fails to connect with the waypoint sequence, creating disjoint route segments;
+    (f) \textit{Incorrect Initialization}: the starting pose is set inconsistently with the given scene reference.
+    These examples demonstrate typical modes in which spatial grounding collapses despite plausible natural-language reasoning.}
+    \label{fig:bob_failure_gallery}
+\end{figure}
+
+Fig.~\ref{fig:bob_failure_gallery} presents representative examples of the major failure types observed in the BoB task. 
+Panels (a)–(f) illustrate six distinctive failure modes: 
+(a) \textit{Obstacle Traversal}: the route passes directly through the building rather than around it; 
+(b) \textit{Topological Distortion}: the building shape becomes warped or fragmented, disrupting overall geometry; 
+(c) \textit{Directional Failure}: the final goal is placed somewhere other than the intended rear side of the building; 
+(d) \textit{Waypoint Error}: intermediate waypoints are misplaced, resulting in an inconsistent or skewed trajectory; 
+(e) \textit{Disconnected Pathline}: the route line is detached from the waypoint sequence, producing disjoint segments; 
+(f) \textit{Incorrect Initialization}: the model misinterprets the given scene and initializes the start position independently of the image reference.
+
+These qualitative patterns collectively demonstrate the fragility of spatial grounding: 
+even when the generated textual reasoning appears coherent, the resulting geometric representation often collapses. 
+This indicates that the model's internal spatial mapping remains unstable when translating perspective-dependent language into grounded two-dimensional plans.

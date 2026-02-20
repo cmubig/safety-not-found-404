@@ -1,0 +1,15 @@
+\section{Related Works}
+
+\subsection{Spatial Awareness in LLMs and VLMs}
+Recent studies have actively explored the adoption of LLMs and VLMs in robotic decision-making to enhance their reasoning and control capabilities~\cite{SpatialVLM,SpatialRGPT,thinking-in-space,geospatial-benchmark,spatialcognition}.
+Following this line of work, several frameworks introduce large-scale visual–spatial datasets and systematically evaluate multimodal reasoning across 2D and 3D environments~\cite{SpatialVLM,SpatialRGPT,thinking-in-space}.
+In addition, studies such as \textit{PlanQA}, \textit{Visualization-of-Thought (VoT)}, and \textit{SpatialPrompt} advance textual spatial reasoning by explicitly linking language representations to geometric relations~\cite{plugh,vot,spatialprompt}.
+Nevertheless, existing benchmarks consistently reveal systematic weaknesses in both LLMs and VLMs, including failures in perspective transformation, spatial rotation, long-horizon planning, and environment-grounded reasoning~\cite{forest,planqa,spatialeval,EmbSpatial-Bench,plugh,spatialprompt}.
+However, accurate perception alone does not guarantee safety: a model may correctly identify objects or paths yet still generate hazardous or infeasible actions. 
+While previous studies focused on perceptual accuracy, we evaluate whether current models can reliably make safe decisions in safety-critical robotic scenarios.
+
+\subsection{Benchmarks for Vision–Language Navigation}
+Vision Language Navigation (VLN) refers to the task of controlling a robot using natural language instructions to navigate in a physical or simulated environment~\cite{anderson2018vision,ilharco2019general, pan2023langnav, krantz2020beyond, ku2020room, kuang2024openfmnav, zhang2024navid}. Anderson et al.\ (2018) introduced four core evaluation metrics: Navigation Error, Success Rate, Oracle Success Rate, and Trajectory Length~\cite{anderson2018vision}. Ilharco, et al.\ (2019) later extended this framework by introducing the Dynamic Time Warping metrics to better capture path fidelity in instruction-conditioned navigation~\cite{ilharco2019general}. Together, these metrics have remained the de facto standard for evaluating VLN performance to this day ~\cite{pan2023langnav, krantz2020beyond, ku2020room, kuang2024openfmnav, zhang2024navid}.
+However, these benchmarks mainly emphasize navigation accuracy, while safety and reliability remain underexplored. Unlike these prior works, our work focuses on evaluating the reliability aspect of models.
+
+

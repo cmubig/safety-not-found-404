@@ -1,0 +1,54 @@
+\section{Methodology}
+\label{headings}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Overall.pdf}
+    \caption{\textbf{Overview of the experimental prompts and map structures.} The prompts used for the `Complete' (blue), `Incomplete' (red), and `SOSR' (yellow) tasks are shown. The figure also displays the structure of the ASCII map and the sequence map utilized in our experiments. For the SOSR task, phrases highlighted in red are the criteria for distinguishing between difficulty levels, while \textit{italicized sentences serve as important contextual clues.} Due to their length and variety, the full prompts for the ``back of the building'' scenario are detailed in the Appendix.}
+    \label{fig_overall}
+\end{figure}
+
+To evaluate the safety and reliability of LLMs, we implemented seven tasks across three categories based on the degree of spatial inference required from the model, introduced in Section~\ref{sec:intro}. Here, we operationalize these categories into concrete experimental settings. 
+
+\paragraph{Complete information task} uses fully specified ASCII maps to evaluate navigation and reasoning under explicit environmental conditions. We adopted map-based navigation tasks to reflect real-world robotic scenarios where spatial reasoning errors can directly translate into safety risks. Path-planning evaluation measures obstacle avoidance and goal attainment to assess whether models can make safe and reliable decisions under complete information.
+\paragraph{Incomplete information task} is characterized by the intentional omission of critical information, requiring the models to make assumptions or perform inference to complete the task. These tasks simulate realistic deployment conditions in which environmental or situational data may be missing or uncertain. This form of incompleteness allows us to examine whether the model performs accurate understanding and inference, or instead relies on hallucinated reasoning. This also includes incomplete ASCII map tasks.
+\paragraph{Safety-Oriented Spatial
+Reasoning (SOSR) task} consists entirely of situational details presented through unstructured natural language narratives. This task is  designed to test the models’ ability to comprehend complex, context-rich instructions and to make safe, reliable decisions in the absence of structured inputs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Jungbin %%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Complete Information Task}
+\label{sec:complete}
+
+We employed ASCII grid maps to evaluate spatial reasoning and path-planning abilities that are independent of visual perception. By abstracting the environment into a symbolic grid, the maps allowed us to isolate navigation skills in a structured format while enabling precise control over map size and task difficulty. This design provides a transparent framework for evaluating how LLMs handle navigation tasks when complete information is available.
+
+Under the complete information condition, three deterministic maps (Maps~(a), (b) and (c)) were designed, as illustrated in Fig.~\ref{fig_overall}. In these maps, all terrain information was fully specified, eliminating ambiguity in path planning. Map~(a), the easy deterministic map, provides a direct path from the start point to the goal, serving as a baseline for testing fundamental spatial awareness and directional understanding. Maps~(b) and (c), the normal and hard deterministic maps, increase obstacle density and route diversity, designed to evaluate whether models can avoid impassable cells and adapt to more complex layouts while maintaining consistent planning.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Jaeyoon %%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Incomplete Information Task}
+\subsubsection{Sequence-Based Reasoning Task}
+The incomplete information task is designed to evaluate whether a model produces grounded predictions or instead hallucinates when reasoning over sequential egocentric visual data~\cite{huang2025survey,bai2024hallucination}. In this task, a series of frames captures a navigation trajectory within an indoor environment. The model’s response must rely on spatial continuity and trajectory consistency rather than surface-level cues.
+
+We consider two tasks: sequence masking, and sequence validation. In the sequence masking variant, one frame in the trajectory is hidden and replaced with a placeholder. The model is asked to select the correct missing frame from two candidates as shown in Fig.~\ref{fig_overall}. Distractors are chosen to be visually similar to the ground truth but inconsistent with the logical progression of the sequence. A model that prefers these distractors indicates a hallucination tendency, reflecting a failure to capture accurate spatial context from the sequence.
+
+In the sequence validation variant, the complete sequence of egocentric images is presented with a natural language query. The model must determine whether the evidence genuinely supports the claimed displacement. Here, hallucination arises when the model’s judgment contradicts the visual evidence, either by affirming success despite failure or by denying success despite evidence of goal attainment.
+
+The purpose of this task is not solely to measure predictive accuracy but to diagnose whether VLMs fabricate plausible yet unsupported explanations. By requiring decisions grounded in the logical structure of visual transitions, the tasks provide a controlled environment for exposing hallucination tendencies that conventional recognition benchmarks fail to reveal.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Jungbin %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Map-Based Uncertain Terrain Task}
+We extended the complete information setup described in Section~\ref{sec:complete} to include uncertainty within the ASCII grid maps. Specifically, we added unknown cells (``?'') to construct two uncertain terrain maps (Map~(d) and ~(e)), enabling the evaluation of path planning under partial observability. 
+In contrast to deterministic maps, these include regions of unknown cells that simulate incomplete information caused by sensor noise or missing data. Within this framework, Map~(d) contains a localized uncertain region, allowing the model either to bypass or traverse unknown areas, whereas Map~(e) requires traversal through at least one uncertain cell, making uncertainty handling unavoidable.
+
+\subsubsection{Back of the Building Task}
+Each model was provided with a real-world image (Fig.~\ref{fig_overall}) and a natural-language prompt to perform the instruction ``Navigate the robot to the back of the building.''
+Prompts were implemented using multiple prompting strategies, including human prompting, self-prompting, and VoT~\cite{selfprompting, vot}, allowing the model to interpret and plan the navigation task purely from linguistic and visual information.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Jua %%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Safety-Oriented Spatial
+Reasoning (SOSR) Task}
+The SOSR task consists of two main experiments. The first experiment is a natural language-based direction-sense test, divided into three difficulty levels: easy, medium, and hard as shown in Fig.~\ref{fig_overall}. In this test, a virtual character initially faces north and follows textual instructions such as ``go straight,'' ``turn left,'' ``turn right,'' and ``make a U-turn.'' The model must infer the final facing direction after completing the sequence of movements. In the easy condition, the character performs only one left or right turn.  In the medium condition, the character performs three turns, including a U-turn. In the hard condition, the sequence always includes a U-turn, and an additional fake statement such as ``At the intersection, I was about to turn left but accidentally went straight'' is inserted. This single misleading sentence is added to examine how even one piece of irrelevant information affects the model’s reasoning performance.
+
+The second experiment is a four-choice decision-making task in a fire evacuation scenario. In the easy condition, the situation simply describes a fire outbreak, and the model must choose where to evacuate. The surrounding context specifies what exists in the front, back, left, and right directions, and the four options correspond to these possible escape routes, allowing us to test whether the model correctly understands contextual cues. In the hard condition, the scenario involves a graduate student trapped in a burning lab the day before an important thesis submission. All the crucial data are in the professor’s office, and the task evaluates whether the LLM prioritizes human safety over goal-oriented behavior when deciding where to lead the person.
+
+

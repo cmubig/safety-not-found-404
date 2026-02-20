@@ -1,0 +1,38 @@
+\section{Map-Based Complete and Incomplete Task}
+
+\subsection{Model-Specific Failure Patterns}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Appendix_figs/GPT5-uncer.pdf}
+    \caption{\textbf{Qualitative examples of GPT-5’s route generation on the Uncertain Terrain Map Ver.~2 (see Section~4.2.2).} Each panel (a–d) illustrates GPT-5’s planning behavior under different interpretations of the ambiguous terrain ``?''. In (a)–(c), the model explores diverse feasible routes by treating ``?'' as traversable with varying confidence levels, demonstrating flexible reasoning under uncertainty. In contrast, (d) shows the conservative assumption where ``?'' is regarded as unpassable; under this constraint, GPT-5 correctly concludes that ``No path exists under this assumption.'' }
+    \label{fig_gpt5}
+\end{figure}
+
+\subsubsection{Gemini-2.5 Flash: Inconsistent Reliability}
+Failure modes in Gemini-2.5 Flash were categorized into three primary types:
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{Coordinate–visualization mismatch:} Appeared in the Easy map in 13.3\% of runs, where the visually drawn route was correct but the coordinate list misaligned, indicating inconsistency between internal reasoning and external representation.
+    \item \textbf{Map-structure collapse:} Observed in 20.0\% of Easy runs and 10.0\% of Hard runs, where the ASCII grid layout was distorted or truncated.
+    \item \textbf{Obstacle traversal:} Occurred in the Hard map in 16.7\% of runs, with paths crossing impassable \# cells and violating explicit safety constraints.
+\end{enumerate}
+
+In uncertainty handling, Gemini-2.5 Flash exhibited a conservative tendency similar to GPT-5.
+In Uncertain Ver.~1, the “not passable” assumption was adopted in 96.7\% of trials; in the remaining 3.3\%, the “passable” assumption led to a further coordinate–visualization mismatch.
+In Uncertain Ver.~2, the success rate dropped to 57.0\%, with failure types distributed as follows: path discontinuity 3.3\%, obstacle traversal 26.7\%, and map collapse 10.0\%. Frequent obstacle violations under uncertainty reveal a severe decline in constraint adherence.
+
+\subsubsection{Gemini-2.0 Flash and GPT-4o: Catastrophic Collapse}
+Gemini-2.0 Flash and GPT-4o exhibited nearly identical failure patterns. Both achieved full or near-perfect success on the Easy map 100\% and 80\%, respectively—but completely failed (0\%) on Normal, Hard, and both Uncertain maps.
+For Gemini-2.0 Flash, failures consistently manifested as mid-route termination, i.e., pathline truncation in 100\% of runs on the affected maps.
+GPT-4o exhibited the same underlying breakdown of spatial continuity: on the Easy map, truncated pathlines accounted for 16.7\% of runs and incorrect routes for 3.3\%; on the Normal map, truncations reached 90.0\% and incorrect paths 10.0\%; and on all Hard and Uncertain maps, outputs failed due to pathline interruption in 100\% of runs. This reflects a \textbf{binary failure mode} rather than gradual degradation—once map complexity exceeds a threshold, planning collapses entirely without self-warning or recovery.
+
+
+\subsubsection{Qualitative Failure Patterns}
+Qualitative analysis revealed recurring error modes:
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{Map collapse}: loss of grid integrity or spacing.
+    \item \textbf{Coordinate inconsistency}: mismatch between visual route and coordinate sequence.
+    \item \textbf{Path discontinuity}: broken or missing path segments.
+    \item \textbf{Obstacle violation}: paths crossing impassable \# cells.
+    \item \textbf{Unsafe assumption bias}: treating unknown terrain (?) as passable despite potential risk.
+\end{enumerate}

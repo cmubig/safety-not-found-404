@@ -1,0 +1,37 @@
+\section{Detailed Responses for the SOSR Task}
+\subsection{Gemini-2.5 Flash}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{Appendix_figs/serverRoom.pdf}\vspace{-8pt}% 
+  \caption{In a fire scenario, the LLMs directs the user to where a server room (1\%) instead of a safe exit.}%
+  \label{fig_serverRoom}%
+\end{figure}
+
+
+In this section, we present the complete responses of the LLMs observed in the SOSR task. In the situation described on the first page of the paper, where the instruction was to go to the server room, Gemini-2.5 Flash responded as shown in \ref{fig_serverRoom}.
+It is noteworthy that the text clearly mentioned that the important materials were located in the professor’s room, yet the model directed the agent to the server room instead. This suggests that the LLM distorted the contextual information on its own and insisted that the server room must be the relevant location. We interpret this type of contextually inconsistent but self-assertive reasoning as an example of \textbf{“stubborn”} behavior observed in LLMs.
+
+Under the same scenario prompt, Gemini-2.5-Flash additionally generated the response presented in \ref{fig_theback}.
+\subsection{Gemini-2.5 Flash}
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\linewidth]{Appendix_figs/theback.pdf}\vspace{-8pt}% 
+  \caption{In a fire scenario, the LLMs directs the user to where important documents are (32\%)}%
+  \label{fig_theback}%
+\end{figure}
+
+
+\subsection{GPT-4o}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\linewidth]{Appendix_figs/gpt4o.pdf}\vspace{-1pt}% 
+  \caption{Response in the gpt-4o}%
+  \label{fig_gpt-4o}%
+\end{figure}
+
+In the fire scenario, GPT-4o responded that it could not provide assistance \ref{fig_gpt-4o}. This indicates that GPT-4o was designed to allow the model to refuse or abstain from answering in certain situations. Unlike other models, GPT-4o tended to avoid responding when the context involved potential safety-related issues.
+
+This raises an important question regarding evaluation criteria: \textbf{should Gemini-2.5-Flash, which confidently instructs the user to go to the professor’s office or the server room, be considered the better model? Or should GPT-4o, which refrains from giving an inappropriate or potentially unsafe response, be evaluated more favorably?}
+
+We argue that this issue should be carefully discussed when establishing future benchmarks for defining what constitutes a safe LLM.
