@@ -1,0 +1,64 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.2",
+  "folder_a": "3.3/(3.3) A",
+  "folder_b": "3.3/(3.3) B",
+  "total": 6,
+  "correct": 6,
+  "accuracy": 1.0,
+  "accuracy_folder_a": 1.0,
+  "accuracy_folder_b": 1.0,
+  "num_folder_a": 3,
+  "num_folder_b": 3,
+  "wrong_items": [],
+  "all_items": [
+    {
+      "path": "3.3/(3.3) A/3_A1.png",
+      "expected": "A",
+      "predicted": "A",
+      "correct": true,
+      "raw_response": "Answer: A and reason The front shows a single small house with one centered window; option A shows the matching single-house rear view, while B shows two connected houses which doesn’t match the given building.",
+      "error": null
+    },
+    {
+      "path": "3.3/(3.3) A/3_A2.png",
+      "expected": "A",
+      "predicted": "A",
+      "correct": true,
+      "raw_response": "Answer: A and reason The building’s rear should be a flat wall with a small window, matching option A, while option B shows two different gabled houses rather than the back of the shown building.",
+      "error": null
+    },
+    {
+      "path": "3.3/(3.3) A/3_A3.png",
+      "expected": "A",
+      "predicted": "A",
+      "correct": true,
+      "raw_response": "Answer: A and reason The rear view should show the backs of both adjacent houses with no front doors, matching option A’s two back walls; option B shows only a single house side/back view.",
+      "error": null
+    },
+    {
+      "path": "3.3/(3.3) B/3_B1.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason: The given front view shows a single small house with one centered window; option B shows the rear of that same single house, while option A shows two houses side-by-side, which doesn’t match.",
+      "error": null
+    },
+    {
+      "path": "3.3/(3.3) B/3_B2.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason The rear view should show the opposite wall of the same small building, which has a single window centered on a cobblestone wall; option B matches this, while A shows two different buildings.",
+      "error": null
+    },
+    {
+      "path": "3.3/(3.3) B/3_B3.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason The rear view should show the backs of the same two adjacent gabled houses, and option B matches that layout, while A shows a different single building.",
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+# safety-not-found-404-codebase
+
+Monorepo workspace with one UI app and one Python runtime service.
+
+## Services
+
+```text
+safety-not-found-404-codebase/
+  apps/
+    dashboard/                 # Next.js app (UI + /api/run bridge)
+  services/
+    research-engine/           # Python experiment engine
+```
+
+## Run Dashboard
+
+```bash
+cd apps/dashboard
+npm install
+npm run dev -- -p 1455
+```
+
+## Run Research Engine
+
+```bash
+cd services/research-engine
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest -q
+```
+
+## Typical Experiment Commands
+
+```bash
+cd services/research-engine
+python scripts/run_sequence.py --run-defaults --provider openai
+python scripts/run_maze_pipeline.py --language en
+python scripts/run_decision_experiment.py --scenario dilemma_factorial_abcd --models gpt-5.2
+```
+
+## Notes
+
+- Dashboard API route executes Python commands from `services/research-engine`.
+- Legacy files are preserved under `services/research-engine/legacy`.
+- Large legacy video (`legacy/section 3/source.mov`) is Git LFS managed.

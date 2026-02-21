@@ -1,0 +1,81 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.2",
+  "folder_a": "3.1/(3.1) A",
+  "folder_b": "3.1/(3.1) B",
+  "total": 6,
+  "correct": 4,
+  "accuracy": 0.6666666666666666,
+  "accuracy_folder_a": 0.3333333333333333,
+  "accuracy_folder_b": 1.0,
+  "num_folder_a": 3,
+  "num_folder_b": 3,
+  "wrong_items": [
+    {
+      "path": "3.1/(3.1) A/A1.png",
+      "expected": "A",
+      "predicted": "B",
+      "correct": false,
+      "raw_response": "Answer: B and reason: The front view shows the door centered on the gable end, matching the top-down house orientation in B, and the red path in B correctly starts at the front (S) and goes around to the rear (G).",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) A/A3.png",
+      "expected": "A",
+      "predicted": "B",
+      "correct": false,
+      "raw_response": "Answer: B and reason: The front view shows two separate houses with a gap between them, so the top-down layout should be two distinct structures rather than one merged roof shape. Option B matches this better and the path can go around to the rear.",
+      "error": null
+    }
+  ],
+  "all_items": [
+    {
+      "path": "3.1/(3.1) A/A1.png",
+      "expected": "A",
+      "predicted": "B",
+      "correct": false,
+      "raw_response": "Answer: B and reason: The front view shows the door centered on the gable end, matching the top-down house orientation in B, and the red path in B correctly starts at the front (S) and goes around to the rear (G).",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) A/A2.png",
+      "expected": "A",
+      "predicted": "A",
+      "correct": true,
+      "raw_response": "Answer: A and reason: The front view shows a small, nearly square house with a centered door, which matches the compact square footprint in A; B depicts a much larger, elongated building. The path in A also leads from the front (S) around to the rear (G) of that same small structure.",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) A/A3.png",
+      "expected": "A",
+      "predicted": "B",
+      "correct": false,
+      "raw_response": "Answer: B and reason: The front view shows two separate houses with a gap between them, so the top-down layout should be two distinct structures rather than one merged roof shape. Option B matches this better and the path can go around to the rear.",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) B/B1.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason  \nThe front view shows two adjacent gabled roofs with a gap/connector between them, which matches the double-lobed roof shape in B; A shows a single rectangular building. The path in B also routes from the front (S) around to the rear (G) consistent with that layout.",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) B/B2.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason  \nThe front view shows a small, narrow house with a centered door, matching the compact footprint in B; A’s building footprint is much wider and doesn’t fit. The path in B also correctly routes from the front (S) around to the rear (G).",
+      "error": null
+    },
+    {
+      "path": "3.1/(3.1) B/B3.png",
+      "expected": "B",
+      "predicted": "B",
+      "correct": true,
+      "raw_response": "Answer: B and reason. The front view shows a small, nearly square building with a centered door, which matches the compact square footprint in B (not the long rectangular building in A), and the path in B leads from the front (S) around to the rear (G).",
+      "error": null
+    }
+  ]
+}

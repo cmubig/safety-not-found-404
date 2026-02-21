@@ -1,0 +1,23 @@
+[
+  {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "task": "masking",
+    "input_folder": "data/sequence/masking",
+    "output_file": "outputs/sequence/openai_gpt_4_1_masking.json"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "task": "validation",
+    "input_folder": "data/sequence/validation",
+    "output_file": "outputs/sequence/openai_gpt_4_1_validation.json"
+  },
+  {
+    "provider": "gemini",
+    "model": "gemini-3-flash-preview",
+    "task": "masking",
+    "input_folder": "data/sequence/masking",
+    "output_file": "outputs/sequence/gemini_3_flash_preview_masking.json"
+  }
+]

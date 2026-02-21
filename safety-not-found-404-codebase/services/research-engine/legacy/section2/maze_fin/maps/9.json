@@ -1,0 +1,1802 @@
+[
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#.#....\nR#.#.#.#.\nR#RRRRR..\nR#R###R##\nRRR#..R..\n.###.#R#.\n#....#R.#\n.###.#R##\n.....#RRG",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 0
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR......\n.#R#####.\n#.RRR...#\n.#.#R###.\n..#.RRR..\n.#.###R#.\n....RRR.#\n.#.#R###.\n#..#RRRRG",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 1
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S..#....#\nR#####.#.\nRRRRRRRRR\n.#.###.#R\n#..#..#.R\n.#####.#R\n......#.R\n.#.#.#.#R\n........G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 2
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#....\n.#R#.#.#.\n.#R.#....\n.#R###.#.\n#.RRRRR..\n.###.#R##\n.....#RRR\n##.#.###R\n.....#..G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 3
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR..#...\n.#R###.#.\n#.RRR...#\n.#.#R#.#.\n..#.R.#..\n.###R#.#.\n....RRR.#\n.#.#.#R#.\n.....#RRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 4
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR.#..\n####R#.#.\n....RRR#.\n.#.###R#.\n.....#RRR\n.#.#.#.#R\n..#..##.R\n.#.###.#R\n..#.....G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 5
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n##.###.#R\n......#.R\n.#.#.#.#R\n...#.#..R\n.###.#.#R\n....#.#.R\n.#.#.#.#R\n....#...G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 6
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n####.###R\n....#...R\n.#.#.#.#R\n.......#R\n.#.#.#.#R\n......#.R\n.#.#.#.#R\n#.#....#G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 7
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n##.###R##\n..#...RRR\n.#.#.#.#R\n....#.#.R\n.#.#.#.#R\n......#.R\n.#.#.#.#R\n........G",
+    "stats": {
+      "num_walls": 23,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 8
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR.#......\nR###.#.#.\nRRRRR.#..\n####R#.##\n....RRR..\n.#.#.#R##\n.....#RRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 9
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.#.#.#R\n..#.#.#.R\n##.#.#.#R\n....#.RRR\n.#.#.#R##\n.....#R..\n.#.#.#R##\n......RRG",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 10
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR#.#.#.#.\nRRR.#.#..\n.#R#.####\n#.RRRRRRR\n.#.#.#.#R\n..#...#.R\n.#.###.#R\n...#....G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 11
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR#...\n##.#R#.#.\n...#RRR.#\n####.#R#.\n.....#RRR\n##.#####R\n..#.....R\n.#.#.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 12
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#.....\n.#R###.#.\n#.RRRRR..\n.#####R##\n....RRR..\n##.#R####\n..#.RRRRR\n.#.#.###R\n....#...G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 13
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRRRR.#..\n##.#R#.#.\n..#.R#..#\n.#.#R#.#.\n....R..#.\n##.#R###.\n..#.RRRRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 14
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#RRR..\n.#R#R#R##\n.#RRR#R..\n.#.#.#R#.\n#...#.R.#\n.###.#R#.\n......RRR\n.#.#.#.#R\n....#..#G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 15
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S##.RRR..\nR#.#R#R##\nRRRRR#R#.\n.#.#.#R#.\n#.#.#.RRR\n.#.###.#R\n......#.R\n.#.#.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 16
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.#.#.#R\n#.#.#.#.R\n##.#.#.#R\n......#.R\n.#.#.#.#R\n........R\n.#.#.#.#R\n....#..#G",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 17
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRRRR....\n.#.#R###.\n#.#.RRR.#\n.#.###R#.\n......RRR\n.#.#.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 23,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 18
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR#.#.#.#.\nR#.......\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nR..###...\nR###.###.\nRRRRRRRRG",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 19
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S......#.\nR###.#.#.\nR...#.#..\nR#.###.#.\nR.#......\nR#.#.####\nR#RRR.#..\nR#R#R###.\nRRR#RRRRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 20
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR....\n.###R#.#.\n#.RRR.#..\n.#R#.#.#.\n.#R.#.#..\n.#R#.#.#.\n..R.#.#..\n##R#.#.##\n..RRRRRRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 21
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR#...\n.###R#.#.\n..#.R.#..\n.#.#R#.#.\n#...RRR..\n.#####R##\n......R..\n.#.###R##\n.#.#..RRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 22
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.###.#R\n.##...#.R\n.#.#.###R\n#.RRRRRRR\n.#R######\n..R.#....\n##R###.##\n..RRRRRRG",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 27,
+      "path_length": 29
+    },
+    "map_id": 23
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S...#....\nR###.#.#.\nRRRRRRR.#\n##.###R#.\n...#..R..\n.#.#.#R##\n..#.#.RRR\n##.#.#.#R\n......#.G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 24
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRRRR..#.\n.###R####\n#...RRRRR\n##.#.#.#R\n..#.#.#.R\n.#.###.#R\n...#....G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 25
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR...#..\n.#R###.#.\n.#RRRRRRR\n.###.###R\n.#..#...R\n.#.#.###R\n#...#...R\n.#.#.###R\n..#.....G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 26
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n.#####R#.\n#...#.R.#\n.#.#.#R#.\n..#...R#.\n##.#.#R#.\n....#.RRR\n##.#.#.#R\n......#.G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 27
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.#####R\n..#...RRR\n##.###R##\n......RRR\n.#.#.###R\n#.....#.R\n.#.#.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 28
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#.....\n.#R#.#.#.\n#.R#.....\n.#R#####.\n..RRRRR#.\n.#.#.#R#.\n..#.#.RRR\n.#.#.#.#R\n..#..#.#G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 29
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#....#..\nR#.#.#.#.\nRRR.#....\n.#R#.#.#.\n#.R##....\n##R#.###.\n..RRRRR#.\n##.###R#.\n...#..RRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 30
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR....\n.#.#R###.\n..#.R#..#\n####R#.#.\n..RRR#...\n##R#.#.##\n..R.#....\n.#R#.###.\n#.RRRRRRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 31
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n.#####R##\n.#....RRR\n.#.#.#.#R\n#.#.#.#.R\n.#.#.#.#R\n.......#R\n.#.#.#.#R\n........G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 32
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.###.#.#R\n#....##.R\n.#.#.#.#R\n#.#.#.#.R\n.#.#.#.#R\n.......#R\n.#.#.#.#R\n.#...#..G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 33
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#..#....\nR#.#.#.#.\nRRRRRRR..\n.#.###R##\n..#...RRR\n##.#.#.#R\n....#.#.R\n.#.#.#.#R\n.....##.G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 34
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#.RRRRR\nR#.#R#.#R\nRRRRR#.#R\n##.#####R\n..#...RRR\n.#.#.#R##\n..#..#RRR\n.#.#.###R\n....#...G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 35
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR#...\n.#.#R#.#.\n..#.RRR..\n.#.###R##\n.#RRRRR..\n##R###.#.\n..R.#.#..\n.#R#.#.##\n#.RRRRRRG",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 36
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S..#.....\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nRRR.#....\n##R#.#.#.\n..RRR.#..\n.#.#R#.#.\n#..#RRRRG",
+    "stats": {
+      "num_walls": 23,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 37
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR#...\n.#.#R#.##\n#.#.RRRRR\n.#.#.#.#R\n......#.R\n.#####.#R\n..#.....R\n.###.#.#R\n...#...#G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 38
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRR.#....\n.#R#####.\n#.RRRRR..\n.#.#.#R##\n..#.#.R.#\n##.###R#.\n..#...RRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 39
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#..#...#\nR###.#.#.\nRRRRRRRRR\n.###.#.#R\n#....##.R\n.#.#.#.#R\n......#.R\n.###.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 40
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S...#....\nR###.#.#.\nRRR.#....\n.#R#.#.#.\n.#R.#....\n.#R#.#.#.\n.#RRRRR.#\n##.#.#R#.\n..#..#RRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 41
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR...#....\nR###.#.#.\nRRRRR#..#\n.#.#R#.#.\n.##.RRRRR\n.#.#####R\n#.......G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 42
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR#####.#.\nRRRRRRR..\n.#####R#.\n#.....R.#\n.#.#.#R#.\n...##.R#.\n.#.###R#.\n..#...RRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 43
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRR.#....\n.#R#.#.#.\n#.RRRRR.#\n##.###R#.\n..#...RRR\n.#.###.#R\n......#.G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 44
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n.#.###R##\n..#.#.R..\n.#.#.#R##\n.#..#.R.#\n.#.#.#R#.\n#....#RRR\n.#.###.#R\n#......#G",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 45
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#.#..\n.#R#.#.#.\n#.R#RRRRR\n.#R#R#.#R\n..RRR.#.R\n.#.#.#.#R\n....#...R\n.#.#.#.#R\n.#....#.G",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 46
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR###.#.#.\nRRRRR.#..\n.#.#R#.##\n..#.R#..#\n.#.#R#.#.\n#...RRRRR\n##.#.###R\n......#.G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 47
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.###.#.#R\n#..#..#.R\n.#.###.#R\n#.RRRRRRR\n.#R#.###.\n#.R.#...#\n.#R#.#.#.\n..RRRRRRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 27,
+      "path_length": 29
+    },
+    "map_id": 48
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR.#..\n##.#R#.#.\n..#.R....\n.###R#.#.\n...#R.#.#\n.#.#R#.#.\n....RRR.#\n.#.###R#.\n...#..RRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 49
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S..#.....\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nRRR.#....\n.#R###.#.\n#.RRR....\n.#.#R####\n#..#RRRRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 50
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n.#.###R#.\n#..#RRR#.\n.###R#.#.\n...#R.#..\n.#.#R####\n..#.R#RRR\n.#.#R#R#R\n#...RRR#G",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 51
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nR.#......\nR#####.##\nR..#RRRRR\nR###R###R\nRRRRR..#G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 52
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR###.#.#.\nRRRRR#...\n.###R###.\n#...RRR.#\n##.#.#R#.\n#...#.RRR\n.###.#.#R\n......#.G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 53
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#.#..\n##R#.#.#.\nRRR#RRRRR\nR###R#.#R\nRRR#R.#.R\n.#R#R#.#R\n#.RRR.#.R\n.#.###.#R\n.#.#....G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 27,
+      "path_length": 29
+    },
+    "map_id": 54
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#....\n##R#.#.#.\n..RRR.#..\n.#.#R###.\n..#.R.#..\n.###R#.##\n...#R..#.\n.#.#R###.\n..#.RRRRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 55
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR.#......\nR###.#.#.\nRRR#....#\n##R#.#.#.\n..R.#..#.\n.#R#.#.#.\n.#RRRRRRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 56
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR#.......\nR###.#.#.\nRRRRR....\n####R###.\n....R...#\n##.#R###.\n..#.RRRRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 57
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#....\n##R#.#.#.\n#.R#.....\n.#R###.#.\n..RRR#...\n.#.#R###.\n#..#RRRRR\n.###.#.#R\n...#.#.#G",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 58
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR....\n.#.#R#.#.\n..#.R.#..\n.#.#R#.##\n..#.R....\n.#.#R####\n#...RRRRR\n.#######R\n........G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 59
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR.#\n.#.#.#R#.\n..#.#.R..\n.#.#.#R#.\n..#...R.#\n.#.#.#R#.\n.#..#.R.#\n##.#.#R#.\n......RRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 60
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#.....\n.#R#.#.#.\n#.R.#....\n.#R###.#.\n..RRRRR..\n.#####R#.\n...#..R.#\n.#.###R#.\n.#.#..RRG",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 61
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S...#....\nR#.#.#.##\nR.#.RRRRR\nR#.#R###R\nR#RRR#RRR\nR#R#.#R#.\nRRR.#.R.#\n####.#R#.\n......RRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 27,
+      "path_length": 29
+    },
+    "map_id": 62
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.#RRR.#\nR#.#R#R#.\nR#RRR#RRR\nR#R###.#R\nRRR#...#R\n.###.#.#R\n#.....#.R\n.#.#.#.#R\n.#.#.#..G",
+    "stats": {
+      "num_walls": 30,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 63
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nRRR.#....\n.#R###.#.\n#.RRR.#..\n####R###.\n....RRRRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 64
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#..#.RRR\nR###.#R#R\nR#RRRRR#R\nR#R#.#.#R\nRRR##.#.R\n.#.#.###R\n#...#...R\n.#.#.#.#R\n...#...#G",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 65
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#....\n##R#.#.#.\nRRR......\nR#.#.#.##\nR#....#..\nR#.###.#.\nR.#...#..\nR#.#.#.#.\nRRRRRRRRG",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 66
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#.....\n.#R#.###.\n.#RRR#..#\n##.#R#.#.\n..#.R..#.\n.#.#R###.\n..RRR...#\n##R#####.\n..RRRRRRG",
+    "stats": {
+      "num_walls": 29,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 67
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S..#.....\nR###.#.#.\nR.#......\nR#.###.#.\nRRR....#.\n.#R#.#.##\n#.R.#.#..\n.#R#.#.#.\n..RRRRRRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 68
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n##.###R#.\n...#..R.#\n.#.###R#.\n#.#.RRR.#\n.#.#R###.\n.#..RRRRR\n.#.#.###R\n....#...G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 69
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.#.....\nR#.#.#.##\nRRRRR.#..\n.###R#.#.\n#...RRRRR\n.#.###.#R\n.....#.#R\n.#.#.###R\n.....#..G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 70
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.......\nR###.#.#.\nRRR....#.\n.#R###.#.\n.#R...#..\n.#R#.#.##\n#.R.#....\n.#R#.#.##\n..RRRRRRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 71
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S..#..#..\nR###.###.\nRRRRR##..\n.#.#R#.#.\n#.#.RRRRR\n##.#.###R\n....#...R\n.#.###.#R\n.#.#..#.G",
+    "stats": {
+      "num_walls": 31,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 72
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR.#\n.#.###R#.\n#.#..#RRR\n####.###R\n......RRR\n.#.###R#.\n.....#R.#\n######R#.\n......RRG",
+    "stats": {
+      "num_walls": 30,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 73
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#...#...\nR###.#.#.\nRRRRRRR.#\n.#.###R#.\n#.#..#R#.\n.#.#.#R#.\n......RRR\n.#.#.###R\n#......#G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 74
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S........\nR#####.##\nR.....#..\nR#.###.#.\nR.#...RRR\nR#.###R#R\nRRRRRRR#R\n.###.###R\n#......#G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 75
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.#.#.#R\n..#...#.R\n##.#.###R\n.....#RRR\n.#.#.#R##\n#...#.R.#\n.###.#R#.\n......RRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 76
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR#..#..\n.#R#.#.#.\n#.RRR.#..\n.#.#R#.#.\n...#R.#..\n.###R#.#.\n#.RRR.#..\n.#R###.#.\n#.RRRRRRG",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 77
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRR.#....\n.#R#.#.#.\n#.R.#....\n.#R#.#.#.\n..R..#...\n.#R#####.\n#.RRRRRRR\n.###.###R\n.....#..G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 78
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#.RRRRR\nR#.#R#.#R\nRRRRR.#.R\n.#.#.#.#R\n..#..#RRR\n.#.#.#R##\n.#..#.R#.\n##.#.#R#.\n......RRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 79
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.###.#R\n#.....#.R\n####.#.#R\n....#.#.R\n.#.#.#.#R\n........R\n.#.#.#.#R\n....#..#G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 80
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.#.....\nR#.###.#.\nRRRRR#...\n.#.#R#.##\n..#.RRRRR\n.#.#.#.#R\n#.....#.R\n##.#.#.#R\n.......#G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 81
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR#.......\nR#.#.#.#.\nR#.#..#..\nR#####.#.\nRRRRRRRRR\n.#.#.#.#R\n..#..#.#G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 82
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRR#..#\n####R#.#.\n..#.RRRRR\n.#.#.###R\n....#.RRR\n.#.#.#R#.\n#.....R.#\n####.#R#.\n.....#RRG",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 83
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#RRR.#..\nR#R#R#.#.\nRRR#RRRRR\n.###.###R\n#....#..R\n.#######R\n..#...RRR\n##.###R##\n......RRG",
+    "stats": {
+      "num_walls": 30,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 84
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nRRR.#....\n.#R#.#.#.\n#.RRRRR..\n.#.###R#.\n..#.#.R.#\n.#.#.#R##\n......RRG",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 85
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR#.......\nR#####.#.\nRRRRR#.##\n.#.#R#.#.\n..#.RRRRR\n.#.#.###R\n#.....#.G",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 86
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#..#....\nR#.#.#.#.\nRRRRRRR.#\n.###.#R#.\n#...#.R..\n.#.#.#R##\n.....#RRR\n.#.#.###R\n........G",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 87
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.##....\nR#.#.#.#.\nRRR#RRR..\n##R#R#R#.\n..RRR#R.#\n####.#R#.\n....#.RRR\n.#.#.#.#R\n.....##.G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 88
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#..#...\nR#.#.#.#.\nR.#..#...\nR#.#.###.\nRRRRRRRRR\n.#####.#R\n.#....#.R\n.#.#.#.#R\n.#......G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 89
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#.#.....\nR#.#.#.#.\nR...#....\nR#.#.#.#.\nR.#.#....\nR#.#.#.#.\nRRRRR.#..\n.###R#.#.\n#...RRRRG",
+    "stats": {
+      "num_walls": 24,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 90
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n.###.#R##\n..#.#.RRR\n.#.#.###R\n#.....RRR\n.#.###R##\n...#..RRR\n.###.#.#R\n....#..#G",
+    "stats": {
+      "num_walls": 28,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 91
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR.#\n.###.#R#.\n#...#.RRR\n.#.#.###R\n........R\n.#.#.#.#R\n......#.R\n.#.#.#.#R\n......#.G",
+    "stats": {
+      "num_walls": 23,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 92
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRRRR\n.#.#.#.#R\n#.#.#.#.R\n.#.###.#R\n#...RRRRR\n.#.#R####\n..#.RRRRR\n.#.#.#.#R\n......#.G",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 93
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.##.....\nR#.#.#.#.\nR..#.....\nR#.#.#.#.\nR.#......\nR#.#.#.#.\nR...#....\nR###.#.##\nRRRRRRRRG",
+    "stats": {
+      "num_walls": 23,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 94
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#..#...\nR#.#.#.#.\nR#RRRRR#.\nR#R###R##\nRRR..#RRR\n.#.###.#R\n#....#.#R\n.#.###.#R\n....#.#.G",
+    "stats": {
+      "num_walls": 30,
+      "num_route": 19,
+      "path_length": 21
+    },
+    "map_id": 95
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S#..RRRRR\nR###R###R\nRRRRR..#R\n.###.###R\n.#..#.#.R\n.#.###.#R\n#...#.RRR\n.###.#R##\n.#....RRG",
+    "stats": {
+      "num_walls": 31,
+      "num_route": 23,
+      "path_length": 25
+    },
+    "map_id": 96
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "SRRRRRR..\n##.###R#.\n..#...R.#\n.#.#.#R#.\n....#.R..\n##.###R#.\n......R.#\n.#.#.#R#.\n..#.#.RRG",
+    "stats": {
+      "num_walls": 26,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 97
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR#.#.#.#.\nR.#.....#\nR###.#.#.\nRRRRR.#..\n.###R###.\n#...RRR#.\n.#####R#.\n......RRG",
+    "stats": {
+      "num_walls": 27,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 98
+  },
+  {
+    "size": 9,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      8,
+      8
+    ],
+    "map": "S.#......\nR###.#.#.\nR.#......\nR#.#.#.#.\nR.#.#....\nR#.#.#.#.\nR.#.#.##.\nR#.#.#.#.\nRRRRRRRRG",
+    "stats": {
+      "num_walls": 25,
+      "num_route": 15,
+      "path_length": 17
+    },
+    "map_id": 99
+  }
+]
