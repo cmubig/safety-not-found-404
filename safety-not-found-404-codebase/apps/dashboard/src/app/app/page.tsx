@@ -22,7 +22,14 @@ type LogFeedItem = {
 type DecisionModelOption = {
   value: string;
   label: string;
-  provider: "openai" | "gemini" | "anthropic";
+  provider: ModelProvider;
+};
+
+type ModelProvider = "openai" | "gemini" | "anthropic";
+
+type ModelCatalogResponse = {
+  providers?: Partial<Record<ModelProvider, Array<Partial<DecisionModelOption>>>>;
+  warnings?: string[];
 };
 
 type FailureCategory =
@@ -50,17 +57,7 @@ type RunProgress = {
   percent: number | null;
 };
 
-const DECISION_MODEL_OPTIONS: DecisionModelOption[] = [
-  { value: "codex-mini-latest", label: "Codex Mini (Latest)", provider: "openai" },
-  { value: "codex-latest", label: "Codex (Latest)", provider: "openai" },
-  { value: "gpt-5.2", label: "GPT-5.2", provider: "openai" },
-  { value: "gpt-4.1-mini", label: "GPT-4.1-mini", provider: "openai" },
-  { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro", provider: "gemini" },
-  { value: "gemini-3-flash-preview", label: "Gemini 3 Flash", provider: "gemini" },
-  { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet", provider: "anthropic" },
-];
-
-const OAUTH_DEFAULT_DECISION_MODELS = ["codex-mini-latest"];
+const MODEL_FETCH_DEBOUNCE_MS = 350;
 
 const FEED_KIND_STYLE: Record<FeedKind, string> = {
   system: "border-neutral-700 text-neutral-200",
@@ -275,12 +272,65 @@ function normalizeModelId(value: string): string {
   return value.trim();
 }
 
-function inferModelProvider(modelId: string): "openai" | "gemini" | "anthropic" {
+function inferModelProvider(modelId: string): ModelProvider {
   const lowered = modelId.trim().toLowerCase();
 
   if (lowered.startsWith("gemini")) return "gemini";
   if (lowered.startsWith("claude")) return "anthropic";
   return "openai";
+}
+
+function sanitizeDecisionModelOptions(
+  options: Array<Partial<DecisionModelOption>> | undefined,
+  fallbackProvider: ModelProvider
+): DecisionModelOption[] {
+  if (!options) return [];
+
+  return options
+    .map((option) => {
+      const value = option.value?.trim();
+      if (!value) return null;
+      return {
+        value,
+        label: option.label?.trim() || value,
+        provider: option.provider ?? fallbackProvider,
+      };
+    })
+    .filter((option): option is DecisionModelOption => option !== null);
+}
+
+function dedupeDecisionModelOptions(options: DecisionModelOption[]): DecisionModelOption[] {
+  const seen = new Set<string>();
+  const deduped: DecisionModelOption[] = [];
+
+  for (const option of options) {
+    if (seen.has(option.value)) continue;
+    seen.add(option.value);
+    deduped.push(option);
+  }
+
+  return deduped;
+}
+
+function sortDecisionModelOptions(options: DecisionModelOption[], oauthMode: boolean): DecisionModelOption[] {
+  const providerOrder: Record<ModelProvider, number> = {
+    openai: 0,
+    gemini: 1,
+    anthropic: 2,
+  };
+
+  return [...options].sort((a, b) => {
+    const providerDelta = providerOrder[a.provider] - providerOrder[b.provider];
+    if (providerDelta !== 0) return providerDelta;
+
+    if (oauthMode && a.provider === "openai" && b.provider === "openai") {
+      const aCodex = a.value.toLowerCase().startsWith("codex") ? 0 : 1;
+      const bCodex = b.value.toLowerCase().startsWith("codex") ? 0 : 1;
+      if (aCodex !== bCodex) return aCodex - bCodex;
+    }
+
+    return a.value.localeCompare(b.value, "en", { numeric: true, sensitivity: "base" });
+  });
 }
 
 function providerBadgeText(modelId: string): string {
@@ -331,7 +381,13 @@ export default function Dashboard() {
   const [seqProvider, setSeqProvider] = useState("openai");
   const [mazeLang, setMazeLang] = useState("ko");
   const [decScenario, setDecScenario] = useState("dilemma_baseline_ab");
-  const [decModels, setDecModels] = useState<string[]>(["gpt-5.2"]);
+  const [decModels, setDecModels] = useState<string[]>([]);
+  const [decisionModelOptions, setDecisionModelOptions] = useState<DecisionModelOption[]>([]);
+  const [modelCatalogWarnings, setModelCatalogWarnings] = useState<string[]>([]);
+  const [modelCatalogError, setModelCatalogError] = useState<string | null>(null);
+  const [modelCatalogLoading, setModelCatalogLoading] = useState(false);
+  const [modelCatalogUpdatedAt, setModelCatalogUpdatedAt] = useState<number | null>(null);
+  const [modelCatalogRevision, setModelCatalogRevision] = useState(0);
   const [decModelInput, setDecModelInput] = useState("");
   const [decModelInputError, setDecModelInputError] = useState<string | null>(null);
 
@@ -348,26 +404,68 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!authStatus) return;
-    setDecModels((prev) => {
-      // Keep user-selected set intact; only replace legacy default.
-      if (prev.length === 1 && prev[0] === "gpt-5.2") {
-        return [...OAUTH_DEFAULT_DECISION_MODELS];
+    let active = true;
+    const controller = new AbortController();
+
+    const timeoutId = window.setTimeout(async () => {
+      setModelCatalogLoading(true);
+      setModelCatalogError(null);
+
+      try {
+        const tokens = loadTokens();
+        const response = await fetch("/api/models", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            oauthToken: tokens?.access_token ?? "",
+            apiKeys,
+          }),
+        });
+
+        if (!response.ok) {
+          const bodyText = await response.text();
+          throw new Error(`Model catalog request failed (${response.status}): ${bodyText}`);
+        }
+
+        const payload = (await response.json()) as ModelCatalogResponse;
+        const openaiModels = sanitizeDecisionModelOptions(payload.providers?.openai, "openai");
+        const geminiModels = sanitizeDecisionModelOptions(payload.providers?.gemini, "gemini");
+        const anthropicModels = sanitizeDecisionModelOptions(payload.providers?.anthropic, "anthropic");
+        const mergedModels = sortDecisionModelOptions(
+          dedupeDecisionModelOptions([...openaiModels, ...geminiModels, ...anthropicModels]),
+          authStatus
+        );
+
+        if (!active) return;
+
+        setDecisionModelOptions(mergedModels);
+        setModelCatalogWarnings((payload.warnings ?? []).filter((warning) => Boolean(warning?.trim())));
+        setModelCatalogUpdatedAt(Date.now());
+      } catch (error: unknown) {
+        if (!active || controller.signal.aborted) return;
+        setDecisionModelOptions([]);
+        setModelCatalogWarnings([]);
+        setModelCatalogError(toErrorMessage(error));
+      } finally {
+        if (active) setModelCatalogLoading(false);
       }
-      return prev;
-    });
-  }, [authStatus]);
+    }, MODEL_FETCH_DEBOUNCE_MS);
 
-  const decisionModelOptions = useMemo(() => {
-    if (!authStatus) return DECISION_MODEL_OPTIONS;
+    return () => {
+      active = false;
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [apiKeys, authStatus, modelCatalogRevision]);
 
-    const preferred = new Set(OAUTH_DEFAULT_DECISION_MODELS);
-    return [...DECISION_MODEL_OPTIONS].sort((a, b) => {
-      const aScore = preferred.has(a.value) ? 0 : 1;
-      const bScore = preferred.has(b.value) ? 0 : 1;
-      return aScore - bScore;
+  useEffect(() => {
+    if (decisionModelOptions.length === 0) return;
+    setDecModels((prev) => {
+      if (prev.length > 0) return prev;
+      return [decisionModelOptions[0].value];
     });
-  }, [authStatus]);
+  }, [decisionModelOptions]);
 
   const handleChatGPTConnect = async () => {
     try {
@@ -392,6 +490,10 @@ export default function Dashboard() {
     } catch {
       setCopiedPath(null);
     }
+  };
+
+  const refreshModelCatalog = () => {
+    setModelCatalogRevision((prev) => prev + 1);
   };
 
   const processChunk = (chunk: string) => {
@@ -766,7 +868,7 @@ export default function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Section 3: Decision Experiments</CardTitle>
-              <CardDescription>AI decision runner with selectable model set (including Codex family).</CardDescription>
+              <CardDescription>AI decision runner with live model catalog from connected providers.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -780,37 +882,71 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-neutral-400">Models</label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-xs font-medium text-neutral-400">Models</label>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={refreshModelCatalog}
+                    disabled={isRunning || modelCatalogLoading}
+                  >
+                    {modelCatalogLoading ? "Syncing..." : "Refresh"}
+                  </Button>
+                </div>
                 {authStatus ? (
                   <p className="text-xs text-neutral-500">
-                    OAuth mode active: Codex models are prioritized and recommended.
+                    OAuth mode active: live OpenAI catalog is loaded and Codex models are prioritized.
                   </p>
                 ) : (
                   <p className="text-xs text-neutral-500">
-                    Connect OAuth to prioritize Codex models for OpenAI routing.
+                    Catalog is fetched live from connected provider credentials.
                   </p>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {decisionModelOptions.map((option) => {
-                    const selected = decModels.includes(option.value);
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => toggleDecisionModel(option.value)}
-                        className={`text-left px-3 py-2 border transition-colors ${
-                          selected
-                            ? "border-white bg-white text-black"
-                            : "border-neutral-700 bg-transparent text-neutral-200 hover:border-neutral-400"
-                        }`}
-                        disabled={isRunning}
-                      >
-                        <div className="text-sm font-semibold">{option.label}</div>
-                        <div className={`text-xs ${selected ? "text-neutral-700" : "text-neutral-500"}`}>{option.provider}</div>
-                      </button>
-                    );
-                  })}
-                </div>
+                <p className="text-xs text-neutral-500">
+                  {modelCatalogLoading
+                    ? "Loading model catalog..."
+                    : `Loaded ${decisionModelOptions.length} model(s)${
+                        modelCatalogUpdatedAt ? ` • synced ${new Date(modelCatalogUpdatedAt).toLocaleTimeString()}` : ""
+                      }`}
+                </p>
+                {modelCatalogError ? <p className="text-xs text-red-300">{modelCatalogError}</p> : null}
+                {modelCatalogWarnings.length > 0 ? (
+                  <div className="space-y-1">
+                    {modelCatalogWarnings.map((warning) => (
+                      <p key={warning} className="text-xs text-amber-300">
+                        {warning}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
+                {decisionModelOptions.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-auto pr-1">
+                    {decisionModelOptions.map((option) => {
+                      const selected = decModels.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => toggleDecisionModel(option.value)}
+                          className={`text-left px-3 py-2 border transition-colors ${
+                            selected
+                              ? "border-white bg-white text-black"
+                              : "border-neutral-700 bg-transparent text-neutral-200 hover:border-neutral-400"
+                          }`}
+                          disabled={isRunning}
+                        >
+                          <div className="text-sm font-semibold">{option.label}</div>
+                          <div className={`text-xs ${selected ? "text-neutral-700" : "text-neutral-500"}`}>{option.provider}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="border border-neutral-800 p-3 text-xs text-neutral-500">
+                    No provider models loaded yet. Connect OAuth or set API keys, or add custom model id below.
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Input
                     value={decModelInput}
@@ -840,7 +976,7 @@ export default function Dashboard() {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-neutral-500">Selected: {decModels.join(", ")}</p>
+                <p className="text-xs text-neutral-500">Selected: {decModels.length > 0 ? decModels.join(", ") : "-"}</p>
               </div>
 
               <Button
