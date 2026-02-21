@@ -51,13 +51,16 @@ type RunProgress = {
 };
 
 const DECISION_MODEL_OPTIONS: DecisionModelOption[] = [
+  { value: "codex-mini-latest", label: "Codex Mini (Latest)", provider: "openai" },
+  { value: "codex-latest", label: "Codex (Latest)", provider: "openai" },
   { value: "gpt-5.2", label: "GPT-5.2", provider: "openai" },
   { value: "gpt-4.1-mini", label: "GPT-4.1-mini", provider: "openai" },
-  { value: "codex-mini-latest", label: "Codex Mini (Latest)", provider: "openai" },
   { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro", provider: "gemini" },
   { value: "gemini-3-flash-preview", label: "Gemini 3 Flash", provider: "gemini" },
   { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet", provider: "anthropic" },
 ];
+
+const OAUTH_DEFAULT_DECISION_MODELS = ["codex-mini-latest"];
 
 const FEED_KIND_STYLE: Record<FeedKind, string> = {
   system: "border-neutral-700 text-neutral-200",
@@ -343,6 +346,28 @@ export default function Dashboard() {
     };
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (!authStatus) return;
+    setDecModels((prev) => {
+      // Keep user-selected set intact; only replace legacy default.
+      if (prev.length === 1 && prev[0] === "gpt-5.2") {
+        return [...OAUTH_DEFAULT_DECISION_MODELS];
+      }
+      return prev;
+    });
+  }, [authStatus]);
+
+  const decisionModelOptions = useMemo(() => {
+    if (!authStatus) return DECISION_MODEL_OPTIONS;
+
+    const preferred = new Set(OAUTH_DEFAULT_DECISION_MODELS);
+    return [...DECISION_MODEL_OPTIONS].sort((a, b) => {
+      const aScore = preferred.has(a.value) ? 0 : 1;
+      const bScore = preferred.has(b.value) ? 0 : 1;
+      return aScore - bScore;
+    });
+  }, [authStatus]);
 
   const handleChatGPTConnect = async () => {
     try {
@@ -756,8 +781,17 @@ export default function Dashboard() {
 
               <div className="space-y-2">
                 <label className="text-xs font-medium text-neutral-400">Models</label>
+                {authStatus ? (
+                  <p className="text-xs text-neutral-500">
+                    OAuth mode active: Codex models are prioritized and recommended.
+                  </p>
+                ) : (
+                  <p className="text-xs text-neutral-500">
+                    Connect OAuth to prioritize Codex models for OpenAI routing.
+                  </p>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {DECISION_MODEL_OPTIONS.map((option) => {
+                  {decisionModelOptions.map((option) => {
                     const selected = decModels.includes(option.value);
                     return (
                       <button
