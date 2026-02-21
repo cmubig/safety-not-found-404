@@ -58,6 +58,10 @@ function normalizeCredential(value: string | undefined): string {
   return value?.trim() ?? "";
 }
 
+function isMissingModelReadScope(message: string): boolean {
+  return message.toLowerCase().includes("missing scopes: api.model.read");
+}
+
 function uniqueByValue(models: DecisionModelOption[]): DecisionModelOption[] {
   const seen = new Set<string>();
   const deduped: DecisionModelOption[] = [];
@@ -214,9 +218,17 @@ export async function POST(req: NextRequest) {
     const body = ((await req.json().catch(() => ({}))) ?? {}) as ModelsRequest;
 
     const oauthToken = normalizeCredential(body.oauthToken);
-    const openaiCredential = oauthToken || normalizeCredential(body.apiKeys?.openai) || normalizeCredential(process.env.OPENAI_API_KEY);
+    const openaiApiKey = normalizeCredential(body.apiKeys?.openai) || normalizeCredential(process.env.OPENAI_API_KEY);
     const geminiCredential = normalizeCredential(body.apiKeys?.gemini) || normalizeCredential(process.env.GEMINI_API_KEY);
     const anthropicCredential = normalizeCredential(body.apiKeys?.anthropic) || normalizeCredential(process.env.ANTHROPIC_API_KEY);
+
+    const openaiCredentials = [
+      { source: "oauth", token: oauthToken },
+      { source: "api_key", token: openaiApiKey },
+    ].filter((entry, index, array) => {
+      if (!entry.token) return false;
+      return array.findIndex((candidate) => candidate.token === entry.token) === index;
+    });
 
     const providers: ProviderModelMap = {
       openai: [],
@@ -225,16 +237,32 @@ export async function POST(req: NextRequest) {
     };
     const warnings: string[] = [];
 
-    if (!openaiCredential && !geminiCredential && !anthropicCredential) {
+    if (openaiCredentials.length === 0 && !geminiCredential && !anthropicCredential) {
       warnings.push("No OAuth/API credentials found. Connect OAuth or provide keys to load live model catalog.");
       return NextResponse.json({ providers, warnings });
     }
 
-    if (openaiCredential) {
-      try {
-        providers.openai = await fetchOpenAIModels(openaiCredential);
-      } catch (error: unknown) {
-        warnings.push(`OpenAI catalog unavailable: ${toErrorMessage(error)}`);
+    if (openaiCredentials.length > 0) {
+      const openaiErrors: string[] = [];
+
+      for (const credential of openaiCredentials) {
+        try {
+          providers.openai = await fetchOpenAIModels(credential.token);
+          openaiErrors.length = 0;
+          break;
+        } catch (error: unknown) {
+          const message = toErrorMessage(error);
+          openaiErrors.push(`${credential.source}: ${message}`);
+          if (credential.source === "oauth" && isMissingModelReadScope(message)) {
+            warnings.push(
+              "OAuth token is missing `api.model.read` scope. Logout and reconnect ChatGPT OAuth to grant model catalog access."
+            );
+          }
+        }
+      }
+
+      if (providers.openai.length === 0 && openaiErrors.length > 0) {
+        warnings.push(`OpenAI catalog unavailable: ${openaiErrors.join(" | ")}`);
       }
     }
 

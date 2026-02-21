@@ -7,7 +7,8 @@ const AUTHORIZE_URL = "https://auth.openai.com/oauth/authorize";
 const TOKEN_URL = "https://auth.openai.com/oauth/token";
 const CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann";
 const REDIRECT_URI = "http://localhost:1455/auth/callback";
-const SCOPE = "openid profile email offline_access";
+// `api.model.read` is required for /v1/models catalog lookup.
+const SCOPE = "openid profile email offline_access api.model.read";
 
 const STORAGE_KEY = "benchmark_oauth";
 const PKCE_KEY = "benchmark_pkce";

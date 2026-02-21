@@ -482,6 +482,18 @@ export default function Dashboard() {
     }
   };
 
+  const handleOAuthReconnect = async () => {
+    try {
+      clearTokens();
+      setAuthStatus(false);
+      const { authUrl } = await createAuthFlow();
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error(err);
+      alert("Failed to re-initiate login flow.");
+    }
+  };
+
   const handleCopyPath = async (path: string) => {
     try {
       await navigator.clipboard.writeText(path);
@@ -741,6 +753,10 @@ export default function Dashboard() {
   }, [isRunning, runFinishedAt, runStartedAt]);
 
   const recentArtifacts = useMemo(() => artifactPaths.slice(-20).reverse(), [artifactPaths]);
+  const oauthModelScopeMissing = useMemo(
+    () => modelCatalogWarnings.some((warning) => warning.toLowerCase().includes("api.model.read")),
+    [modelCatalogWarnings]
+  );
 
   const activeTaskPercent = runType ? progressByTask[runType] : null;
 
@@ -919,6 +935,11 @@ export default function Dashboard() {
                       </p>
                     ))}
                   </div>
+                ) : null}
+                {authStatus && oauthModelScopeMissing ? (
+                  <Button type="button" size="sm" variant="outline" onClick={handleOAuthReconnect} disabled={isRunning}>
+                    Reconnect OAuth (Grant model.read)
+                  </Button>
                 ) : null}
                 {decisionModelOptions.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-auto pr-1">
