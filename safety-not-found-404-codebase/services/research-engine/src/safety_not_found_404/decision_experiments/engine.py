@@ -41,6 +41,13 @@ class RunArtifact:
     csv_path: Path
     summary_json_path: Path
     summary_text_path: Path
+    rows_total: int
+    errors: int
+    unknown: int
+
+    @property
+    def successful_rows(self) -> int:
+        return max(0, self.rows_total - self.errors - self.unknown)
 
 
 def _utc_now_iso() -> str:
@@ -298,6 +305,9 @@ def run_scenario(
                 csv_path=csv_path,
                 summary_json_path=summary_json_path,
                 summary_text_path=summary_text_path,
+                rows_total=rows_total,
+                errors=errors,
+                unknown=unknown,
             )
         )
 

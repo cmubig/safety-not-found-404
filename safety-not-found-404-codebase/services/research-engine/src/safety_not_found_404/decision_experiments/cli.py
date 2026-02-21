@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 from pathlib import Path
 from typing import List
 
@@ -108,6 +109,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"CSV: {artifact.csv_path}")
             print(f"Summary JSON: {artifact.summary_json_path}")
             print(f"Summary TXT: {artifact.summary_text_path}")
+
+    if sum(artifact.successful_rows for artifact in artifacts) <= 0:
+        print(
+            "Decision experiment produced no successful responses (all rows are errors/unknown).",
+            file=sys.stderr,
+        )
+        return 1
 
     return 0
 
