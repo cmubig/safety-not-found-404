@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safety-not-found-404"
+version = "0.1.0"
+description = "Refactored tooling for Safety Not Found 404 project workflows"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "openai>=1.40.0",
+  "google-genai>=0.7.0",
+  "google-generativeai>=0.8.0",
+  "matplotlib>=3.8.0",
+  "opencv-python>=4.9.0",
+  "numpy>=1.26.0",
+  "requests>=2.31.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

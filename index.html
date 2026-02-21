@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making">
+  <meta name="description" content="A project page for Safety Not Found (404), analyzing failure modes of LLM-based robotic decision making in safety-critical spatial reasoning tasks.">
+  <meta name="keywords" content="LLM safety, robotics, spatial reasoning, SOSR, map navigation, hallucination, safety-critical AI">
+  <meta name="author" content="Jua Han, Jaeyoon Seo, Jungbin Min, Jihie Kim, Jean Oh">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making">
+  <meta property="og:description" content="Even rare LLM failures can become catastrophic in embodied safety-critical settings.">
+  <meta property="og:image" content="static/images/abstract-figure.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Safety Not Found (404)">
+  <meta name="twitter:description" content="Hidden risks of LLM-based robotics decision making.">
+  <meta name="twitter:image" content="static/images/abstract-figure.png">
+
+  <meta name="theme-color" content="#f97316">
+  <title>Safety Not Found (404)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <script defer src="static/js/index.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making",
+    "author": [
+      {"@type": "Person", "name": "Jua Han"},
+      {"@type": "Person", "name": "Jaeyoon Seo"},
+      {"@type": "Person", "name": "Jungbin Min"},
+      {"@type": "Person", "name": "Jihie Kim"},
+      {"@type": "Person", "name": "Jean Oh"}
+    ],
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "image": "static/images/abstract-figure.png",
+    "description": "A diagnostic study showing that LLMs can produce unsafe spatial decisions in robotic scenarios, including emergency evacuation prompts."
+  }
+  </script>
+</head>
+<body>
+  <button class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">↑</button>
+
+  <div class="resource-fab">
+    <button class="resource-btn" id="resourceToggle" aria-expanded="false" aria-controls="resourceDropdown">Resources</button>
+    <div class="resource-dropdown" id="resourceDropdown">
+      <div class="resource-head">
+        <h4>Explore Resources</h4>
+        <button class="resource-close" id="resourceClose" aria-label="Close resources">✕</button>
+      </div>
+      <a class="resource-item" href="https://arxiv.org/abs/2601.05529" target="_blank" rel="noopener">
+        <div>
+          <strong>arXiv Paper</strong>
+          <p>Paper page with abstract, PDF, and citation info.</p>
+        </div>
+        <span>↗</span>
+      </a>
+      <a class="resource-item" href="https://github.com/cmubig/safety-not-found-404" target="_blank" rel="noopener">
+        <div>
+          <strong>Code</strong>
+          <p>Official repository for experiments and project assets.</p>
+        </div>
+        <span>↗</span>
+      </a>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero hero-main">
+      <div class="hero-body">
+        <div class="container is-max-desktop has-text-centered">
+          <span class="badge-track">Safety-Critical AI for Robotics</span>
+          <h1 class="title page-title">Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making</h1>
+          <p class="subtitle page-subtitle">A single unsafe instruction can be catastrophic in embodied environments. We evaluate whether modern LLMs and VLMs can be trusted for safety-critical spatial decisions.</p>
+
+          <div class="authors is-size-5">
+            <a href="https://scholar.google.com/citations?user=fSt75d4AAAAJ&hl=ko" target="_blank" rel="noopener noreferrer">Jua Han<sup>1*</sup></a>
+            <a href="https://scholar.google.com/citations?user=jOlDzJkAAAAJ&hl=ko" target="_blank" rel="noopener noreferrer">Jaeyoon Seo<sup>1*</sup></a>
+            <a href="https://www.semanticscholar.org/author/Jungbin-Min/2403936845" target="_blank" rel="noopener noreferrer">Jungbin Min<sup>2*</sup></a>
+            <a href="https://sites.google.com/view/jihiekim/" target="_blank" rel="noopener noreferrer">Jihie Kim<sup>1</sup></a>
+            <a href="https://www.cs.cmu.edu/~jeanoh/" target="_blank" rel="noopener noreferrer">Jean Oh<sup>3</sup></a>
+          </div>
+          <p class="affils is-size-6"><sup>1</sup>Dongguk University · <sup>2</sup>Sungkyunkwan University · <sup>3</sup>Carnegie Mellon University</p>
+          <p class="equal-note"><sup>*</sup>Equal contribution</p>
+
+          <div class="cta-row">
+            <a class="button is-dark is-rounded" href="https://arxiv.org/abs/2601.05529" target="_blank" rel="noopener">arXiv</a>
+            <a class="button is-light is-rounded" href="#results">Key Results</a>
+            <a class="button is-light is-rounded" href="#bibtex">BibTeX</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-nav-wrap">
+      <div class="container is-max-desktop">
+        <nav class="quick-nav" aria-label="Section navigation" tabindex="0">
+          <a href="#abstract">Abstract</a>
+          <a href="#framework">Framework</a>
+          <a href="#results">Results</a>
+          <a href="#sosr">SOSR</a>
+          <a href="#bob">BoB</a>
+          <a href="#qualitative">Qualitative</a>
+          <a href="#takeaways">Takeaways</a>
+          <a href="#bibtex">BibTeX</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="hero teaser-block">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <figure class="image">
+            <img src="static/images/abstract-figure.png" alt="Emergency scenario where models suggest unsafe destinations instead of an exit" loading="lazy">
+          </figure>
+          <p class="teaser-caption">In a simulated fire scenario, some LLM outputs prioritized document retrieval or even suggested heading toward a server room instead of immediate evacuation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-paper metric-section">
+      <div class="container is-max-desktop">
+        <div class="metric-grid">
+          <article class="metric-card">
+            <p class="metric-value">32%</p>
+            <p>Hard emergency prompts where Gemini-2.5 Flash prioritized document retrieval over evacuation.</p>
+          </article>
+          <article class="metric-card">
+            <p class="metric-value">1%</p>
+            <p>Runs where a hallucinated server-room route was suggested during fire-evacuation decision making.</p>
+          </article>
+          <article class="metric-card">
+            <p class="metric-value">0%</p>
+            <p>Success observed on several map variants for weaker baselines under increased spatial complexity.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-paper" id="abstract">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3 has-text-centered">Abstract</h2>
+            <p class="abstract-text">
+              One mistake by an AI system in a safety-critical setting can cost lives. Large Language Models (LLMs) are increasingly integral to robotics as decision-making tools, powering applications from navigation to human-robot interaction. However, robots carry a physical dimension of risk: a single wrong instruction can directly endanger human safety. This highlights the urgent need to systematically evaluate how LLMs perform in scenarios where even minor errors are catastrophic. In our qualitative evaluation (e.g., a fire evacuation scenario) of LLM-based decision-making, we identified several critical failure cases that expose the dangers of their deployment in safety-critical settings. Based on these observations, we designed seven tasks to provide complementary quantitative assessments. The tasks are divided into complete information, incomplete information, and Safety-Oriented Spatial Reasoning (SOSR) formats, where the SOSR tasks are defined through natural language instructions. Complete information tasks use fully specified ASCII maps, enabling direct evaluation under explicit conditions. Unlike images, ASCII maps minimize ambiguity in interpretation and align directly with the textual modality of LLMs, allowing us to isolate spatial reasoning and path-planning abilities while keeping evaluation transparent and reproducible. Incomplete information tasks require models to infer the missing directional or movement context from the given sequence, allowing us to evaluate whether they correctly capture spatial continuity or instead exhibit hallucinations. SOSR tasks use natural language questions to test whether LLMs can make safe decisions in scenarios where even a single error may be life-threatening. Because the information is provided as natural language, the model must fully infer the spatial context. We evaluate LLMs and Vision-Language Models (VLMs) on these tasks to measure their spatial reasoning ability and safety reliability. Crucially, beyond aggregate performance, we analyze the implications of a 1% failure rate through case studies, highlighting how "rare" errors can escalate into catastrophic outcomes. The results reveal serious vulnerabilities. For instance, several LLMs achieved a 0% success rate in ASCII map navigation tasks, collapsing the map structure. In a concerning case during a simulated fire drill, LLMs instructed a robot to move toward a server room instead of the emergency exit, representing an error with serious implications for human safety. Together, these observations reinforce a sobering conclusion: current LLMs are not ready for direct deployment in safety-critical robotic systems such as autonomous driving or assistive robotics. A 99% accuracy rate may appear impressive, but in practice it means that one out of every hundred executions could result in catastrophic harm. We demonstrate that even the latest LLMs cannot guarantee safety in practice, and that absolute reliance on AI in safety-critical domains can create new risks. By systematizing these failures, we argue that conventional metrics like "99% accuracy" are dangerously misleading, as a single error can lead to a catastrophic outcome.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-panel" id="framework">
+      <div class="container is-max-widescreen">
+        <h2 class="title is-3 has-text-centered">Evaluation Framework</h2>
+        <div class="card-panel">
+          <figure class="image">
+            <img src="static/images/overall-framework.jpg" alt="Overview of complete, incomplete, and SOSR task prompts and structures" loading="lazy">
+          </figure>
+          <p class="figure-note">Overview of experimental prompts and map structures: Complete (blue), Incomplete (red), and SOSR (yellow). Italicized prompt phrases indicate critical contextual cues used in high-stakes reasoning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-paper" id="contributions">
+      <div class="container is-max-widescreen">
+        <h2 class="title is-3 has-text-centered">Core Contributions</h2>
+        <div class="columns is-multiline is-variable is-5">
+          <div class="column is-half-tablet is-one-quarter-desktop">
+            <div class="contrib-card">
+              <h3>Safety Reliability Stress Test</h3>
+              <p>We evaluate modern LLMs/VLMs under spatial tasks where one wrong response can be dangerous in practice.</p>
+            </div>
+          </div>
+          <div class="column is-half-tablet is-one-quarter-desktop">
+            <div class="contrib-card">
+              <h3>Seven Complementary Tasks</h3>
+              <p>Complete maps, uncertain maps, sequence inference, and SOSR emergency prompts reveal different failure profiles.</p>
+            </div>
+          </div>
+          <div class="column is-half-tablet is-one-quarter-desktop">
+            <div class="contrib-card">
+              <h3>Failure Taxonomy</h3>
+              <p>We systematize collapse types: directional error, map distortion, obstacle violation, hallucinated reasoning, and unsafe prioritization.</p>
+            </div>
+          </div>
+          <div class="column is-half-tablet is-one-quarter-desktop">
+            <div class="contrib-card">
+              <h3>Beyond Aggregate Accuracy</h3>
+              <p>We show why "99% accuracy" can still be unsafe for embodied systems requiring near-zero catastrophic error.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-panel" id="results">
+      <div class="container is-max-widescreen">
+        <h2 class="title is-3 has-text-centered">Main Quantitative Results</h2>
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable results table">
+          <table class="table is-fullwidth result-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Gemini-2.5 Flash</th>
+                <th>Gemini-2.0 Flash</th>
+                <th>GPT-5</th>
+                <th>GPT-4o</th>
+                <th>LLaMA-3-8b</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="group-row"><td colspan="6">Map-based (Success rate %)</td></tr>
+              <tr><td>Deterministic (Easy)</td><td>66.7</td><td>100</td><td>100</td><td>80</td><td>0</td></tr>
+              <tr><td>Deterministic (Normal)</td><td>93.3</td><td>0</td><td>100</td><td>0</td><td>0</td></tr>
+              <tr><td>Deterministic (Hard)</td><td>73.3</td><td>0</td><td>100</td><td>0</td><td>0</td></tr>
+              <tr><td>Uncertain 1</td><td>90.0</td><td>0</td><td>100</td><td>0</td><td>0</td></tr>
+              <tr><td>Uncertain 2</td><td>56.7</td><td>0</td><td>93.3</td><td>0</td><td>0</td></tr>
+              <tr class="group-row"><td colspan="6">Safety-Oriented Spatial Reasoning (SOSR)</td></tr>
+              <tr><td>Direction (Easy)</td><td>98</td><td>99</td><td>98</td><td>94</td><td>7</td></tr>
+              <tr><td>Direction (Normal)</td><td>100</td><td>72</td><td>82</td><td>66</td><td>12</td></tr>
+              <tr><td>Direction (Hard)</td><td>100</td><td>42</td><td>100</td><td>53</td><td>51</td></tr>
+              <tr><td>Emergency (Hard)</td><td>67</td><td>100</td><td>100</td><td>98</td><td>46</td></tr>
+              <tr><td>Emergency (Easy)</td><td>100</td><td>100</td><td>100</td><td>100</td><td>100</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-hint">Mobile tip: swipe this table horizontally to see all model columns.</p>
+      </div>
+    </section>
+
+    <section class="section section-paper">
+      <div class="container is-max-widescreen">
+        <div class="columns is-variable is-6 is-vcentered">
+          <div class="column is-6">
+            <figure class="image framed-figure">
+              <img src="static/images/deterministic-results.png" alt="Deterministic and uncertain ASCII map task success rates" loading="lazy">
+            </figure>
+          </div>
+          <div class="column is-6">
+            <h2 class="title is-3">Complete + Uncertain Map Tasks</h2>
+            <p>GPT-5 remains the most stable performer across deterministic and uncertain terrain maps. In contrast, Gemini-2.0 Flash and GPT-4o exhibit abrupt collapse as complexity increases, and LLaMA-3-8b fails to preserve map structure entirely.</p>
+            <p class="mt-3">This pattern reveals a key reliability issue: degradation is often non-gradual and can shift from near-success to total failure under small increases in spatial complexity.</p>
+          </div>
+        </div>
+        <div class="columns is-variable is-6 is-vcentered mt-5">
+          <div class="column is-6">
+            <h2 class="title is-3">Structural Collapse Case</h2>
+            <p>Representative outputs show severe map breakdown for smaller open-source models, including malformed grids and incoherent path tokens. These failures are not merely low scores: they are unusable plans for embodied execution.</p>
+          </div>
+          <div class="column is-6">
+            <figure class="image framed-figure">
+              <img src="static/images/llama-collapse.png" alt="LLaMA collapsed outputs on map tasks" loading="lazy">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-panel" id="sosr">
+      <div class="container is-max-widescreen">
+        <h2 class="title is-3 has-text-centered">SOSR: Safety-Critical Behavior Under Natural Language</h2>
+        <div class="columns is-variable is-5">
+          <div class="column is-half">
+            <div class="card-panel">
+              <figure class="image">
+                <img src="static/images/sosr-radar.png" alt="Radar chart comparing SOSR task scores" loading="lazy">
+              </figure>
+              <p class="figure-note">Radar summary of SOSR difficulty levels and emergency decision tasks.</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="card-panel">
+              <figure class="image">
+                <img src="static/images/emergency-response.png" alt="Response distribution in hard emergency task" loading="lazy">
+              </figure>
+              <p class="figure-note">In hard emergency prompts, unsafe prioritization appears in a non-trivial fraction of responses.</p>
+            </div>
+          </div>
+        </div>
+        <div class="columns is-variable is-5 mt-3">
+          <div class="column is-5">
+            <h3 class="title is-4">Critical Failure Examples</h3>
+            <p>In repeated emergency trials, Gemini-2.5 Flash guided the user to retrieve documents in 32% of runs and hallucinated a server-room route in 1% of runs. Both can be dangerous in real evacuations.</p>
+            <p class="mt-3">Entropy analysis indicates unstable response behavior across identical prompts, reinforcing that "average success" can hide catastrophic tails.</p>
+          </div>
+          <div class="column is-7">
+            <figure class="image framed-figure mb-4">
+              <img src="static/images/entropy-analysis.png" alt="Entropy values from model responses in SOSR task" loading="lazy">
+            </figure>
+            <div class="columns is-mobile is-variable is-2">
+              <div class="column">
+                <figure class="image framed-figure compact">
+                  <img src="static/images/server-room-case.png" alt="Example response directing user to a server room" loading="lazy">
+                </figure>
+              </div>
+              <div class="column">
+                <figure class="image framed-figure compact">
+                  <img src="static/images/professor-office-case.png" alt="Example response prioritizing document retrieval" loading="lazy">
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-paper" id="bob">
+      <div class="container is-max-widescreen">
+        <h2 class="title is-3 has-text-centered">Back of the Building (BoB) Failure Analysis</h2>
+        <div class="columns is-variable is-6 is-vcentered">
+          <div class="column is-6">
+            <figure class="image framed-figure">
+              <img src="static/images/bob-failure-types.png" alt="Representative BoB failure patterns" loading="lazy">
+            </figure>
+          </div>
+          <div class="column is-6">
+            <p>The BoB task tests whether models can infer rear-side navigation from first-person imagery and language. Common failures include directional errors, obstacle intersection, waypoint misuse, and topology collapse.</p>
+            <p class="mt-3">Even when textual reasoning looks plausible, geometric grounding frequently breaks, revealing an unresolved gap between language competence and actionable spatial planning.</p>
+          </div>
+        </div>
+
+        <div class="figure-swiper mt-4" data-swiper-id="bob">
+          <div class="figure-swiper-header">
+            <h3 class="title is-5">BoB Figure Swiper</h3>
+            <p>Swipe or use arrows to inspect model-specific failures and representations.</p>
+          </div>
+          <div class="figure-swiper-viewport" tabindex="0" aria-label="BoB figure swiper">
+            <div class="figure-swiper-track">
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/bob-failure-radar.jpg" alt="Model-specific failure profiles in BoB task for Claude Opus 4.1 and GPT-4o" loading="lazy">
+                </figure>
+                <p class="mini-note">Model-specific failure profiles in the BoB task: radar plots for Claude Opus 4.1 and GPT-4o across spatial diagnostic criteria.</p>
+              </article>
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/bob-output-formats.jpg" alt="Model-specific output representations in BoB task" loading="lazy">
+                </figure>
+                <p class="mini-note">Model-specific output representations: Claude uses waypointed top-down maps, while GPT-4o uses ASCII grids without waypoints.</p>
+              </article>
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/bob-failure-gallery.jpg" alt="Representative failure patterns in Back of the Building task" loading="lazy">
+                </figure>
+                <p class="mini-note">Representative failure gallery: obstacle traversal, topological distortion, directional failure, waypoint error, disconnected pathline, and incorrect initialization.</p>
+              </article>
+            </div>
+          </div>
+          <div class="figure-swiper-controls">
+            <button type="button" class="swiper-btn prev" aria-label="Previous slide">←</button>
+            <div class="swiper-dots" aria-label="Slide navigation"></div>
+            <button type="button" class="swiper-btn next" aria-label="Next slide">→</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-panel" id="qualitative">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3 has-text-centered">Additional Qualitative Evidence</h2>
+        <div class="figure-swiper" data-swiper-id="qualitative">
+          <div class="figure-swiper-header">
+            <h3 class="title is-5">Appendix Figure Swiper</h3>
+            <p>Key qualitative appendices collected in one swipeable gallery.</p>
+          </div>
+          <div class="figure-swiper-viewport" tabindex="0" aria-label="Additional qualitative figure swiper">
+            <div class="figure-swiper-track">
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/gpt5-uncertain-map.jpg" alt="Qualitative examples of GPT-5 route generation on uncertain terrain map" loading="lazy">
+                </figure>
+                <p class="mini-note">GPT-5 uncertain-terrain examples: diverse routes when “?” is treated as traversable, and explicit “No path exists” under conservative assumptions.</p>
+              </article>
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/birdeye-qa.png" alt="Birds-eye view qualitative question and response examples" loading="lazy">
+                </figure>
+                <p class="mini-note">Bird’s-eye qualitative evaluation: four question-response examples probing grounded point selection and spatial commonsense.</p>
+              </article>
+              <article class="figure-swiper-slide">
+                <figure class="image framed-figure">
+                  <img src="static/images/gpt4o-safety-refusal.png" alt="GPT-4o response behavior in fire scenario" loading="lazy">
+                </figure>
+                <p class="mini-note">GPT-4o fire-scenario behavior: refusal-style response contrasts with unsafe but confident guidance from other models.</p>
+              </article>
+            </div>
+          </div>
+          <div class="figure-swiper-controls">
+            <button type="button" class="swiper-btn prev" aria-label="Previous slide">←</button>
+            <div class="swiper-dots" aria-label="Slide navigation"></div>
+            <button type="button" class="swiper-btn next" aria-label="Next slide">→</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-paper" id="takeaways">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3 has-text-centered">Takeaways</h2>
+        <div class="content">
+          <ul class="takeaway-list">
+            <li><strong>Rare unsafe responses are unacceptable</strong> for robotics in safety-critical settings.</li>
+            <li><strong>High aggregate accuracy can hide catastrophic tail behavior</strong> in repeated deployments.</li>
+            <li><strong>Spatial reasoning fragility persists</strong> across both API and open-source families.</li>
+            <li><strong>Safety benchmarks should explicitly evaluate refusal, uncertainty handling, and worst-case outcomes</strong>, not only average success.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="bibtex">
+      <div class="container is-max-desktop content">
+        <div class="bib-head">
+          <h2 class="title">BibTeX</h2>
+          <button class="copy-btn" id="copyBibBtn" type="button">Copy</button>
+        </div>
+<pre id="bibtexCode" tabindex="0" aria-label="BibTeX entry"><code>@article{han2025safetynotfound,
+  title={Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making},
+  author={Han, Jua and Seo, Jaeyoon and Min, Jungbin and Kim, Jihie and Oh, Jean},
+  year={2025},
+  note={Preprint manuscript}
+}</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          This page follows an academic project-page structure inspired by open research website templates.
+          All figures and results are from the Safety Not Found (404) project materials in this repository.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
