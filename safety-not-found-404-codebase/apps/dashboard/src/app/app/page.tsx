@@ -53,6 +53,7 @@ type RunProgress = {
 const DECISION_MODEL_OPTIONS: DecisionModelOption[] = [
   { value: "gpt-5.2", label: "GPT-5.2", provider: "openai" },
   { value: "gpt-4.1-mini", label: "GPT-4.1-mini", provider: "openai" },
+  { value: "codex-mini-latest", label: "Codex Mini (Latest)", provider: "openai" },
   { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro", provider: "gemini" },
   { value: "gemini-3-flash-preview", label: "Gemini 3 Flash", provider: "gemini" },
   { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet", provider: "anthropic" },
@@ -267,6 +268,28 @@ function fileHref(path: string): string {
   return `file://${encodeURI(path)}`;
 }
 
+function normalizeModelId(value: string): string {
+  return value.trim();
+}
+
+function inferModelProvider(modelId: string): "openai" | "gemini" | "anthropic" {
+  const lowered = modelId.trim().toLowerCase();
+
+  if (lowered.startsWith("gemini")) return "gemini";
+  if (lowered.startsWith("claude")) return "anthropic";
+  return "openai";
+}
+
+function providerBadgeText(modelId: string): string {
+  const lowered = modelId.trim().toLowerCase();
+  if (lowered.startsWith("codex")) return "openai/codex";
+  return inferModelProvider(modelId);
+}
+
+function isValidModelId(modelId: string): boolean {
+  return /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,127}$/.test(modelId);
+}
+
 export default function Dashboard() {
   const [logs, setLogs] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
@@ -306,6 +329,8 @@ export default function Dashboard() {
   const [mazeLang, setMazeLang] = useState("ko");
   const [decScenario, setDecScenario] = useState("dilemma_baseline_ab");
   const [decModels, setDecModels] = useState<string[]>(["gpt-5.2"]);
+  const [decModelInput, setDecModelInput] = useState("");
+  const [decModelInputError, setDecModelInputError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -534,6 +559,28 @@ export default function Dashboard() {
       }
       return [...prev, model];
     });
+    setDecModelInputError(null);
+  };
+
+  const removeDecisionModel = (model: string) => {
+    setDecModels((prev) => {
+      if (prev.length === 1) return prev;
+      return prev.filter((item) => item !== model);
+    });
+  };
+
+  const addCustomDecisionModel = () => {
+    const model = normalizeModelId(decModelInput);
+    if (!model) return;
+
+    if (!isValidModelId(model)) {
+      setDecModelInputError("Invalid model id format.");
+      return;
+    }
+
+    setDecModels((prev) => (prev.includes(model) ? prev : [...prev, model]));
+    setDecModelInput("");
+    setDecModelInputError(null);
   };
 
   const feedStats = useMemo(() => {
@@ -694,7 +741,7 @@ export default function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Section 3: Decision Experiments</CardTitle>
-              <CardDescription>AI decision runner with selectable model set.</CardDescription>
+              <CardDescription>AI decision runner with selectable model set (including Codex family).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -729,6 +776,35 @@ export default function Dashboard() {
                       </button>
                     );
                   })}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={decModelInput}
+                    onChange={(event) => setDecModelInput(event.target.value)}
+                    placeholder="Add custom model id (e.g. codex-mini-latest)"
+                    disabled={isRunning}
+                  />
+                  <Button type="button" variant="secondary" size="sm" disabled={isRunning} onClick={addCustomDecisionModel}>
+                    Add
+                  </Button>
+                </div>
+                {decModelInputError ? <p className="text-xs text-red-300">{decModelInputError}</p> : null}
+                <div className="flex flex-wrap gap-2">
+                  {decModels.map((model) => (
+                    <button
+                      key={model}
+                      type="button"
+                      onClick={() => removeDecisionModel(model)}
+                      disabled={isRunning || decModels.length === 1}
+                      className={`px-2 py-1 border text-xs font-mono ${
+                        decModels.length === 1
+                          ? "border-neutral-700 text-neutral-400"
+                          : "border-neutral-600 text-neutral-200 hover:border-white"
+                      }`}
+                    >
+                      {model} ({providerBadgeText(model)}) x
+                    </button>
+                  ))}
                 </div>
                 <p className="text-xs text-neutral-500">Selected: {decModels.join(", ")}</p>
               </div>
