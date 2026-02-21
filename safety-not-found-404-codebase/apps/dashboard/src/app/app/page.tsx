@@ -25,6 +25,31 @@ type DecisionModelOption = {
   provider: "openai" | "gemini" | "anthropic";
 };
 
+type FailureCategory =
+  | "auth"
+  | "quota"
+  | "rate_limit"
+  | "timeout"
+  | "network"
+  | "input"
+  | "process"
+  | "unknown";
+
+type FailureInsight = {
+  category: FailureCategory;
+  title: string;
+  hint: string;
+  line: string;
+};
+
+type RunProgress = {
+  stage: string;
+  scope: string;
+  current: number;
+  total: number;
+  percent: number | null;
+};
+
 const DECISION_MODEL_OPTIONS: DecisionModelOption[] = [
   { value: "gpt-5.2", label: "GPT-5.2", provider: "openai" },
   { value: "gpt-4.1-mini", label: "GPT-4.1-mini", provider: "openai" },
@@ -32,33 +57,6 @@ const DECISION_MODEL_OPTIONS: DecisionModelOption[] = [
   { value: "gemini-3-flash-preview", label: "Gemini 3 Flash", provider: "gemini" },
   { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet", provider: "anthropic" },
 ];
-
-function toErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return String(error);
-}
-
-function classifyLine(line: string): FeedKind {
-  const lowered = line.toLowerCase();
-
-  if (lowered.startsWith("[system error]") || lowered.includes("traceback") || lowered.includes(" failed")) {
-    return "error";
-  }
-  if (lowered.startsWith("[system]")) {
-    return "system";
-  }
-  if (lowered.includes("progress:")) {
-    return "progress";
-  }
-  if (lowered.startsWith("saved:") || lowered.includes(" saved:")) {
-    return "saved";
-  }
-  if (lowered.includes("단계") || lowered.startsWith("processing ") || lowered.startsWith("scenario:")) {
-    return "stage";
-  }
-
-  return "info";
-}
 
 const FEED_KIND_STYLE: Record<FeedKind, string> = {
   system: "border-neutral-700 text-neutral-200",
@@ -69,6 +67,206 @@ const FEED_KIND_STYLE: Record<FeedKind, string> = {
   info: "border-neutral-800 text-neutral-400",
 };
 
+const FAILURE_STYLE: Record<FailureCategory, string> = {
+  auth: "border-rose-700 bg-rose-950/40 text-rose-200",
+  quota: "border-orange-700 bg-orange-950/40 text-orange-200",
+  rate_limit: "border-amber-700 bg-amber-950/40 text-amber-200",
+  timeout: "border-yellow-700 bg-yellow-950/40 text-yellow-100",
+  network: "border-sky-700 bg-sky-950/40 text-sky-100",
+  input: "border-violet-700 bg-violet-950/40 text-violet-100",
+  process: "border-red-700 bg-red-950/40 text-red-100",
+  unknown: "border-neutral-700 bg-neutral-900 text-neutral-200",
+};
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+function classifyLine(line: string): FeedKind {
+  const lowered = line.toLowerCase();
+  const exitMatch = lowered.match(/\[process exited with code\s+(-?\d+)\]/);
+
+  if (exitMatch && Number(exitMatch[1]) !== 0) {
+    return "error";
+  }
+  if (
+    lowered.startsWith("[system error]") ||
+    lowered.includes("traceback") ||
+    lowered.includes(" exception") ||
+    lowered.includes(" error:") ||
+    lowered.includes(" failed")
+  ) {
+    return "error";
+  }
+  if (lowered.startsWith("[system]")) {
+    return "system";
+  }
+  if (lowered.includes("progress:")) {
+    return "progress";
+  }
+  if (/^(saved(?: report)?|csv|summary json|summary txt|output):/i.test(line)) {
+    return "saved";
+  }
+  if (lowered.includes("단계") || lowered.startsWith("processing ") || lowered.startsWith("scenario:")) {
+    return "stage";
+  }
+
+  return "info";
+}
+
+function categorizeFailure(line: string): FailureInsight {
+  const lowered = line.toLowerCase();
+
+  if (
+    lowered.includes("unauthorized") ||
+    lowered.includes("401") ||
+    lowered.includes("invalid api key") ||
+    lowered.includes("authentication") ||
+    lowered.includes("oauth")
+  ) {
+    return {
+      category: "auth",
+      title: "Authentication Failure",
+      hint: "Check OAuth login or API key validity before rerun.",
+      line,
+    };
+  }
+
+  if (
+    lowered.includes("insufficient_quota") ||
+    lowered.includes("quota") ||
+    lowered.includes("billing") ||
+    lowered.includes("credit") ||
+    lowered.includes("nonretryable_quota_zero")
+  ) {
+    return {
+      category: "quota",
+      title: "Quota Exhausted",
+      hint: "Top up credits or switch to ChatGPT OAuth route.",
+      line,
+    };
+  }
+
+  if (lowered.includes("rate limit") || lowered.includes("too many requests") || lowered.includes("http 429")) {
+    return {
+      category: "rate_limit",
+      title: "Rate Limited",
+      hint: "Retry with lower request volume or wait and rerun.",
+      line,
+    };
+  }
+
+  if (lowered.includes("timeout") || lowered.includes("timed out") || lowered.includes("deadline")) {
+    return {
+      category: "timeout",
+      title: "Timeout",
+      hint: "Increase timeout or reduce workload per run.",
+      line,
+    };
+  }
+
+  if (
+    lowered.includes("connection") ||
+    lowered.includes("network") ||
+    lowered.includes("failed to fetch") ||
+    lowered.includes("dns") ||
+    lowered.includes("econn")
+  ) {
+    return {
+      category: "network",
+      title: "Network Failure",
+      hint: "Verify connectivity and retry the same configuration.",
+      line,
+    };
+  }
+
+  if (
+    lowered.includes("required") ||
+    lowered.includes("invalid") ||
+    lowered.includes("unknown provider") ||
+    lowered.includes("no model targets") ||
+    lowered.includes("usage:")
+  ) {
+    return {
+      category: "input",
+      title: "Invalid Input",
+      hint: "Review selected scenario/model/provider parameters.",
+      line,
+    };
+  }
+
+  if (/\[process exited with code\s+(-?\d+)\]/i.test(line)) {
+    return {
+      category: "process",
+      title: "Process Exit Failure",
+      hint: "Inspect preceding error lines and stack traces for root cause.",
+      line,
+    };
+  }
+
+  return {
+    category: "unknown",
+    title: "Unknown Failure",
+    hint: "Open Raw Terminal Output and inspect the final error block.",
+    line,
+  };
+}
+
+function detectStage(line: string): string | null {
+  const trimmed = line.trim();
+  const lowered = trimmed.toLowerCase();
+  const koStageMatch = trimmed.match(/^(\d+)단계:\s*(.+)$/);
+
+  if (koStageMatch) {
+    return `${koStageMatch[1]}단계: ${koStageMatch[2]}`;
+  }
+  if (lowered.startsWith("scenario:")) {
+    return "Scenario execution";
+  }
+  if (lowered.startsWith("models:")) {
+    return "Model sweep";
+  }
+  if (lowered.startsWith("[system] initializing task:")) {
+    return "Initialization";
+  }
+  if (lowered.startsWith("processing ")) {
+    return "Map generation";
+  }
+
+  return null;
+}
+
+function extractScope(line: string): string | null {
+  const match = line.match(/^Processing\s+([0-9]+x[0-9]+)\.\.\./i);
+  return match ? match[1] : null;
+}
+
+function extractProgress(line: string): { current: number; total: number; percent: number } | null {
+  const match = line.match(/progress:\s*(\d+)\s*\/\s*(\d+)/i);
+  if (!match) return null;
+
+  const current = Number(match[1]);
+  const total = Number(match[2]);
+  if (!Number.isFinite(current) || !Number.isFinite(total) || total <= 0) return null;
+
+  const percent = Math.max(0, Math.min(100, Math.round((current / total) * 100)));
+  return { current, total, percent };
+}
+
+function extractArtifactPath(line: string): string | null {
+  const match = line.match(/^(saved(?: report)?|csv|summary json|summary txt|output):\s*(.+)$/i);
+  if (!match) return null;
+
+  const cleaned = match[2].trim().replace(/\s+\([^)]*\)$/, "");
+  if (!cleaned.startsWith("/")) return null;
+  return cleaned;
+}
+
+function fileHref(path: string): string {
+  return `file://${encodeURI(path)}`;
+}
+
 export default function Dashboard() {
   const [logs, setLogs] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
@@ -78,9 +276,25 @@ export default function Dashboard() {
   const [runFinishedAt, setRunFinishedAt] = useState<number | null>(null);
   const [feedItems, setFeedItems] = useState<LogFeedItem[]>([]);
   const [feedFilter, setFeedFilter] = useState<FeedKind | "all">("all");
+  const [artifactPaths, setArtifactPaths] = useState<string[]>([]);
+  const [latestFailure, setLatestFailure] = useState<FailureInsight | null>(null);
+  const [copiedPath, setCopiedPath] = useState<string | null>(null);
+  const [runProgress, setRunProgress] = useState<RunProgress>({
+    stage: "Idle",
+    scope: "",
+    current: 0,
+    total: 0,
+    percent: null,
+  });
+  const [progressByTask, setProgressByTask] = useState<Record<RunTaskType, number | null>>({
+    sequence: null,
+    maze: null,
+    decision: null,
+  });
 
   const lineBufferRef = useRef("");
   const feedSequenceRef = useRef(0);
+  const activeRunRef = useRef<RunTaskType | null>(null);
 
   const [apiKeys, setApiKeys] = useState({
     openai: "",
@@ -120,6 +334,16 @@ export default function Dashboard() {
     }
   };
 
+  const handleCopyPath = async (path: string) => {
+    try {
+      await navigator.clipboard.writeText(path);
+      setCopiedPath(path);
+      setTimeout(() => setCopiedPath((current) => (current === path ? null : current)), 1200);
+    } catch {
+      setCopiedPath(null);
+    }
+  };
+
   const processChunk = (chunk: string) => {
     setLogs((prev) => prev + chunk);
 
@@ -128,38 +352,111 @@ export default function Dashboard() {
     lineBufferRef.current = lines.pop() ?? "";
 
     const parsed: LogFeedItem[] = [];
+    const discoveredPaths: string[] = [];
+
+    let stageUpdate: string | null = null;
+    let scopeUpdate: string | null = null;
+    let progressUpdate: { current: number; total: number; percent: number } | null = null;
+    let failureUpdate: FailureInsight | null = null;
+
     for (const rawLine of lines) {
       const text = rawLine.trim();
       if (!text || /^=+$/.test(text)) continue;
 
+      const kind = classifyLine(text);
       parsed.push({
         id: ++feedSequenceRef.current,
-        kind: classifyLine(text),
+        kind,
         text,
       });
+
+      const stage = detectStage(text);
+      if (stage) stageUpdate = stage;
+
+      const scope = extractScope(text);
+      if (scope) scopeUpdate = scope;
+
+      const progress = extractProgress(text);
+      if (progress) progressUpdate = progress;
+
+      const artifactPath = extractArtifactPath(text);
+      if (artifactPath) discoveredPaths.push(artifactPath);
+
+      if (kind === "error") {
+        failureUpdate = categorizeFailure(text);
+      }
     }
 
     if (parsed.length > 0) {
-      setFeedItems((prev) => [...prev, ...parsed].slice(-600));
+      setFeedItems((prev) => [...prev, ...parsed].slice(-800));
+    }
+
+    if (discoveredPaths.length > 0) {
+      setArtifactPaths((prev) => {
+        const merged = [...prev];
+        for (const path of discoveredPaths) {
+          if (!merged.includes(path)) merged.push(path);
+        }
+        return merged.slice(-200);
+      });
+    }
+
+    if (failureUpdate) {
+      setLatestFailure(failureUpdate);
+    }
+
+    if (stageUpdate || scopeUpdate || progressUpdate) {
+      setRunProgress((prev) => ({
+        stage: stageUpdate ?? prev.stage,
+        scope: scopeUpdate ?? prev.scope,
+        current: progressUpdate?.current ?? prev.current,
+        total: progressUpdate?.total ?? prev.total,
+        percent: progressUpdate?.percent ?? prev.percent,
+      }));
+    }
+
+    const currentRun = activeRunRef.current;
+    if (currentRun && progressUpdate) {
+      setProgressByTask((prev) => ({
+        ...prev,
+        [currentRun]: progressUpdate.percent,
+      }));
     }
   };
 
   const resetRunState = (type: RunTaskType) => {
+    activeRunRef.current = type;
     setRunType(type);
     setRunStartedAt(Date.now());
     setRunFinishedAt(null);
     setLogs("");
     setFeedItems([]);
     setFeedFilter("all");
+    setArtifactPaths([]);
+    setLatestFailure(null);
+    setCopiedPath(null);
+    setRunProgress({ stage: "Initialization", scope: "", current: 0, total: 0, percent: 0 });
+    setProgressByTask((prev) => ({
+      ...prev,
+      [type]: 0,
+    }));
     lineBufferRef.current = "";
     feedSequenceRef.current = 0;
   };
 
-  const finishRun = () => {
+  const finishRun = (successful: boolean) => {
     if (lineBufferRef.current.trim()) {
       processChunk("\n");
     }
+
+    const currentRun = activeRunRef.current;
+    if (successful && currentRun) {
+      setProgressByTask((prev) => ({ ...prev, [currentRun]: 100 }));
+      setRunProgress((prev) => ({ ...prev, percent: 100 }));
+    }
+
     setRunFinishedAt(Date.now());
+    activeRunRef.current = null;
   };
 
   const handleRun = async (type: RunTaskType, payload: RunPayload) => {
@@ -197,13 +494,13 @@ export default function Dashboard() {
       if (!response.ok) {
         const bodyText = await response.text();
         processChunk(`[SYSTEM ERROR] Request failed (${response.status}): ${bodyText}\n`);
-        finishRun();
+        finishRun(false);
         return;
       }
 
       if (!response.body) {
         processChunk("[SYSTEM ERROR] No response body.\n");
-        finishRun();
+        finishRun(false);
         return;
       }
 
@@ -220,10 +517,10 @@ export default function Dashboard() {
       }
 
       processChunk("\n[SYSTEM] Task completed successfully.\n");
-      finishRun();
+      finishRun(true);
     } catch (error: unknown) {
       processChunk(`\n[SYSTEM ERROR] ${toErrorMessage(error)}\n`);
-      finishRun();
+      finishRun(false);
     } finally {
       setIsRunning(false);
     }
@@ -268,6 +565,34 @@ export default function Dashboard() {
     if (!runFinishedAt) return isRunning ? "running" : "-";
     return `${((runFinishedAt - runStartedAt) / 1000).toFixed(1)}s`;
   }, [isRunning, runFinishedAt, runStartedAt]);
+
+  const recentArtifacts = useMemo(() => artifactPaths.slice(-20).reverse(), [artifactPaths]);
+
+  const activeTaskPercent = runType ? progressByTask[runType] : null;
+
+  const renderSectionProgress = (type: RunTaskType) => {
+    if (runType !== type) return null;
+
+    const percent = progressByTask[type];
+    const showIndeterminate = isRunning && percent === null;
+
+    return (
+      <div className="space-y-1">
+        <div className="h-1.5 bg-neutral-800 overflow-hidden border border-neutral-700">
+          {percent !== null ? (
+            <div className="h-full bg-white transition-all duration-300" style={{ width: `${percent}%` }} />
+          ) : showIndeterminate ? (
+            <div className="h-full w-1/3 bg-white/70 animate-pulse" />
+          ) : (
+            <div className="h-full w-0" />
+          )}
+        </div>
+        <p className="text-[11px] text-neutral-500">
+          {percent !== null ? `${percent}%` : isRunning ? "running" : "-"}
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen p-8 max-w-7xl mx-auto space-y-8 font-sans">
@@ -314,7 +639,7 @@ export default function Dashboard() {
         <CardHeader>
           <CardTitle>Execution Architecture</CardTitle>
           <CardDescription>
-            Sequence and Decision sections call AI models. Maze section is local data generation/processing only.
+            Sequence and Decision sections call AI models. Maze section is local data generation and processing only.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -337,6 +662,7 @@ export default function Dashboard() {
               <Button className="w-full" disabled={isRunning} onClick={() => handleRun("sequence", { provider: seqProvider })}>
                 Run Sequence
               </Button>
+              {renderSectionProgress("sequence")}
             </CardContent>
           </Card>
 
@@ -361,6 +687,7 @@ export default function Dashboard() {
               >
                 Run Maze Pipeline
               </Button>
+              {renderSectionProgress("maze")}
             </CardContent>
           </Card>
 
@@ -414,6 +741,7 @@ export default function Dashboard() {
               >
                 Run Decision Experiment
               </Button>
+              {renderSectionProgress("decision")}
             </CardContent>
           </Card>
         </div>
@@ -446,6 +774,47 @@ export default function Dashboard() {
             </div>
           </div>
 
+          <div className="p-4 border-b border-neutral-800 space-y-3">
+            <div>
+              <div className="flex items-center justify-between text-xs text-neutral-400">
+                <span>Pipeline Progress</span>
+                <span>
+                  {activeTaskPercent !== null
+                    ? `${activeTaskPercent}%`
+                    : isRunning
+                    ? "running"
+                    : "-"}
+                </span>
+              </div>
+              <div className="mt-2 h-2 bg-neutral-900 border border-neutral-800 overflow-hidden">
+                {activeTaskPercent !== null ? (
+                  <div className="h-full bg-white transition-all duration-300" style={{ width: `${activeTaskPercent}%` }} />
+                ) : isRunning ? (
+                  <div className="h-full w-1/3 bg-white/70 animate-pulse" />
+                ) : (
+                  <div className="h-full w-0" />
+                )}
+              </div>
+              <div className="mt-2 text-[11px] text-neutral-500">
+                Stage: {runProgress.stage}
+                {runProgress.scope ? ` • Scope: ${runProgress.scope}` : ""}
+                {runProgress.total > 0 ? ` • ${runProgress.current}/${runProgress.total}` : ""}
+              </div>
+            </div>
+
+            <div className={`border px-3 py-2 text-xs ${latestFailure ? FAILURE_STYLE[latestFailure.category] : "border-neutral-800 text-neutral-500"}`}>
+              {latestFailure ? (
+                <div className="space-y-1">
+                  <p className="font-semibold">Failure Insight: {latestFailure.title}</p>
+                  <p className="text-[11px] opacity-90">{latestFailure.hint}</p>
+                  <p className="font-mono text-[11px] break-all">{latestFailure.line}</p>
+                </div>
+              ) : (
+                <p>No failure detected in current run.</p>
+              )}
+            </div>
+          </div>
+
           <div className="px-4 py-3 border-b border-neutral-800 flex flex-wrap gap-2">
             {(["all", "system", "stage", "progress", "saved", "error", "info"] as const).map((kind) => (
               <button
@@ -463,7 +832,42 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="p-4 flex-1 overflow-auto bg-[#000000] font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[650px]">
+          <div className="px-4 py-3 border-b border-neutral-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-neutral-300">Artifacts</p>
+              <p className="text-xs text-neutral-500">{artifactPaths.length}</p>
+            </div>
+            {recentArtifacts.length > 0 ? (
+              <div className="space-y-2 max-h-40 overflow-auto pr-1">
+                {recentArtifacts.map((path) => (
+                  <div key={path} className="border border-neutral-800 p-2 text-xs font-mono text-neutral-400 space-y-2">
+                    <p className="break-all">{path}</p>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={fileHref(path)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2 py-1 border border-neutral-700 hover:border-neutral-400 text-neutral-300"
+                      >
+                        Open
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyPath(path)}
+                        className="px-2 py-1 border border-neutral-700 hover:border-neutral-400 text-neutral-300"
+                      >
+                        {copiedPath === path ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-neutral-600">No artifacts captured yet.</p>
+            )}
+          </div>
+
+          <div className="p-4 flex-1 overflow-auto bg-[#000000] font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
             {filteredFeed.length > 0 ? (
               <div className="space-y-2">
                 {filteredFeed.map((item) => (
