@@ -13,10 +13,16 @@ export function Navbar() {
   ];
 
   return (
-    <nav className={`w-full z-50 transition-colors duration-300 ${isHome ? "fixed top-0 bg-transparent" : "sticky top-0 border-b border-neutral-800 bg-[#0a0a0a]"}`}>
-      <div className="max-w-7xl mx-auto px-8 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-bold text-white tracking-tight mr-4">
+    <nav
+      className={`w-full z-50 transition-colors duration-300 ${
+        isHome
+          ? "fixed top-0 bg-transparent"
+          : "sticky top-0 border-b border-[var(--line-soft)] bg-[rgba(8,12,20,0.76)] backdrop-blur-xl"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+          <Link href="/" className="font-semibold text-[var(--fg-primary)] tracking-tight mr-1 sm:mr-4 truncate">
             Safety Not Found 404
           </Link>
           <div className="flex gap-1">
@@ -26,10 +32,10 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
                     isActive && !isHome
-                      ? "bg-white text-black"
-                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      ? "bg-[var(--accent-cyan)] text-[#07121e] border-transparent"
+                      : "border-transparent text-[var(--fg-muted)] hover:text-[var(--fg-primary)] hover:bg-[rgba(17,29,46,0.65)]"
                   }`}
                 >
                   {item.name}

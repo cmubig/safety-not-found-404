@@ -667,13 +667,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen p-8 max-w-7xl mx-auto space-y-8 font-sans">
-      <header className="border-b border-neutral-800 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[rgba(127,216,255,0.2)] blur-3xl" />
+      <div className="pointer-events-none absolute top-24 -right-24 h-80 w-80 rounded-full bg-[rgba(183,255,191,0.18)] blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(153,166,191,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(153,166,191,0.15)_1px,transparent_1px)] [background-size:42px_42px]" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-12 pt-24 space-y-8">
+      <header className="border-b border-[var(--line-soft)] pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Safety Not Found 404</h1>
-          <p className="text-neutral-400">Project Benchmark &amp; Experiment Control Center</p>
+          <p className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--fg-muted)] border border-[var(--line-soft)] px-3 py-1 rounded-full mb-3">
+            AI Safety Lab
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg-primary)] mb-2">
+            Safety Not Found 404
+          </h1>
+          <p className="text-[var(--fg-muted)]">Project Benchmark &amp; Experiment Control Center</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <Button
             variant={authStatus ? "outline" : "primary"}
             onClick={handleChatGPTConnect}
@@ -692,7 +702,7 @@ export default function Dashboard() {
           <Input
             type="password"
             placeholder="or OpenAI API Key"
-            className="w-full sm:w-48"
+            className="w-full sm:w-52"
             value={apiKeys.openai}
             onChange={(e) => setApiKeys({ ...apiKeys, openai: e.target.value })}
             disabled={authStatus}
@@ -707,7 +717,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <Card>
+      <Card className="bg-[linear-gradient(120deg,rgba(127,216,255,0.08),rgba(183,255,191,0.04))]">
         <CardHeader>
           <CardTitle>Execution Architecture</CardTitle>
           <CardDescription>
@@ -716,9 +726,9 @@ export default function Dashboard() {
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+        <div className="space-y-5">
+          <Card className="border-[rgba(127,216,255,0.35)]">
             <CardHeader>
               <CardTitle>Section 1: Sequence</CardTitle>
               <CardDescription>AI-driven sequence benchmark runner.</CardDescription>
@@ -738,7 +748,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-[rgba(183,255,191,0.3)]">
             <CardHeader>
               <CardTitle>Section 2: Maze</CardTitle>
               <CardDescription>Local pipeline for maze generation and visualization (no LLM call).</CardDescription>
@@ -763,7 +773,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-[rgba(255,210,168,0.35)]">
             <CardHeader>
               <CardTitle>Section 3: Decision Experiments</CardTitle>
               <CardDescription>AI decision runner with selectable model set (including Codex family).</CardDescription>
@@ -798,15 +808,15 @@ export default function Dashboard() {
                         key={option.value}
                         type="button"
                         onClick={() => toggleDecisionModel(option.value)}
-                        className={`text-left px-3 py-2 border transition-colors ${
+                        className={`text-left px-3 py-2 rounded-xl border transition-colors ${
                           selected
-                            ? "border-white bg-white text-black"
-                            : "border-neutral-700 bg-transparent text-neutral-200 hover:border-neutral-400"
+                            ? "border-[var(--accent-cyan)] bg-[rgba(127,216,255,0.2)] text-[var(--fg-primary)]"
+                            : "border-[var(--line-soft)] bg-transparent text-[var(--fg-primary)] hover:border-[var(--line-strong)]"
                         }`}
                         disabled={isRunning}
                       >
                         <div className="text-sm font-semibold">{option.label}</div>
-                        <div className={`text-xs ${selected ? "text-neutral-700" : "text-neutral-500"}`}>{option.provider}</div>
+                        <div className={`text-xs ${selected ? "text-[var(--fg-primary)]/75" : "text-[var(--fg-muted)]"}`}>{option.provider}</div>
                       </button>
                     );
                   })}
@@ -830,10 +840,10 @@ export default function Dashboard() {
                       type="button"
                       onClick={() => removeDecisionModel(model)}
                       disabled={isRunning || decModels.length === 1}
-                      className={`px-2 py-1 border text-xs font-mono ${
+                      className={`px-2 py-1 rounded-lg border text-xs font-mono ${
                         decModels.length === 1
-                          ? "border-neutral-700 text-neutral-400"
-                          : "border-neutral-600 text-neutral-200 hover:border-white"
+                          ? "border-[var(--line-soft)] text-[var(--fg-muted)]"
+                          : "border-[var(--line-strong)] text-[var(--fg-primary)] hover:border-[var(--accent-cyan)]"
                       }`}
                     >
                       {model} ({providerBadgeText(model)}) x
@@ -856,37 +866,37 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        <div className="flex flex-col h-full bg-[#050505] border border-neutral-800 rounded-md overflow-hidden relative shadow-lg">
-          <div className="bg-neutral-900 border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex flex-col h-full border border-[var(--line-soft)] rounded-2xl overflow-hidden relative bg-[var(--bg-panel)] shadow-[0_20px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+          <div className="bg-[rgba(15,23,38,0.72)] border-b border-[var(--line-soft)] px-4 py-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${isRunning ? "bg-white animate-pulse" : "bg-neutral-600"}`} />
               Execution Console
             </h3>
-            <span className="text-xs text-neutral-500 font-mono">/api/run</span>
+            <span className="text-xs text-[var(--fg-muted)] font-mono">/api/run</span>
           </div>
 
-          <div className="p-4 border-b border-neutral-800 grid grid-cols-2 gap-3 text-xs font-mono">
-            <div className="border border-neutral-800 p-3">
-              <div className="text-neutral-500">Task</div>
+          <div className="p-4 border-b border-[var(--line-soft)] grid grid-cols-2 gap-3 text-xs font-mono">
+            <div className="border border-[var(--line-soft)] rounded-xl p-3 bg-[rgba(11,17,28,0.55)]">
+              <div className="text-[var(--fg-muted)]">Task</div>
               <div className="text-white mt-1">{runType ?? "-"}</div>
             </div>
-            <div className="border border-neutral-800 p-3">
-              <div className="text-neutral-500">Duration</div>
+            <div className="border border-[var(--line-soft)] rounded-xl p-3 bg-[rgba(11,17,28,0.55)]">
+              <div className="text-[var(--fg-muted)]">Duration</div>
               <div className="text-white mt-1">{runDurationText}</div>
             </div>
-            <div className="border border-neutral-800 p-3">
-              <div className="text-neutral-500">Saved</div>
+            <div className="border border-[var(--line-soft)] rounded-xl p-3 bg-[rgba(11,17,28,0.55)]">
+              <div className="text-[var(--fg-muted)]">Saved</div>
               <div className="text-emerald-300 mt-1">{feedStats.saved}</div>
             </div>
-            <div className="border border-neutral-800 p-3">
-              <div className="text-neutral-500">Errors</div>
+            <div className="border border-[var(--line-soft)] rounded-xl p-3 bg-[rgba(11,17,28,0.55)]">
+              <div className="text-[var(--fg-muted)]">Errors</div>
               <div className="text-red-300 mt-1">{feedStats.error}</div>
             </div>
           </div>
 
-          <div className="p-4 border-b border-neutral-800 space-y-3">
+          <div className="p-4 border-b border-[var(--line-soft)] space-y-3">
             <div>
-              <div className="flex items-center justify-between text-xs text-neutral-400">
+              <div className="flex items-center justify-between text-xs text-[var(--fg-muted)]">
                 <span>Pipeline Progress</span>
                 <span>
                   {activeTaskPercent !== null
@@ -896,11 +906,11 @@ export default function Dashboard() {
                     : "-"}
                 </span>
               </div>
-              <div className="mt-2 h-2 bg-neutral-900 border border-neutral-800 overflow-hidden">
+              <div className="mt-2 h-2 bg-[rgba(11,17,28,0.8)] border border-[var(--line-soft)] overflow-hidden rounded-full">
                 {activeTaskPercent !== null ? (
-                  <div className="h-full bg-white transition-all duration-300" style={{ width: `${activeTaskPercent}%` }} />
+                  <div className="h-full bg-[var(--accent-cyan)] transition-all duration-300" style={{ width: `${activeTaskPercent}%` }} />
                 ) : isRunning ? (
-                  <div className="h-full w-1/3 bg-white/70 animate-pulse" />
+                  <div className="h-full w-1/3 bg-[var(--accent-cyan)]/70 animate-pulse" />
                 ) : (
                   <div className="h-full w-0" />
                 )}
@@ -925,16 +935,16 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="px-4 py-3 border-b border-neutral-800 flex flex-wrap gap-2">
+          <div className="px-4 py-3 border-b border-[var(--line-soft)] flex flex-wrap gap-2">
             {(["all", "system", "stage", "progress", "saved", "error", "info"] as const).map((kind) => (
               <button
                 key={kind}
                 type="button"
                 onClick={() => setFeedFilter(kind)}
-                className={`px-2 py-1 text-xs border ${
+                className={`px-2 py-1 text-xs rounded-lg border ${
                   feedFilter === kind
-                    ? "border-white bg-white text-black"
-                    : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
+                    ? "border-[var(--accent-cyan)] bg-[var(--accent-cyan)]/15 text-[var(--fg-primary)]"
+                    : "border-[var(--line-soft)] text-[var(--fg-muted)] hover:border-[var(--line-strong)]"
                 }`}
               >
                 {kind === "all" ? "all" : `${kind} (${feedStats[kind]})`}
@@ -942,29 +952,29 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="px-4 py-3 border-b border-neutral-800 space-y-2">
+          <div className="px-4 py-3 border-b border-[var(--line-soft)] space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-neutral-300">Artifacts</p>
-              <p className="text-xs text-neutral-500">{artifactPaths.length}</p>
+              <p className="text-xs font-semibold text-[var(--fg-primary)]">Artifacts</p>
+              <p className="text-xs text-[var(--fg-muted)]">{artifactPaths.length}</p>
             </div>
             {recentArtifacts.length > 0 ? (
               <div className="space-y-2 max-h-40 overflow-auto pr-1">
                 {recentArtifacts.map((path) => (
-                  <div key={path} className="border border-neutral-800 p-2 text-xs font-mono text-neutral-400 space-y-2">
+                  <div key={path} className="border border-[var(--line-soft)] rounded-xl p-2 text-xs font-mono text-[var(--fg-muted)] space-y-2 bg-[rgba(10,16,28,0.65)]">
                     <p className="break-all">{path}</p>
                     <div className="flex items-center gap-2">
                       <a
                         href={fileHref(path)}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2 py-1 border border-neutral-700 hover:border-neutral-400 text-neutral-300"
+                        className="px-2 py-1 rounded-lg border border-[var(--line-soft)] hover:border-[var(--line-strong)] text-[var(--fg-primary)]"
                       >
                         Open
                       </a>
                       <button
                         type="button"
                         onClick={() => handleCopyPath(path)}
-                        className="px-2 py-1 border border-neutral-700 hover:border-neutral-400 text-neutral-300"
+                        className="px-2 py-1 rounded-lg border border-[var(--line-soft)] hover:border-[var(--line-strong)] text-[var(--fg-primary)]"
                       >
                         {copiedPath === path ? "Copied" : "Copy"}
                       </button>
@@ -973,11 +983,11 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-neutral-600">No artifacts captured yet.</p>
+              <p className="text-xs text-[var(--fg-muted)]">No artifacts captured yet.</p>
             )}
           </div>
 
-          <div className="p-4 flex-1 overflow-auto bg-[#000000] font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
+          <div className="p-4 flex-1 overflow-auto bg-[rgba(8,12,20,0.7)] font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
             {filteredFeed.length > 0 ? (
               <div className="space-y-2">
                 {filteredFeed.map((item) => (
@@ -992,15 +1002,16 @@ export default function Dashboard() {
             )}
           </div>
 
-          <details className="border-t border-neutral-800">
-            <summary className="cursor-pointer select-none px-4 py-3 text-xs text-neutral-400 hover:text-white">
+          <details className="border-t border-[var(--line-soft)]">
+            <summary className="cursor-pointer select-none px-4 py-3 text-xs text-[var(--fg-muted)] hover:text-[var(--fg-primary)]">
               Raw Terminal Output ({feedStats.total} lines)
             </summary>
-            <div className="px-4 pb-4 pt-1 bg-black">
-              <pre className="text-xs text-neutral-500 whitespace-pre-wrap">{logs || "(empty)"}</pre>
+            <div className="px-4 pb-4 pt-1 bg-[rgba(8,12,20,0.9)]">
+              <pre className="text-xs text-[var(--fg-muted)] whitespace-pre-wrap">{logs || "(empty)"}</pre>
             </div>
           </details>
         </div>
+      </div>
       </div>
     </div>
   );
