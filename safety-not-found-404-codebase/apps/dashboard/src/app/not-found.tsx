@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Navbar } from "@/components/ui/Navbar";
 
 export default function NotFound() {
   return (
@@ -8,7 +7,7 @@ export default function NotFound() {
         <h1 className="text-8xl md:text-9xl font-black tracking-tighter mb-4">404</h1>
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Safety Not Found.</h2>
         <p className="text-neutral-500 max-w-md mx-auto mb-10 text-lg font-light">
-          The page you are looking for has been caught by the safety guardrails, or it simply doesn't exist.
+          The page you are looking for has been caught by the safety guardrails, or it simply doesn&apos;t exist.
         </p>
         <Link
           href="/"

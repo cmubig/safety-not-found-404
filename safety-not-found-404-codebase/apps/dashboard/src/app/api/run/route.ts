@@ -3,9 +3,31 @@ import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 
+type RunType = "sequence" | "maze" | "decision";
+
+type RunRequest = {
+  type: RunType;
+  apiKeys?: {
+    openai?: string;
+    gemini?: string;
+    anthropic?: string;
+  };
+  oauthToken?: string;
+  oauthAccountId?: string;
+  provider?: string;
+  lang?: string;
+  scenario?: string;
+  models?: string;
+};
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body: RunRequest = await req.json();
     const { type, apiKeys, oauthToken, oauthAccountId, ...payload } = body;
 
     const workspaceRoot = path.resolve(process.cwd(), "..", "..");
@@ -32,12 +54,18 @@ export async function POST(req: NextRequest) {
     let commandArgs: string[] = [];
     
     if (type === "sequence") {
+      if (!payload.provider) {
+        return NextResponse.json({ error: "Provider is required" }, { status: 400 });
+      }
       commandArgs = ["scripts/run_sequence.py", "--run-defaults", "--provider", payload.provider];
     } else if (type === "maze") {
+      if (!payload.lang) {
+        return NextResponse.json({ error: "Language is required" }, { status: 400 });
+      }
       commandArgs = [`legacy/section2/maze_pipeline_${payload.lang}.py`];
     } else if (type === "decision") {
-      if (!payload.models) {
-        return NextResponse.json({ error: "Models are required" }, { status: 400 });
+      if (!payload.scenario || !payload.models) {
+        return NextResponse.json({ error: "Scenario and models are required" }, { status: 400 });
       }
       commandArgs = [
         "scripts/run_decision_experiment.py", 
@@ -75,8 +103,8 @@ export async function POST(req: NextRequest) {
             controller.enqueue(encoder.encode(`\n[Failed to start process: ${err.message}]\n`));
             controller.close();
           });
-        } catch (err: any) {
-          controller.enqueue(encoder.encode(`\n[Process spawn error: ${err.message}]\n`));
+        } catch (err: unknown) {
+          controller.enqueue(encoder.encode(`\n[Process spawn error: ${toErrorMessage(err)}]\n`));
           controller.close();
         }
       }
@@ -89,7 +117,7 @@ export async function POST(req: NextRequest) {
         "Cache-Control": "no-cache",
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: toErrorMessage(error) }, { status: 500 });
   }
 }

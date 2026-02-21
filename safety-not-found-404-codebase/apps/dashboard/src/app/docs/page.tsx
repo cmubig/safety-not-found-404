@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 
 export default function DocsPage() {
   return (
@@ -6,7 +6,7 @@ export default function DocsPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Developer Documentation</h1>
         <p className="text-lg text-neutral-400 leading-relaxed max-w-3xl">
-          Comprehensive guide to running the "Safety Not Found 404" benchmark GUI. Learn about the architecture, authentication methods, and the specifics of the experimental pipelines.
+          Comprehensive guide to running the &quot;Safety Not Found 404&quot; benchmark GUI. Learn about the architecture, authentication methods, and the specifics of the experimental pipelines.
         </p>
       </div>
 
@@ -22,7 +22,7 @@ export default function DocsPage() {
               </p>
               <div className="bg-[#050505] border border-neutral-800 rounded-md p-4 font-mono text-sm">
                 <span className="text-neutral-500"># Start Next.js on port 1455</span><br/>
-                cd "safety-not-found-404-codebase/apps/dashboard"<br/>
+                cd safety-not-found-404-codebase/apps/dashboard<br/>
                 npm run dev
               </div>
               <p>

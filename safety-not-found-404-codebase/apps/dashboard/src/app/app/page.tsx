@@ -7,6 +7,15 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { createAuthFlow, getAuthStatus, loadTokens, clearTokens, refreshAccessToken } from "@/lib/chatgpt-oauth";
 
+type RunTaskType = "sequence" | "maze" | "decision";
+
+type RunPayload = Record<string, string>;
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 export default function Dashboard() {
   const [logs, setLogs] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
@@ -54,7 +63,7 @@ export default function Dashboard() {
     setLogs((prev) => prev + text);
   };
 
-  const handleRun = async (type: string, payload: any) => {
+  const handleRun = async (type: RunTaskType, payload: RunPayload) => {
     if (isRunning) return;
     setIsRunning(true);
     setLogs(""); 
@@ -100,8 +109,8 @@ export default function Dashboard() {
         }
       }
       appendLog(`\n[SYSTEM] Task completed successfully.\n`);
-    } catch (error: any) {
-      appendLog(`\n[SYSTEM ERROR] ${error.message}\n`);
+    } catch (error: unknown) {
+      appendLog(`\n[SYSTEM ERROR] ${toErrorMessage(error)}\n`);
     } finally {
       setIsRunning(false);
     }
