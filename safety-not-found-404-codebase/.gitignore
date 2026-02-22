@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# JavaScript / Next.js
+**/node_modules/
+**/.next/
+**/coverage/
+**/dist/
+
+# Python
+**/.venv/
+**/.pytest_cache/
+**/__pycache__/
+*.py[cod]
+
+# Local environment
+**/.env
+**/.env.*
+!**/.env.example
+
+# Generated legacy artifacts
+services/research-engine/legacy/section2/maze_fin/maps/
+services/research-engine/legacy/section2/maze_fin/view/
+services/research-engine/legacy/section2/maze_fin/sortview/
+services/research-engine/legacy/section2/maze_fin/img/

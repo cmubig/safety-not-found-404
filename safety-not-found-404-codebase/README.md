@@ -8,6 +8,9 @@ Monorepo workspace with one UI app and one Python runtime service.
 safety-not-found-404-codebase/
   apps/
     dashboard/                 # Next.js app (UI + /api/run bridge)
+      src/
+        app/                   # Next.js routes
+        features/dashboard/    # Dashboard feature modules (hooks/components/utils)
   services/
     research-engine/           # Python experiment engine
 ```
@@ -43,4 +46,5 @@ python scripts/run_decision_experiment.py --scenario dilemma_factorial_abcd --mo
 
 - Dashboard API route executes Python commands from `services/research-engine`.
 - Legacy files are preserved under `services/research-engine/legacy`.
+- Generated legacy maze artifacts under `legacy/section2/maze_fin` are intentionally ignored from git tracking.
 - Large legacy video (`legacy/section 3/source.mov`) is Git LFS managed.
