@@ -68,6 +68,8 @@ export function ExperimentControls({
   onRunMaze,
   onRunDecision,
 }: ExperimentControlsProps) {
+  const showOauthScopeAction = isOauthAuthenticated && isModelReadScopeMissing;
+
   return (
     <div className="space-y-6">
       <Card>
@@ -185,10 +187,26 @@ export function ExperimentControls({
               </div>
             ) : null}
 
-            {isOauthAuthenticated && isModelReadScopeMissing ? (
-              <Button type="button" size="sm" variant="outline" onClick={onReconnectOAuth} disabled={isRunning}>
-                Reconnect OAuth (Grant model.read)
-              </Button>
+            {showOauthScopeAction ? (
+              <div className="border border-amber-400/60 bg-amber-500/10 p-3 space-y-2">
+                <p className="text-xs font-semibold text-amber-200">
+                  Action required: reconnect ChatGPT OAuth with model catalog scope.
+                </p>
+                <p className="text-xs text-amber-100">
+                  Current OAuth token is missing <code>api.model.read</code>. Reconnect first, then refresh the catalog.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" onClick={onReconnectOAuth} disabled={isRunning}>
+                    Reconnect OAuth
+                  </Button>
+                  <a
+                    href="/docs#oauth-model-scope"
+                    className="inline-flex items-center justify-center h-8 px-3 text-xs border border-amber-300/60 text-amber-100 hover:bg-amber-500/10 transition-colors"
+                  >
+                    Scope Guide
+                  </a>
+                </div>
+              </div>
             ) : null}
 
             {decisionModelOptions.length > 0 ? (

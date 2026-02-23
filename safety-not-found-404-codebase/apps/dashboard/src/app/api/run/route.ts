@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       if (!payload.lang) {
         return NextResponse.json({ error: "Language is required" }, { status: 400 });
       }
-      commandArgs = [`legacy/section2/maze_pipeline_${payload.lang}.py`];
+      commandArgs = ["scripts/run_maze_pipeline.py", "--language", payload.lang];
     } else if (type === "decision") {
       if (!payload.scenario || !payload.models) {
         return NextResponse.json({ error: "Scenario and models are required" }, { status: 400 });

@@ -23,7 +23,10 @@
 !**/.env.example
 
 # Generated legacy artifacts
-services/research-engine/legacy/section2/maze_fin/maps/
-services/research-engine/legacy/section2/maze_fin/view/
-services/research-engine/legacy/section2/maze_fin/sortview/
-services/research-engine/legacy/section2/maze_fin/img/
+services/research-engine/legacy/section_2/maze_fin/maps/
+services/research-engine/legacy/section_2/maze_fin/view/
+services/research-engine/legacy/section_2/maze_fin/sortview/
+services/research-engine/legacy/section_2/maze_fin/img/
+services/research-engine/legacy/section_3/frames_out/
+services/research-engine/legacy/section_3/3.4/samarian/runs/
+services/research-engine/legacy/section_3_4_archive/samarian/runs/

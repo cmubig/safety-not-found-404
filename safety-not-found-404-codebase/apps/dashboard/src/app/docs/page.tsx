@@ -68,6 +68,12 @@ export default function DocsPage() {
               <p>
                 For Gemini, Anthropic, or operators refusing OAuth, standard password inputs exist in the header. To prevent confusion, if a user successfully logs in via ChatGPT OAuth, the manual OpenAI input is forcibly disabled. The Next.js API prioritizes OAuth over Manual Keys over <code>.env</code> values.
               </p>
+
+              <h3 id="oauth-model-scope" className="text-lg font-medium text-white pt-2">C. OAuth Model Scope Troubleshooting</h3>
+              <p>
+                If model catalog loading shows a warning about missing <code>api.model.read</code>, the token was issued without model listing permission.
+                Use the dashboard&apos;s <strong>Reconnect OAuth</strong> action to re-run consent and grant that scope, then click <strong>Refresh</strong> in Section 3.
+              </p>
             </CardContent>
           </Card>
         </section>

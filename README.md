@@ -60,7 +60,7 @@ pytest -q
 
 ## Large Files
 
-`safety-not-found-404-codebase/services/research-engine/legacy/section 3/source.mov` is tracked via Git LFS.
+`safety-not-found-404-codebase/services/research-engine/legacy/section_3/source.mov` is tracked via Git LFS.
 
 ## Additional Docs
 

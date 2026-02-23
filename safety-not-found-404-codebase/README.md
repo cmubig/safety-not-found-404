@@ -46,5 +46,6 @@ python scripts/run_decision_experiment.py --scenario dilemma_factorial_abcd --mo
 
 - Dashboard API route executes Python commands from `services/research-engine`.
 - Legacy files are preserved under `services/research-engine/legacy`.
-- Generated legacy maze artifacts under `legacy/section2/maze_fin` are intentionally ignored from git tracking.
-- Large legacy video (`legacy/section 3/source.mov`) is Git LFS managed.
+- Generated legacy maze artifacts under `legacy/section_2/maze_fin` are intentionally ignored from git tracking.
+- Legacy frame dumps and intermediate run artifacts are excluded from tracking (`legacy/section_3/frames_out`, `legacy/section_3/3.4/samarian/runs`, `legacy/section_3_4_archive/samarian/runs`).
+- Large legacy video (`legacy/section_3/source.mov`) is Git LFS managed.
