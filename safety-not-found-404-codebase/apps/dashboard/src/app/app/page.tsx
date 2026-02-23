@@ -193,7 +193,7 @@ export default function DashboardPage() {
               <p className="mt-2 text-sm sm:text-base text-neutral-400">Project Benchmark &amp; Experiment Control Center</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto xl:min-w-[520px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full xl:w-auto xl:min-w-[720px]">
               <div className="rounded-md border border-neutral-800 bg-black px-3 py-3">
                 <p className="text-[11px] uppercase tracking-wide text-neutral-500">Auth</p>
                 <p className="mt-1 text-sm font-medium text-white">
@@ -210,41 +210,60 @@ export default function DashboardPage() {
                 <p className="text-[11px] uppercase tracking-wide text-neutral-500">Run Status</p>
                 <p className="mt-1 text-sm font-medium text-white">{isRunning ? `Running ${activeRunType ?? ""}` : "Idle"}</p>
               </div>
+              <div className="rounded-md border border-neutral-800 bg-black px-3 py-3">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500">Selected Models</p>
+                <p className="mt-1 text-sm font-medium text-white">
+                  {effectiveSelectedDecisionModelIds.length > 0 ? `${effectiveSelectedDecisionModelIds.length}` : "0"}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col sm:flex-row gap-3">
-            <Button
-              variant={isOauthAuthenticated ? "outline" : "primary"}
-              onClick={handleChatGptConnectToggle}
-              className="w-full sm:w-auto overflow-hidden text-ellipsis px-2"
-            >
-              {isOauthAuthenticated ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#10a37f]" />
-                  ChatGPT Configured (Click to Logout)
-                </span>
-              ) : (
-                "Connect ChatGPT (OAuth)"
-              )}
-            </Button>
+          <div className="mt-5 flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+              <Button
+                variant={isOauthAuthenticated ? "outline" : "primary"}
+                onClick={handleChatGptConnectToggle}
+                className="w-full overflow-hidden text-ellipsis px-2"
+              >
+                {isOauthAuthenticated ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#10a37f]" />
+                    ChatGPT Configured (Click to Logout)
+                  </span>
+                ) : (
+                  "Connect ChatGPT (OAuth)"
+                )}
+              </Button>
 
-            <Input
-              type="password"
-              placeholder="or OpenAI API Key"
-              className="w-full sm:w-56"
-              value={apiKeys.openai}
-              onChange={(event) => updateApiKey("openai", event.target.value)}
-              disabled={isOauthAuthenticated}
-            />
+              <Input
+                type="password"
+                placeholder="or OpenAI API Key"
+                className="w-full"
+                value={apiKeys.openai}
+                onChange={(event) => updateApiKey("openai", event.target.value)}
+                disabled={isOauthAuthenticated}
+              />
 
-            <Input
-              type="password"
-              placeholder="Gemini API Key"
-              className="w-full sm:w-56"
-              value={apiKeys.gemini}
-              onChange={(event) => updateApiKey("gemini", event.target.value)}
-            />
+              <Input
+                type="password"
+                placeholder="Gemini API Key"
+                className="w-full"
+                value={apiKeys.gemini}
+                onChange={(event) => updateApiKey("gemini", event.target.value)}
+              />
+
+              <Input
+                type="password"
+                placeholder="Anthropic API Key"
+                className="w-full"
+                value={apiKeys.anthropic}
+                onChange={(event) => updateApiKey("anthropic", event.target.value)}
+              />
+            </div>
+            <p className="text-xs text-neutral-500">
+              OpenAI key input is disabled while ChatGPT OAuth is connected. Gemini/Anthropic keys remain active.
+            </p>
           </div>
         </header>
 

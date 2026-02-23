@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { FEED_FILTER_OPTIONS, FEED_KIND_STYLE, FAILURE_STYLE } from "../constants";
 import { FailureInsight, FeedKind, FeedStats, LogFeedItem, PipelineProgress, RunTaskType } from "../types";
 import { toFileHref } from "../utils/log-utils";
@@ -37,6 +38,33 @@ export function ExecutionConsole({
   onCopyArtifactPath,
   rawLogs,
 }: ExecutionConsoleProps) {
+  const logViewportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isRunning) return;
+    const viewport = logViewportRef.current;
+    if (!viewport) return;
+    viewport.scrollTop = viewport.scrollHeight;
+  }, [filteredFeedItems, isRunning]);
+
+  const downloadRawLogs = () => {
+    const normalizedLogs = rawLogs.trim();
+    if (!normalizedLogs) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const blob = new Blob([normalizedLogs], { type: "text/plain;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = `execution-${activeRunType ?? "task"}-${timestamp}.log`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    URL.revokeObjectURL(href);
+  };
+
   return (
     <div className="flex flex-col h-full bg-neutral-950 border border-neutral-800 rounded-xl overflow-hidden relative">
       <div className="bg-neutral-950 border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
@@ -44,7 +72,17 @@ export function ExecutionConsole({
           <div className={`w-2 h-2 rounded-full ${isRunning ? "bg-white animate-pulse" : "bg-neutral-600"}`} />
           Execution Console
         </h3>
-        <span className="text-xs text-neutral-500 font-mono">/api/run</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={downloadRawLogs}
+            disabled={!rawLogs.trim()}
+            className="px-2 py-1 text-xs border border-neutral-700 text-neutral-300 hover:border-neutral-500 disabled:opacity-40 disabled:pointer-events-none"
+          >
+            Export logs
+          </button>
+          <span className="text-xs text-neutral-500 font-mono">/api/run</span>
+        </div>
       </div>
 
       <div className="p-4 border-b border-neutral-800 grid grid-cols-2 gap-3 text-xs font-mono bg-black/30">
@@ -157,7 +195,10 @@ export function ExecutionConsole({
         )}
       </div>
 
-      <div className="p-4 flex-1 overflow-auto bg-black font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
+      <div
+        ref={logViewportRef}
+        className="p-4 flex-1 overflow-auto bg-black font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]"
+      >
         {filteredFeedItems.length > 0 ? (
           <div className="space-y-2">
             {filteredFeedItems.map((feedItem) => (
