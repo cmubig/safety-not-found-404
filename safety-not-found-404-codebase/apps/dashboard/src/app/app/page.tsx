@@ -184,108 +184,131 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 max-w-7xl mx-auto space-y-8 font-sans">
-      <header className="border-b border-neutral-800 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Safety Not Found 404</h1>
-          <p className="text-neutral-400">Project Benchmark &amp; Experiment Control Center</p>
-        </div>
+    <div className="min-h-screen bg-black">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 space-y-6 font-sans">
+        <header className="rounded-xl border border-neutral-800 bg-neutral-950 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Safety Not Found 404</h1>
+              <p className="mt-2 text-sm sm:text-base text-neutral-400">Project Benchmark &amp; Experiment Control Center</p>
+            </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button
-            variant={isOauthAuthenticated ? "outline" : "primary"}
-            onClick={handleChatGptConnectToggle}
-            className="w-full sm:w-auto overflow-hidden text-ellipsis px-2"
-          >
-            {isOauthAuthenticated ? (
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#10a37f]" />
-                ChatGPT Configured (Click to Logout)
-              </span>
-            ) : (
-              "Connect ChatGPT (OAuth)"
-            )}
-          </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto xl:min-w-[520px]">
+              <div className="rounded-md border border-neutral-800 bg-black px-3 py-3">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500">Auth</p>
+                <p className="mt-1 text-sm font-medium text-white">
+                  {isOauthAuthenticated ? "ChatGPT OAuth Connected" : "OAuth Not Connected"}
+                </p>
+              </div>
+              <div className="rounded-md border border-neutral-800 bg-black px-3 py-3">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500">Model Catalog</p>
+                <p className="mt-1 text-sm font-medium text-white">
+                  {isModelCatalogLoading ? "Syncing..." : `${decisionModelOptions.length} loaded`}
+                </p>
+              </div>
+              <div className="rounded-md border border-neutral-800 bg-black px-3 py-3">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500">Run Status</p>
+                <p className="mt-1 text-sm font-medium text-white">{isRunning ? `Running ${activeRunType ?? ""}` : "Idle"}</p>
+              </div>
+            </div>
+          </div>
 
-          <Input
-            type="password"
-            placeholder="or OpenAI API Key"
-            className="w-full sm:w-48"
-            value={apiKeys.openai}
-            onChange={(event) => updateApiKey("openai", event.target.value)}
-            disabled={isOauthAuthenticated}
+          <div className="mt-5 flex flex-col sm:flex-row gap-3">
+            <Button
+              variant={isOauthAuthenticated ? "outline" : "primary"}
+              onClick={handleChatGptConnectToggle}
+              className="w-full sm:w-auto overflow-hidden text-ellipsis px-2"
+            >
+              {isOauthAuthenticated ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#10a37f]" />
+                  ChatGPT Configured (Click to Logout)
+                </span>
+              ) : (
+                "Connect ChatGPT (OAuth)"
+              )}
+            </Button>
+
+            <Input
+              type="password"
+              placeholder="or OpenAI API Key"
+              className="w-full sm:w-56"
+              value={apiKeys.openai}
+              onChange={(event) => updateApiKey("openai", event.target.value)}
+              disabled={isOauthAuthenticated}
+            />
+
+            <Input
+              type="password"
+              placeholder="Gemini API Key"
+              className="w-full sm:w-56"
+              value={apiKeys.gemini}
+              onChange={(event) => updateApiKey("gemini", event.target.value)}
+            />
+          </div>
+        </header>
+
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>Execution Architecture</CardTitle>
+            <CardDescription>
+              Sequence and Decision sections call AI models. Maze section is local data generation and processing only.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(340px,1fr)_minmax(500px,1.25fr)] gap-6">
+          <ExperimentControls
+            isRunning={isRunning}
+            isOauthAuthenticated={isOauthAuthenticated}
+            sequenceProvider={sequenceProvider}
+            mazeLanguage={mazeLanguage}
+            decisionScenario={decisionScenario}
+            selectedDecisionModelIds={effectiveSelectedDecisionModelIds}
+            decisionModelOptions={decisionModelOptions}
+            modelCatalogWarnings={modelCatalogWarnings}
+            modelCatalogError={modelCatalogError}
+            isModelCatalogLoading={isModelCatalogLoading}
+            modelCatalogUpdatedAt={modelCatalogUpdatedAt}
+            isModelReadScopeMissing={isModelReadScopeMissing}
+            customDecisionModelInput={customDecisionModelInput}
+            customDecisionModelInputError={customDecisionModelInputError}
+            activeRunType={activeRunType}
+            taskProgressByType={taskProgressByType}
+            onSequenceProviderChange={setSequenceProvider}
+            onMazeLanguageChange={setMazeLanguage}
+            onDecisionScenarioChange={setDecisionScenario}
+            onDecisionModelToggle={toggleDecisionModel}
+            onDecisionModelRemove={removeDecisionModel}
+            onCustomDecisionModelInputChange={setCustomDecisionModelInput}
+            onAddCustomDecisionModel={addCustomDecisionModel}
+            onRefreshModelCatalog={refreshModelCatalog}
+            onReconnectOAuth={handleOAuthReconnect}
+            onRunSequence={runSequenceExperiment}
+            onRunMaze={runMazeExperiment}
+            onRunDecision={runDecisionExperiment}
           />
 
-          <Input
-            type="password"
-            placeholder="Gemini API Key"
-            className="w-full sm:w-48"
-            value={apiKeys.gemini}
-            onChange={(event) => updateApiKey("gemini", event.target.value)}
+          <ExecutionConsole
+            isRunning={isRunning}
+            activeRunType={activeRunType}
+            runDurationText={runDurationText}
+            feedStats={feedStats}
+            activeTaskPercent={activeTaskPercent}
+            pipelineProgress={pipelineProgress}
+            latestFailureInsight={latestFailureInsight}
+            logFeedFilter={logFeedFilter}
+            onLogFeedFilterChange={setLogFeedFilter}
+            filteredFeedItems={filteredFeedItems}
+            recentArtifacts={recentArtifacts}
+            artifactCount={artifactPaths.length}
+            copiedArtifactPath={copiedArtifactPath}
+            onCopyArtifactPath={(path) => {
+              void copyArtifactPath(path);
+            }}
+            rawLogs={rawLogs}
           />
         </div>
-      </header>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Execution Architecture</CardTitle>
-          <CardDescription>
-            Sequence and Decision sections call AI models. Maze section is local data generation and processing only.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <ExperimentControls
-          isRunning={isRunning}
-          isOauthAuthenticated={isOauthAuthenticated}
-          sequenceProvider={sequenceProvider}
-          mazeLanguage={mazeLanguage}
-          decisionScenario={decisionScenario}
-          selectedDecisionModelIds={effectiveSelectedDecisionModelIds}
-          decisionModelOptions={decisionModelOptions}
-          modelCatalogWarnings={modelCatalogWarnings}
-          modelCatalogError={modelCatalogError}
-          isModelCatalogLoading={isModelCatalogLoading}
-          modelCatalogUpdatedAt={modelCatalogUpdatedAt}
-          isModelReadScopeMissing={isModelReadScopeMissing}
-          customDecisionModelInput={customDecisionModelInput}
-          customDecisionModelInputError={customDecisionModelInputError}
-          activeRunType={activeRunType}
-          taskProgressByType={taskProgressByType}
-          onSequenceProviderChange={setSequenceProvider}
-          onMazeLanguageChange={setMazeLanguage}
-          onDecisionScenarioChange={setDecisionScenario}
-          onDecisionModelToggle={toggleDecisionModel}
-          onDecisionModelRemove={removeDecisionModel}
-          onCustomDecisionModelInputChange={setCustomDecisionModelInput}
-          onAddCustomDecisionModel={addCustomDecisionModel}
-          onRefreshModelCatalog={refreshModelCatalog}
-          onReconnectOAuth={handleOAuthReconnect}
-          onRunSequence={runSequenceExperiment}
-          onRunMaze={runMazeExperiment}
-          onRunDecision={runDecisionExperiment}
-        />
-
-        <ExecutionConsole
-          isRunning={isRunning}
-          activeRunType={activeRunType}
-          runDurationText={runDurationText}
-          feedStats={feedStats}
-          activeTaskPercent={activeTaskPercent}
-          pipelineProgress={pipelineProgress}
-          latestFailureInsight={latestFailureInsight}
-          logFeedFilter={logFeedFilter}
-          onLogFeedFilterChange={setLogFeedFilter}
-          filteredFeedItems={filteredFeedItems}
-          recentArtifacts={recentArtifacts}
-          artifactCount={artifactPaths.length}
-          copiedArtifactPath={copiedArtifactPath}
-          onCopyArtifactPath={(path) => {
-            void copyArtifactPath(path);
-          }}
-          rawLogs={rawLogs}
-        />
       </div>
     </div>
   );

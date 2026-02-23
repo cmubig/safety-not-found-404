@@ -38,8 +38,8 @@ export function ExecutionConsole({
   rawLogs,
 }: ExecutionConsoleProps) {
   return (
-    <div className="flex flex-col h-full bg-[#050505] border border-neutral-800 rounded-md overflow-hidden relative shadow-lg">
-      <div className="bg-neutral-900 border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
+    <div className="flex flex-col h-full bg-neutral-950 border border-neutral-800 rounded-xl overflow-hidden relative">
+      <div className="bg-neutral-950 border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${isRunning ? "bg-white animate-pulse" : "bg-neutral-600"}`} />
           Execution Console
@@ -47,20 +47,20 @@ export function ExecutionConsole({
         <span className="text-xs text-neutral-500 font-mono">/api/run</span>
       </div>
 
-      <div className="p-4 border-b border-neutral-800 grid grid-cols-2 gap-3 text-xs font-mono">
-        <div className="border border-neutral-800 p-3">
+      <div className="p-4 border-b border-neutral-800 grid grid-cols-2 gap-3 text-xs font-mono bg-black/30">
+        <div className="rounded-md border border-neutral-800 p-3">
           <div className="text-neutral-500">Task</div>
           <div className="text-white mt-1">{activeRunType ?? "-"}</div>
         </div>
-        <div className="border border-neutral-800 p-3">
+        <div className="rounded-md border border-neutral-800 p-3">
           <div className="text-neutral-500">Duration</div>
           <div className="text-white mt-1">{runDurationText}</div>
         </div>
-        <div className="border border-neutral-800 p-3">
+        <div className="rounded-md border border-neutral-800 p-3">
           <div className="text-neutral-500">Saved</div>
           <div className="text-emerald-300 mt-1">{feedStats.saved}</div>
         </div>
-        <div className="border border-neutral-800 p-3">
+        <div className="rounded-md border border-neutral-800 p-3">
           <div className="text-neutral-500">Errors</div>
           <div className="text-red-300 mt-1">{feedStats.error}</div>
         </div>
@@ -157,7 +157,7 @@ export function ExecutionConsole({
         )}
       </div>
 
-      <div className="p-4 flex-1 overflow-auto bg-[#000000] font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
+      <div className="p-4 flex-1 overflow-auto bg-black font-mono whitespace-pre-wrap text-sm leading-relaxed max-h-[420px]">
         {filteredFeedItems.length > 0 ? (
           <div className="space-y-2">
             {filteredFeedItems.map((feedItem) => (

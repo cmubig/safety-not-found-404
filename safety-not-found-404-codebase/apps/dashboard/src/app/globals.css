@@ -8,15 +8,14 @@
 }
 
 :root {
-  --bg-primary: #070b14;
-  --bg-secondary: #0d1422;
-  --fg-primary: #f4f8ff;
-  --fg-muted: #99a6bf;
-  --line-soft: rgba(173, 193, 230, 0.22);
-  --line-strong: rgba(173, 193, 230, 0.4);
-  --accent-cyan: #7fd8ff;
-  --accent-lime: #b7ffbf;
-  --accent-amber: #ffd2a8;
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-elevated: #111111;
+  --fg-primary: #fafafa;
+  --fg-muted: #a3a3a3;
+  --line-soft: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --accent: #ffffff;
 }
 
 body {
@@ -24,22 +23,19 @@ body {
   padding: 0;
   color: var(--fg-primary);
   font-family: var(--font-sans), sans-serif;
-  background:
-    radial-gradient(1200px 500px at 8% -10%, rgba(127, 216, 255, 0.18), transparent 55%),
-    radial-gradient(900px 400px at 92% -5%, rgba(183, 255, 191, 0.14), transparent 58%),
-    linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 58%);
+  background: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: rgba(127, 216, 255, 0.35);
-  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.24);
+  color: #000000;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(153, 166, 191, 0.5) rgba(12, 18, 31, 0.65);
+  scrollbar-color: rgba(163, 163, 163, 0.5) rgba(10, 10, 10, 0.65);
 }
 
 *::-webkit-scrollbar {
@@ -48,11 +44,11 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(12, 18, 31, 0.7);
+  background: rgba(10, 10, 10, 0.9);
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(153, 166, 191, 0.45);
+  background: rgba(163, 163, 163, 0.45);
   border-radius: 999px;
-  border: 2px solid rgba(12, 18, 31, 0.7);
+  border: 2px solid rgba(10, 10, 10, 0.9);
 }
