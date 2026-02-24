@@ -285,7 +285,7 @@ export default function LandingPage() {
           <p>© 2026 404 Safety Not Found. All logic verified.</p>
           <div className="flex gap-8">
             <span className="hover:text-white transition-colors cursor-pointer">Python 3.12+</span>
-            <span className="hover:text-white transition-colors cursor-pointer">Next.js 14</span>
+            <span className="hover:text-white transition-colors cursor-pointer">Next.js 16</span>
             <span className="hover:text-white transition-colors cursor-pointer">Local Execution</span>
           </div>
         </div>

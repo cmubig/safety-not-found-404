@@ -43,7 +43,7 @@ export default function DocsPage() {
               </p>
               <ul className="list-disc leading-loose pl-5 space-y-2 text-neutral-400">
                 <li><strong className="text-white">Frontend:</strong> Styled strictly with Tailwind CSS (pure monochrome, zero gradients). Manages state, API keys, and streams log output using Server-Sent-Events formatting via the active browser reader.</li>
-                <li><strong className="text-white">API Bridge (`/api/run`):</strong> A Next.js API route that securely spawns the heavy <code>.qa_venv/bin/python</code> scripts locally. It injects required <code>OPENAI_API_KEY</code> and other provider keys invisibly into the environment variables (<code>process.env</code>) of the child process.</li>
+                <li><strong className="text-white">API Bridge (`/api/run`):</strong> A Next.js API route that securely spawns local Python scripts (prefers <code>.qa_venv/bin/python</code>, then falls back to <code>.venv/bin/python</code>). It injects required <code>OPENAI_API_KEY</code> and other provider keys into child-process environment variables.</li>
                 <li><strong className="text-white">Python Backend:</strong> The core logic, encompassing parser evaluations, maze pipelines, and automated prompt generators. The GUI acts only as a clean execution trigger and logging interface.</li>
               </ul>
             </CardContent>

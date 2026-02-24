@@ -32,8 +32,8 @@ export const DECISION_SCENARIO_OPTIONS = [
 ] as const;
 
 export const MAZE_LANGUAGE_OPTIONS = [
-  { value: "en", label: "English (maze_pipeline_en.py)" },
-  { value: "ko", label: "Korean (maze_pipeline_ko.py)" },
+  { value: "en", label: "English (run_maze_pipeline --language en)" },
+  { value: "ko", label: "Korean (run_maze_pipeline --language ko)" },
 ] as const;
 
 export const SEQUENCE_PROVIDER_OPTIONS = [

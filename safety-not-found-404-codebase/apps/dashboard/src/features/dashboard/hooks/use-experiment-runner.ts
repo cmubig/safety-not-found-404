@@ -241,8 +241,13 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
         }
       }
 
-      processLogChunk("\n[SYSTEM] Task completed successfully.\n");
-      finishRun(true);
+      const runFailed = hasRunErrorRef.current;
+      if (runFailed) {
+        processLogChunk("\n[SYSTEM ERROR] Task finished with errors.\n");
+      } else {
+        processLogChunk("\n[SYSTEM] Task completed successfully.\n");
+      }
+      finishRun(!runFailed);
     } catch (error: unknown) {
       processLogChunk(`\n[SYSTEM ERROR] ${toErrorMessage(error)}\n`);
       finishRun(false);

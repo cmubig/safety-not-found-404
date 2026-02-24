@@ -20,9 +20,44 @@ type RunRequest = {
   models?: string;
 };
 
+const SEQUENCE_PROVIDERS = new Set(["openai", "gemini"]);
+const MAZE_LANGUAGES = new Set(["en", "ko"]);
+const DECISION_SCENARIOS = new Set([
+  "dilemma_baseline_ab",
+  "dilemma_factorial_abcd",
+  "samarian_time_pressure",
+  "samarian_priming_time",
+]);
+const MODEL_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,127}$/;
+
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+function normalize(value: string | undefined): string {
+  return value?.trim() ?? "";
+}
+
+function parseDecisionModels(rawModels: string): { models: string[]; invalidModel: string | null } {
+  const models = rawModels
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+
+  const uniqueModels: string[] = [];
+  const seen = new Set<string>();
+
+  for (const modelId of models) {
+    if (!MODEL_ID_PATTERN.test(modelId)) {
+      return { models: [], invalidModel: modelId };
+    }
+    if (seen.has(modelId)) continue;
+    seen.add(modelId);
+    uniqueModels.push(modelId);
+  }
+
+  return { models: uniqueModels, invalidModel: null };
 }
 
 export async function POST(req: NextRequest) {
@@ -54,24 +89,43 @@ export async function POST(req: NextRequest) {
     let commandArgs: string[] = [];
     
     if (type === "sequence") {
-      if (!payload.provider) {
+      const provider = normalize(payload.provider);
+      if (!provider) {
         return NextResponse.json({ error: "Provider is required" }, { status: 400 });
       }
-      commandArgs = ["scripts/run_sequence.py", "--run-defaults", "--provider", payload.provider];
+      if (!SEQUENCE_PROVIDERS.has(provider)) {
+        return NextResponse.json({ error: `Unsupported provider: ${provider}` }, { status: 400 });
+      }
+      commandArgs = ["scripts/run_sequence.py", "--run-defaults", "--provider", provider];
     } else if (type === "maze") {
-      if (!payload.lang) {
+      const language = normalize(payload.lang);
+      if (!language) {
         return NextResponse.json({ error: "Language is required" }, { status: 400 });
       }
-      commandArgs = ["scripts/run_maze_pipeline.py", "--language", payload.lang];
+      if (!MAZE_LANGUAGES.has(language)) {
+        return NextResponse.json({ error: `Unsupported maze language: ${language}` }, { status: 400 });
+      }
+      commandArgs = ["scripts/run_maze_pipeline.py", "--language", language];
     } else if (type === "decision") {
-      if (!payload.scenario || !payload.models) {
+      const scenario = normalize(payload.scenario);
+      const rawModels = normalize(payload.models);
+
+      if (!scenario || !rawModels) {
         return NextResponse.json({ error: "Scenario and models are required" }, { status: 400 });
       }
-      commandArgs = [
-        "scripts/run_decision_experiment.py", 
-        "--scenario", payload.scenario, 
-        "--models", payload.models
-      ];
+      if (!DECISION_SCENARIOS.has(scenario)) {
+        return NextResponse.json({ error: `Unsupported scenario: ${scenario}` }, { status: 400 });
+      }
+
+      const { models, invalidModel } = parseDecisionModels(rawModels);
+      if (invalidModel) {
+        return NextResponse.json({ error: `Invalid model id: ${invalidModel}` }, { status: 400 });
+      }
+      if (models.length === 0) {
+        return NextResponse.json({ error: "At least one model is required" }, { status: 400 });
+      }
+
+      commandArgs = ["scripts/run_decision_experiment.py", "--scenario", scenario, "--models", models.join(",")];
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
