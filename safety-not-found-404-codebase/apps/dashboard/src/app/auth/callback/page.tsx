@@ -13,17 +13,31 @@ function CallbackContent() {
   useEffect(() => {
     async function process() {
       try {
-        const code = searchParams.get("code");
-        if (!code) {
+        const oauthError = searchParams.get("error");
+        const oauthErrorDescription = searchParams.get("error_description");
+        if (oauthError) {
           setStatus("error");
-          setError("No authorization code provided.");
+          const description = oauthErrorDescription ?? "";
+          setError(
+            description
+              ? `OAuth failed (${oauthError}): ${description}`
+              : `OAuth failed (${oauthError}).`
+          );
           return;
         }
-        await exchangeCode(code);
+
+        const code = searchParams.get("code");
+        const state = searchParams.get("state");
+        if (!code) {
+          setStatus("error");
+          setError("No authorization code provided. Start OAuth again from /app.");
+          return;
+        }
+        await exchangeCode(code, state);
         setStatus("success");
         
         // Return to app after short delay
-        setTimeout(() => router.push("/"), 1200);
+        setTimeout(() => router.push("/app"), 1200);
       } catch (e) {
         setStatus("error");
         setError(e instanceof Error ? e.message : "Unknown error");
@@ -55,7 +69,7 @@ function CallbackContent() {
             <p className="text-white font-semibold text-lg">Connection Failed</p>
             <p className="text-sm text-neutral-400">{error}</p>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/app")}
               className="mt-6 px-4 py-2 text-sm font-medium border border-neutral-700 hover:bg-white hover:text-black transition-colors rounded-md"
             >
               Return to Dashboard

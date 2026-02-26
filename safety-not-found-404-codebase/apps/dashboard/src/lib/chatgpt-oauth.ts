@@ -7,8 +7,8 @@ const AUTHORIZE_URL = "https://auth.openai.com/oauth/authorize";
 const TOKEN_URL = "https://auth.openai.com/oauth/token";
 const CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann";
 const REDIRECT_URI = "http://localhost:1455/auth/callback";
-// `api.model.read` is required for /v1/models catalog lookup.
-const SCOPE = "openid profile email offline_access api.model.read";
+// Keep OAuth login scope minimal. /v1/models catalog may require separate API-key path.
+const SCOPE = "openid profile email offline_access";
 
 const STORAGE_KEY = "benchmark_oauth";
 const PKCE_KEY = "benchmark_pkce";
@@ -123,16 +123,26 @@ export async function createAuthFlow(): Promise<PKCEFlow> {
   const authUrl = `${AUTHORIZE_URL}?${params}`;
 
   if (typeof window !== "undefined") {
-    localStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, state }));
+    localStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, state, created_at: Date.now() }));
   }
 
   return { authUrl, verifier, state };
 }
 
-export async function exchangeCode(code: string): Promise<OAuthTokens> {
+export async function exchangeCode(code: string, returnedState?: string | null): Promise<OAuthTokens> {
   const pkceRaw = localStorage.getItem(PKCE_KEY);
-  if (!pkceRaw) throw new Error("Auth session expired. Please try again.");
-  const { verifier } = JSON.parse(pkceRaw);
+  if (!pkceRaw) {
+    throw new Error(
+      "Auth session expired or host changed. Reconnect from http://localhost:1455/app."
+    );
+  }
+  const { verifier, state } = JSON.parse(pkceRaw) as { verifier: string; state?: string };
+  if (!verifier) {
+    throw new Error("Invalid PKCE session. Please reconnect OAuth.");
+  }
+  if (returnedState && state && returnedState !== state) {
+    throw new Error("OAuth state mismatch. Please reconnect from the dashboard.");
+  }
 
   const resp = await fetch(TOKEN_URL, {
     method: "POST",

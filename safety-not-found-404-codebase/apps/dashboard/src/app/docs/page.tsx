@@ -71,8 +71,8 @@ export default function DocsPage() {
 
               <h3 id="oauth-model-scope" className="text-lg font-medium text-white pt-2">C. OAuth Model Scope Troubleshooting</h3>
               <p>
-                If model catalog loading shows a warning about missing <code>api.model.read</code>, the token was issued without model listing permission.
-                Use the dashboard&apos;s <strong>Reconnect OAuth</strong> action to re-run consent and grant that scope, then click <strong>Refresh</strong> in Section 3.
+                If model catalog loading shows missing <code>api.model.read</code>, that OAuth session cannot query <code>/v1/models</code>.
+                In that case, keep OAuth for execution but use an OpenAI API key for catalog sync, or enter custom model IDs manually in Section 3.
               </p>
             </CardContent>
           </Card>

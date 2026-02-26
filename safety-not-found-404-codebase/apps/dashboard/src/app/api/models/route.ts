@@ -255,7 +255,7 @@ export async function POST(req: NextRequest) {
           openaiErrors.push(`${credential.source}: ${message}`);
           if (credential.source === "oauth" && isMissingModelReadScope(message)) {
             warnings.push(
-              "OAuth token is missing `api.model.read` scope. Logout and reconnect ChatGPT OAuth to grant model catalog access."
+              "OAuth token cannot access `/v1/models` catalog (missing `api.model.read`). Use OpenAI API key for catalog sync, or add model ids manually."
             );
           }
         }

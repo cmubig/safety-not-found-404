@@ -81,6 +81,13 @@ export default function DashboardPage() {
   }, [decisionModelOptions, selectedDecisionModelIds]);
 
   const connectChatGptOAuth = async () => {
+    const allowedHosts = new Set(["localhost", "127.0.0.1"]);
+    if (!allowedHosts.has(window.location.hostname)) {
+      const localDashboardUrl = "http://localhost:1455/app";
+      alert(`OAuth login is supported only on localhost. Redirecting to ${localDashboardUrl}`);
+      window.location.href = localDashboardUrl;
+      return;
+    }
     const { authUrl } = await createAuthFlow();
     window.location.href = authUrl;
   };

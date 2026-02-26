@@ -190,14 +190,14 @@ export function ExperimentControls({
             {showOauthScopeAction ? (
               <div className="border border-amber-400/60 bg-amber-500/10 p-3 space-y-2">
                 <p className="text-xs font-semibold text-amber-200">
-                  Action required: reconnect ChatGPT OAuth with model catalog scope.
+                  Model catalog scope is unavailable in this OAuth session.
                 </p>
                 <p className="text-xs text-amber-100">
-                  Current OAuth token is missing <code>api.model.read</code>. Reconnect first, then refresh the catalog.
+                  Current OAuth token cannot read <code>/v1/models</code> (missing <code>api.model.read</code>). Use OpenAI API key for catalog sync, or add custom model ids and run directly.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Button type="button" size="sm" onClick={onReconnectOAuth} disabled={isRunning}>
-                    Reconnect OAuth
+                    Retry OAuth
                   </Button>
                   <a
                     href="/docs#oauth-model-scope"
