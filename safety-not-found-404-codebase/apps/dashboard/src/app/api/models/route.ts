@@ -223,8 +223,8 @@ export async function POST(req: NextRequest) {
     const anthropicCredential = normalizeCredential(body.apiKeys?.anthropic) || normalizeCredential(process.env.ANTHROPIC_API_KEY);
 
     const openaiCredentials = [
-      { source: "oauth", token: oauthToken },
       { source: "api_key", token: openaiApiKey },
+      { source: "oauth", token: oauthToken },
     ].filter((entry, index, array) => {
       if (!entry.token) return false;
       return array.findIndex((candidate) => candidate.token === entry.token) === index;

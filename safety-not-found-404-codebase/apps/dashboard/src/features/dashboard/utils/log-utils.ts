@@ -115,12 +115,14 @@ export function categorizeFailureLine(line: string): FailureInsight {
     lowered.includes("invalid") ||
     lowered.includes("unknown provider") ||
     lowered.includes("no model targets") ||
-    lowered.includes("usage:")
+    lowered.includes("usage:") ||
+    lowered.includes("folder not found") ||
+    lowered.includes("filenotfounderror")
   ) {
     return {
       category: "input",
       title: "Invalid Input",
-      hint: "Review selected scenario/model/provider parameters.",
+      hint: "Review provider/model settings and required input dataset paths.",
       line,
     };
   }

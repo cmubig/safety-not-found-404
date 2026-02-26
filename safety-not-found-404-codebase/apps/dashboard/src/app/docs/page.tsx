@@ -66,7 +66,7 @@ export default function DocsPage() {
 
               <h3 className="text-lg font-medium text-white pt-2">B. Manual API Keys</h3>
               <p>
-                For Gemini, Anthropic, or operators refusing OAuth, standard password inputs exist in the header. To prevent confusion, if a user successfully logs in via ChatGPT OAuth, the manual OpenAI input is forcibly disabled. The Next.js API prioritizes OAuth over Manual Keys over <code>.env</code> values.
+                For Gemini, Anthropic, or operators preferring explicit credentials, standard password inputs exist in the header. OpenAI API key and OAuth can be configured together; for live catalog sync, the API key path is tried first, then OAuth, then <code>.env</code>.
               </p>
 
               <h3 id="oauth-model-scope" className="text-lg font-medium text-white pt-2">C. OAuth Model Scope Troubleshooting</h3>
@@ -89,7 +89,7 @@ export default function DocsPage() {
                 <CardTitle className="text-lg">Section 1: Sequence Runner</CardTitle>
               </CardHeader>
               <CardContent className="text-neutral-400 leading-relaxed text-sm">
-                Executes <code>scripts/run_sequence.py --run-defaults</code>. Generates the base adversarial safety bounds tracking standard models parsing multi-turn generation metrics. Available natively with OpenAI or Gemini configurations.
+                Executes <code>scripts/run_sequence.py --run-defaults</code>. Requires local input images under <code>services/research-engine/data/sequence/masking</code> and <code>services/research-engine/data/sequence/validation</code>. The API now preflights these folders and returns an actionable error if missing or empty.
               </CardContent>
             </Card>
 

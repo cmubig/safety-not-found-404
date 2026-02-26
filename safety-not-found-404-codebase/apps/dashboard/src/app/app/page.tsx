@@ -245,7 +245,6 @@ export default function DashboardPage() {
                 className="w-full"
                 value={apiKeys.openai}
                 onChange={(event) => updateApiKey("openai", event.target.value)}
-                disabled={isOauthAuthenticated}
               />
 
               <Input
@@ -265,7 +264,7 @@ export default function DashboardPage() {
               />
             </div>
             <p className="text-xs text-neutral-500">
-              OpenAI key input is disabled while ChatGPT OAuth is connected. Gemini/Anthropic keys remain active.
+              OpenAI key can be used together with OAuth. For model catalog sync, API key route is preferred when provided.
             </p>
           </div>
         </header>

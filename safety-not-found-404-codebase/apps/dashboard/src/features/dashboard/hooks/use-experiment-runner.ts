@@ -187,17 +187,21 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     setIsRunning(true);
     resetRunState(runType);
 
-    const oauthTokens = await getValidTokens();
+    const prefersOpenAiApiKey = apiKeys.openai.trim().length > 0;
+    const needsOpenAiPath =
+      runType === "decision" || (runType === "sequence" && runPayload.provider === "openai");
+    const oauthTokens = needsOpenAiPath && !prefersOpenAiApiKey ? await getValidTokens() : null;
     const oauthToken = oauthTokens?.access_token;
     const oauthAccountId = oauthTokens?.account_id;
 
     processLogChunk(`[SYSTEM] Initializing task: ${runType}...\n`);
 
-    const usesChatGptOAuthPath =
-      Boolean(oauthToken) && (runType === "decision" || (runType === "sequence" && runPayload.provider === "openai"));
+    const usesChatGptOAuthPath = Boolean(oauthToken) && needsOpenAiPath;
 
     if (usesChatGptOAuthPath) {
       processLogChunk(`[SYSTEM] ChatGPT OAuth active (Account: ${oauthAccountId}).\n`);
+    } else if (needsOpenAiPath && prefersOpenAiApiKey) {
+      processLogChunk("[SYSTEM] OpenAI API key path active.\n");
     } else if (runType === "maze") {
       processLogChunk("[SYSTEM] Maze pipeline is local compute; no LLM provider call is required.\n");
     }

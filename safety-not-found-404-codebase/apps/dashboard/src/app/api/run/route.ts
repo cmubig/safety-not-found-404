@@ -29,6 +29,7 @@ const DECISION_SCENARIOS = new Set([
   "samarian_priming_time",
 ]);
 const MODEL_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,127}$/;
+const SUPPORTED_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -69,6 +70,40 @@ function inferProviderFromModelId(modelId: string): ModelProvider {
   return "openai";
 }
 
+function containsImageFiles(rootDir: string): boolean {
+  if (!fs.existsSync(rootDir)) return false;
+
+  const queue: string[] = [rootDir];
+  while (queue.length > 0) {
+    const currentDir = queue.pop();
+    if (!currentDir) continue;
+
+    let entries: fs.Dirent[] = [];
+    try {
+      entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      if (entry.isDirectory()) {
+        queue.push(fullPath);
+        continue;
+      }
+
+      if (entry.isFile()) {
+        const extension = path.extname(entry.name).toLowerCase();
+        if (SUPPORTED_IMAGE_EXTENSIONS.has(extension)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body: RunRequest = await req.json();
@@ -82,8 +117,8 @@ export async function POST(req: NextRequest) {
     ];
     const pythonBin = pythonCandidates.find((candidate) => fs.existsSync(candidate)) ?? "python3";
 
-    // Use OAuth token as OpenAI key if provided, but fallback to manual input or process.env
-    const openaiKey = oauthToken || apiKeys?.openai || process.env.OPENAI_API_KEY || "";
+    // Prefer explicit API key if provided, then OAuth token, then process env.
+    const openaiKey = apiKeys?.openai || oauthToken || process.env.OPENAI_API_KEY || "";
 
     const env = {
       ...process.env,
@@ -117,6 +152,31 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+
+      const sequenceDataRoot = path.join(engineRoot, "data", "sequence");
+      const requiredTasks = ["masking", "validation"];
+      const missingTasks = requiredTasks.filter((taskName) => !fs.existsSync(path.join(sequenceDataRoot, taskName)));
+      const emptyTasks = requiredTasks.filter((taskName) => {
+        if (missingTasks.includes(taskName)) return false;
+        return !containsImageFiles(path.join(sequenceDataRoot, taskName));
+      });
+
+      if (missingTasks.length > 0 || emptyTasks.length > 0) {
+        const messageParts: string[] = [
+          `Sequence dataset is not ready at ${path.join("services", "research-engine", "data", "sequence")}.`,
+        ];
+        if (missingTasks.length > 0) {
+          messageParts.push(`Missing folder(s): ${missingTasks.join(", ")}.`);
+        }
+        if (emptyTasks.length > 0) {
+          messageParts.push(
+            `No image files found in: ${emptyTasks.join(", ")} (supported: ${Array.from(SUPPORTED_IMAGE_EXTENSIONS).join(", ")}).`
+          );
+        }
+        messageParts.push("Add benchmark images, then rerun Sequence.");
+        return NextResponse.json({ error: messageParts.join(" ") }, { status: 400 });
+      }
+
       commandArgs = ["scripts/run_sequence.py", "--run-defaults", "--provider", provider];
     } else if (type === "maze") {
       const language = normalize(payload.lang);
