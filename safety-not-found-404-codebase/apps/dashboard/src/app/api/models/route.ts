@@ -9,6 +9,7 @@ type DecisionModelOption = {
 };
 
 type ProviderModelMap = Record<ModelProvider, DecisionModelOption[]>;
+type OpenAICredentialSource = "api_key" | "oauth";
 
 type ModelsRequest = {
   oauthToken?: string;
@@ -47,6 +48,19 @@ const OPENAI_EXCLUDED_FRAGMENTS = [
   "whisper",
   "image",
   "dall-e",
+];
+
+const OAUTH_COMPAT_OPENAI_MODELS: string[] = [
+  "codex-latest",
+  "codex-mini-latest",
+  "gpt-5.3-codex",
+  "gpt-5.2-codex",
+  "gpt-5-codex-mini",
+  "gpt-5.2",
+  "gpt-4.1",
+  "gpt-4o",
+  "o3",
+  "o4-mini",
 ];
 
 function toErrorMessage(error: unknown): string {
@@ -228,7 +242,7 @@ export async function POST(req: NextRequest) {
     ].filter((entry, index, array) => {
       if (!entry.token) return false;
       return array.findIndex((candidate) => candidate.token === entry.token) === index;
-    });
+    }) as Array<{ source: OpenAICredentialSource; token: string }>;
 
     const providers: ProviderModelMap = {
       openai: [],
@@ -244,6 +258,7 @@ export async function POST(req: NextRequest) {
 
     if (openaiCredentials.length > 0) {
       const openaiErrors: string[] = [];
+      let oauthScopeBlocked = false;
 
       for (const credential of openaiCredentials) {
         try {
@@ -252,18 +267,63 @@ export async function POST(req: NextRequest) {
           break;
         } catch (error: unknown) {
           const message = toErrorMessage(error);
-          openaiErrors.push(`${credential.source}: ${message}`);
           if (credential.source === "oauth" && isMissingModelReadScope(message)) {
-            warnings.push(
-              "OAuth token cannot access `/v1/models` catalog (missing `api.model.read`). Use OpenAI API key for catalog sync, or add model ids manually."
-            );
+            oauthScopeBlocked = true;
+            continue;
           }
+          openaiErrors.push(`${credential.source}: ${message}`);
         }
+      }
+
+      if (providers.openai.length === 0 && oauthScopeBlocked) {
+        providers.openai = sortOpenAIModels(
+          uniqueByValue(
+            OAUTH_COMPAT_OPENAI_MODELS.map((modelId) => ({
+              value: modelId,
+              label: modelId,
+              provider: "openai" as const,
+            }))
+          )
+        );
+        warnings.push(
+          "OpenAI live catalog is unavailable for this OAuth session. Loaded compatibility model profile (VibeRobot-mapped) for immediate use."
+        );
+        warnings.push(
+          "OAuth token cannot access `/v1/models` catalog (missing `api.model.read`). Add OpenAI API key to sync full live catalog."
+        );
+      }
+
+      if (providers.openai.length > 0 && openaiErrors.length > 0) {
+        warnings.push(`OpenAI live catalog partially unavailable: ${openaiErrors.join(" | ")}`);
       }
 
       if (providers.openai.length === 0 && openaiErrors.length > 0) {
         warnings.push(`OpenAI catalog unavailable: ${openaiErrors.join(" | ")}`);
       }
+    }
+
+    if (
+      providers.openai.length === 0 &&
+      oauthToken &&
+      !openaiApiKey &&
+      !geminiCredential &&
+      !anthropicCredential
+    ) {
+      providers.openai = sortOpenAIModels(
+        uniqueByValue(
+          OAUTH_COMPAT_OPENAI_MODELS.map((modelId) => ({
+            value: modelId,
+            label: modelId,
+            provider: "openai" as const,
+          }))
+        )
+      );
+      warnings.push(
+        "Using OAuth compatibility model profile while live provider catalog is unavailable."
+      );
+      warnings.push(
+        "OpenAI API key enables full live catalog sync; OAuth-only sessions may be catalog-restricted."
+      );
     }
 
     if (geminiCredential) {

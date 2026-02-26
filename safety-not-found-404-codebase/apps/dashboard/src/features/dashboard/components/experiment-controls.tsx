@@ -68,7 +68,7 @@ export function ExperimentControls({
   onRunMaze,
   onRunDecision,
 }: ExperimentControlsProps) {
-  const showOauthScopeAction = isOauthAuthenticated && isModelReadScopeMissing;
+  const showOauthScopeAction = isOauthAuthenticated && isModelReadScopeMissing && decisionModelOptions.length === 0;
 
   return (
     <div className="space-y-6">
@@ -161,7 +161,7 @@ export function ExperimentControls({
 
             {isOauthAuthenticated ? (
               <p className="text-xs text-neutral-500">
-                OAuth mode active: live OpenAI catalog is loaded and Codex models are prioritized.
+                OAuth mode active: OpenAI live catalog is used when available, otherwise a compatibility profile is loaded and Codex models are prioritized.
               </p>
             ) : (
               <p className="text-xs text-neutral-500">Catalog is fetched live from connected provider credentials.</p>

@@ -35,7 +35,12 @@ function CallbackContent() {
         }
         await exchangeCode(code, state);
         setStatus("success");
-        
+
+        if (window.opener) {
+          setTimeout(() => window.close(), 600);
+          return;
+        }
+
         // Return to app after short delay
         setTimeout(() => router.push("/app"), 1200);
       } catch (e) {

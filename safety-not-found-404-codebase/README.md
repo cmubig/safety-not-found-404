@@ -56,7 +56,7 @@ Both folders must exist and include image files (`.png`, `.jpg`, `.jpeg`, `.webp
 ## Notes
 
 - Dashboard API route executes Python commands from `services/research-engine`.
-- In Dashboard Section 3, live OpenAI model catalog requires `/v1/models` permission. If OAuth token lacks `api.model.read`, provide an OpenAI API key for catalog sync or use manual model IDs.
+- In Dashboard Section 3, live OpenAI model catalog requires `/v1/models` permission. If OAuth token lacks `api.model.read`, the UI falls back to a VibeRobot-mapped compatibility model profile; provide an OpenAI API key for full live catalog sync.
 - Legacy files are preserved under `services/research-engine/legacy`.
 - Generated legacy maze artifacts under `legacy/section_2/maze_fin` are intentionally ignored from git tracking.
 - Legacy frame dumps and intermediate run artifacts are excluded from tracking (`legacy/section_3/frames_out`, `legacy/section_3/3.4/samarian/runs`, `legacy/section_3_4_archive/samarian/runs`).

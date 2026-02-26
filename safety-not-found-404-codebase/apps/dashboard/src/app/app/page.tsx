@@ -4,7 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { clearTokens, createAuthFlow, getValidTokens } from "@/lib/chatgpt-oauth";
+import {
+  clearTokens,
+  createAuthFlow,
+  getValidTokens,
+  OAUTH_TOKEN_STORAGE_KEY,
+} from "@/lib/chatgpt-oauth";
 import { ExecutionConsole } from "@/features/dashboard/components/execution-console";
 import { ExperimentControls } from "@/features/dashboard/components/experiment-controls";
 import { useExperimentRunner } from "@/features/dashboard/hooks/use-experiment-runner";
@@ -70,6 +75,20 @@ export default function DashboardPage() {
     void checkAuthentication();
   }, []);
 
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== OAUTH_TOKEN_STORAGE_KEY || !event.newValue) return;
+      void (async () => {
+        const tokens = await getValidTokens();
+        setIsOauthAuthenticated(Boolean(tokens));
+        refreshModelCatalog();
+      })();
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [refreshModelCatalog]);
+
   const effectiveSelectedDecisionModelIds = useMemo(() => {
     if (selectedDecisionModelIds.length > 0) return selectedDecisionModelIds;
     if (decisionModelOptions.length > 0) return [decisionModelOptions[0].value];
@@ -85,7 +104,10 @@ export default function DashboardPage() {
       return;
     }
     const { authUrl } = await createAuthFlow();
-    window.location.href = authUrl;
+    const popup = window.open(authUrl, "_blank");
+    if (!popup) {
+      window.location.href = authUrl;
+    }
   };
 
   const handleChatGptConnectToggle = async () => {

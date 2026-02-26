@@ -62,6 +62,7 @@ export default function DocsPage() {
               <p>
                 You can authenticate directly using your ChatGPT Plus/Pro/Team account without exposing raw OpenAI API keys. Using OAuth PKCE application credentials, the GUI bounces you to <code>auth.openai.com</code>. Once approved, the system stores an ephemeral <code>access_token</code> inside <code>localStorage</code>.
                 This token is automatically injected into the API payload and parsed over to the python environments as a valid <code>OPENAI_API_KEY</code>. It will automatically refresh in the background 5 minutes before expiry window.
+                Login is opened in a new tab and the dashboard updates automatically through a storage event, matching the VibeRobot flow.
               </p>
 
               <h3 className="text-lg font-medium text-white pt-2">B. Manual API Keys</h3>
@@ -72,7 +73,7 @@ export default function DocsPage() {
               <h3 id="oauth-model-scope" className="text-lg font-medium text-white pt-2">C. OAuth Model Scope Troubleshooting</h3>
               <p>
                 If model catalog loading shows missing <code>api.model.read</code>, that OAuth session cannot query <code>/v1/models</code>.
-                In that case, keep OAuth for execution but use an OpenAI API key for catalog sync, or enter custom model IDs manually in Section 3.
+                In that case, the dashboard loads a compatibility model profile so experiments can still run; use an OpenAI API key when you need full live catalog sync.
               </p>
             </CardContent>
           </Card>

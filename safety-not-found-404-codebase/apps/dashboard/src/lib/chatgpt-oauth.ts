@@ -12,6 +12,7 @@ const SCOPE = "openid profile email offline_access";
 
 const STORAGE_KEY = "benchmark_oauth";
 const PKCE_KEY = "benchmark_pkce";
+export const OAUTH_TOKEN_STORAGE_KEY = STORAGE_KEY;
 
 export interface OAuthTokens {
   access_token: string;
