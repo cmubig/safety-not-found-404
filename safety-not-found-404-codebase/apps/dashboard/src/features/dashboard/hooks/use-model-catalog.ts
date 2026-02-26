@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadTokens } from "@/lib/chatgpt-oauth";
+import { getValidTokens } from "@/lib/chatgpt-oauth";
 import { MODEL_CATALOG_FETCH_DEBOUNCE_MS } from "../constants";
 import { ApiKeys, DecisionModelOption, ModelCatalogResponse } from "../types";
 import {
@@ -31,7 +31,7 @@ export function useModelCatalog({ apiKeys, isOauthAuthenticated }: UseModelCatal
       setCatalogError(null);
 
       try {
-        const tokens = loadTokens();
+        const tokens = await getValidTokens();
         const response = await fetch("/api/models", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

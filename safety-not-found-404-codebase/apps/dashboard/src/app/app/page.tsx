@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { clearTokens, createAuthFlow, getAuthStatus, refreshAccessToken } from "@/lib/chatgpt-oauth";
+import { clearTokens, createAuthFlow, getValidTokens } from "@/lib/chatgpt-oauth";
 import { ExecutionConsole } from "@/features/dashboard/components/execution-console";
 import { ExperimentControls } from "@/features/dashboard/components/experiment-controls";
 import { useExperimentRunner } from "@/features/dashboard/hooks/use-experiment-runner";
@@ -63,12 +63,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      let authenticated = getAuthStatus().authenticated;
-      if (!authenticated) {
-        const refreshed = await refreshAccessToken();
-        if (refreshed) authenticated = true;
-      }
-      setIsOauthAuthenticated(authenticated);
+      const tokens = await getValidTokens();
+      setIsOauthAuthenticated(Boolean(tokens));
     };
 
     void checkAuthentication();

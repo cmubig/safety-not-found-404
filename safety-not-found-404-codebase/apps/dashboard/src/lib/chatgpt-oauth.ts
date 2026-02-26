@@ -65,17 +65,36 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
   }
 }
 
-export function loadTokens(): OAuthTokens | null {
+function readStoredTokens(): OAuthTokens | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const tokens: OAuthTokens = JSON.parse(raw);
-    if (Date.now() >= tokens.expires_at - 300_000) return null;
-    return tokens;
+    const parsed = JSON.parse(raw) as Partial<OAuthTokens>;
+    if (!parsed.access_token || !parsed.refresh_token || typeof parsed.expires_at !== "number") {
+      return null;
+    }
+    return {
+      access_token: parsed.access_token,
+      refresh_token: parsed.refresh_token,
+      expires_at: parsed.expires_at,
+      account_id: parsed.account_id ?? "",
+      plan_type: parsed.plan_type ?? "",
+    };
   } catch {
     return null;
   }
+}
+
+export function loadStoredTokens(): OAuthTokens | null {
+  return readStoredTokens();
+}
+
+export function loadTokens(): OAuthTokens | null {
+  const tokens = readStoredTokens();
+  if (!tokens) return null;
+  if (Date.now() >= tokens.expires_at - 300_000) return null;
+  return tokens;
 }
 
 function saveTokens(tokens: OAuthTokens) {
@@ -183,7 +202,10 @@ export async function exchangeCode(code: string, returnedState?: string | null):
 }
 
 export async function refreshAccessToken(): Promise<OAuthTokens | null> {
-  const tokens = loadTokens();
+  const activeTokens = loadTokens();
+  if (activeTokens) return activeTokens;
+
+  const tokens = loadStoredTokens();
   if (!tokens?.refresh_token) return null;
 
   try {
@@ -215,4 +237,10 @@ export async function refreshAccessToken(): Promise<OAuthTokens | null> {
   } catch {
     return null;
   }
+}
+
+export async function getValidTokens(): Promise<OAuthTokens | null> {
+  const activeTokens = loadTokens();
+  if (activeTokens) return activeTokens;
+  return refreshAccessToken();
 }

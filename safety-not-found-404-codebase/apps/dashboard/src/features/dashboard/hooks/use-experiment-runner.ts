@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { loadTokens } from "@/lib/chatgpt-oauth";
+import { getValidTokens } from "@/lib/chatgpt-oauth";
 import { FeedStats, FailureInsight, LogFeedItem, PipelineProgress, RunPayload, RunTaskType, ApiKeys } from "../types";
 import {
   categorizeFailureLine,
@@ -187,7 +187,7 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     setIsRunning(true);
     resetRunState(runType);
 
-    const oauthTokens = loadTokens();
+    const oauthTokens = await getValidTokens();
     const oauthToken = oauthTokens?.access_token;
     const oauthAccountId = oauthTokens?.account_id;
 
