@@ -60,6 +60,15 @@ function parseDecisionModels(rawModels: string): { models: string[]; invalidMode
   return { models: uniqueModels, invalidModel: null };
 }
 
+type ModelProvider = "openai" | "gemini" | "anthropic";
+
+function inferProviderFromModelId(modelId: string): ModelProvider {
+  const lowered = modelId.trim().toLowerCase();
+  if (lowered.startsWith("gemini")) return "gemini";
+  if (lowered.startsWith("claude")) return "anthropic";
+  return "openai";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body: RunRequest = await req.json();
@@ -96,6 +105,18 @@ export async function POST(req: NextRequest) {
       if (!SEQUENCE_PROVIDERS.has(provider)) {
         return NextResponse.json({ error: `Unsupported provider: ${provider}` }, { status: 400 });
       }
+      if (provider === "openai" && !openaiKey.trim()) {
+        return NextResponse.json(
+          { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for sequence provider=openai" },
+          { status: 400 }
+        );
+      }
+      if (provider === "gemini" && !env.GEMINI_API_KEY?.trim()) {
+        return NextResponse.json(
+          { error: "GEMINI_API_KEY is required for sequence provider=gemini" },
+          { status: 400 }
+        );
+      }
       commandArgs = ["scripts/run_sequence.py", "--run-defaults", "--provider", provider];
     } else if (type === "maze") {
       const language = normalize(payload.lang);
@@ -123,6 +144,26 @@ export async function POST(req: NextRequest) {
       }
       if (models.length === 0) {
         return NextResponse.json({ error: "At least one model is required" }, { status: 400 });
+      }
+
+      const requiredProviders = new Set<ModelProvider>(models.map(inferProviderFromModelId));
+      if (requiredProviders.has("openai") && !openaiKey.trim()) {
+        return NextResponse.json(
+          { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for selected OpenAI model(s)" },
+          { status: 400 }
+        );
+      }
+      if (requiredProviders.has("gemini") && !env.GEMINI_API_KEY?.trim()) {
+        return NextResponse.json(
+          { error: "GEMINI_API_KEY is required for selected Gemini model(s)" },
+          { status: 400 }
+        );
+      }
+      if (requiredProviders.has("anthropic") && !env.ANTHROPIC_API_KEY?.trim()) {
+        return NextResponse.json(
+          { error: "ANTHROPIC_API_KEY is required for selected Anthropic model(s)" },
+          { status: 400 }
+        );
       }
 
       commandArgs = ["scripts/run_decision_experiment.py", "--scenario", scenario, "--models", models.join(",")];

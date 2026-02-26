@@ -49,6 +49,8 @@ export function categorizeFailureLine(line: string): FailureInsight {
     lowered.includes("unauthorized") ||
     lowered.includes("401") ||
     lowered.includes("invalid api key") ||
+    lowered.includes("api_key is not set") ||
+    lowered.includes("api key is not set") ||
     lowered.includes("authentication") ||
     lowered.includes("oauth")
   ) {
