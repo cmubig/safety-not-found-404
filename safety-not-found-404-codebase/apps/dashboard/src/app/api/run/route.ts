@@ -3,7 +3,7 @@ import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 
-type RunType = "sequence" | "maze" | "decision";
+type RunType = "sequence" | "maze" | "decision" | "safety_vln";
 
 type RunRequest = {
   type: RunType;
@@ -15,9 +15,17 @@ type RunRequest = {
   oauthToken?: string;
   oauthAccountId?: string;
   provider?: string;
+  model?: string;
   lang?: string;
   scenario?: string;
   models?: string;
+  datasetPath?: string;
+  trialsPerProblem?: number;
+  judgeMode?: string;
+  judgeProvider?: string;
+  judgeModel?: string;
+  minPerTrack?: number;
+  strictValidation?: boolean;
 };
 
 const SEQUENCE_PROVIDERS = new Set(["openai", "gemini"]);
@@ -227,6 +235,70 @@ export async function POST(req: NextRequest) {
       }
 
       commandArgs = ["scripts/run_decision_experiment.py", "--scenario", scenario, "--models", models.join(",")];
+    } else if (type === "safety_vln") {
+      const datasetPath = normalize(payload.datasetPath);
+      if (!datasetPath) {
+        return NextResponse.json({ error: "datasetPath is required for safety_vln" }, { status: 400 });
+      }
+
+      const provider = normalize(payload.provider) || "openai";
+      const model = normalize(payload.model) || "gpt-5.2";
+      const judgeMode = normalize(payload.judgeMode) || "rule";
+      const judgeProvider = normalize(payload.judgeProvider) || "openai";
+      const judgeModel = normalize(payload.judgeModel) || "gpt-4.1-mini";
+
+      const trialsPerProblem =
+        typeof payload.trialsPerProblem === "number" && payload.trialsPerProblem > 0
+          ? Math.floor(payload.trialsPerProblem)
+          : 1;
+      const minPerTrack =
+        typeof payload.minPerTrack === "number" && payload.minPerTrack > 0
+          ? Math.floor(payload.minPerTrack)
+          : 100;
+      const strictValidation = payload.strictValidation === true;
+
+      if (provider === "openai" && !openaiKey.trim()) {
+        return NextResponse.json(
+          { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for safety_vln provider=openai" },
+          { status: 400 }
+        );
+      }
+      if (provider === "gemini" && !env.GEMINI_API_KEY?.trim()) {
+        return NextResponse.json(
+          { error: "GEMINI_API_KEY is required for safety_vln provider=gemini" },
+          { status: 400 }
+        );
+      }
+      if (provider === "anthropic" && !env.ANTHROPIC_API_KEY?.trim()) {
+        return NextResponse.json(
+          { error: "ANTHROPIC_API_KEY is required for safety_vln provider=anthropic" },
+          { status: 400 }
+        );
+      }
+
+      commandArgs = [
+        "scripts/run_safety_vln_benchmark.py",
+        "--dataset",
+        datasetPath,
+        "--provider",
+        provider,
+        "--model",
+        model,
+        "--trials-per-problem",
+        String(trialsPerProblem),
+        "--judge-mode",
+        judgeMode,
+        "--judge-provider",
+        judgeProvider,
+        "--judge-model",
+        judgeModel,
+        "--min-per-track",
+        String(minPerTrack),
+      ];
+
+      if (strictValidation) {
+        commandArgs.push("--strict-dataset-validation");
+      }
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }

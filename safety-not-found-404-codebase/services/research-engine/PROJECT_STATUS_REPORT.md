@@ -1,79 +1,84 @@
-# Project Status Report (Submission Pipeline)
+# Project Status Report (Safety-VLN + Submission Pipeline)
 
-## 1) Objective
-Complete the codebase to a submission-ready state by adding a deterministic packaging step that produces:
-- main tables,
-- statistical test tables,
-- ablation tables,
-- release checklist documents,
-- and a machine-readable manifest.
+## 1) Goal
+Align the codebase with the updated research direction:
+- benchmark identity: **Safety-VLN**,
+- strict **3-stage gating** to filter out non-comprehension guesses,
+- explicit **reward/penalty + efficiency/safety/goal** scoring,
+- dataset-side fairness constraints (minimum per-task problem count),
+- reproducible submission package outputs.
 
 ## 2) What Was Implemented
-### New reporting modules
-- `src/safety_not_found_404/reporting/stats.py`
-  - two-proportion z-test,
-  - Wilson confidence interval,
-  - Benjamini-Hochberg multiple-testing correction.
-- `src/safety_not_found_404/reporting/submission_package.py`
-  - output scanning,
-  - best-run selection,
-  - decision/sequence/maze table generation,
-  - pairwise stats,
-  - baseline-relative ablation,
-  - release docs + implementation report + manifest generation.
-- `src/safety_not_found_404/reporting/cli.py`
-  - CLI entry for package build.
 
-### New script entrypoint
-- `scripts/build_submission_package.py`
+### A. Safety-VLN benchmark framework (new)
+- Added module: `src/safety_not_found_404/safety_vln/`
+  - `models.py`: dataset/stage/run result schemas
+  - `dataset.py`: load/save/validate + synthetic dataset generator
+  - `judge.py`: stage judge interface (`rule` and optional `llm` judge)
+  - `scoring.py`: score computation + human-alignment + summary metrics
+  - `engine.py`: end-to-end run (stage1 -> stage2 -> stage3 gating)
+  - `cli.py`: generate/validate/run commands
+- Added scripts:
+  - `scripts/generate_safety_vln_dataset.py`
+  - `scripts/validate_safety_vln_dataset.py`
+  - `scripts/run_safety_vln_benchmark.py`
+- Added dashboard API support:
+  - `/api/run` now supports `type="safety_vln"`
 
-### New tests
-- `tests/test_reporting_stats.py`
-- `tests/test_submission_package.py`
+### B. Submission package pipeline (existing + retained)
+- `src/safety_not_found_404/reporting/` + `scripts/build_submission_package.py`
+- Generates tables/statistics/ablation/release docs/manifest in `outputs/submission_package/`
 
-### Updated docs
-- `README.md` updated with submission-package usage.
+## 3) One-Glance Architecture
 
-## 3) Architecture (One-Glance)
-- Input sources:
-  - `outputs/**/*.summary.json` (decision)
-  - `outputs/sequence/*.json` (sequence)
-  - `maze_fin/maps/*.json` or fallback maze map dirs (maze)
-- Processing layers:
-  - ingestion -> normalization -> metrics -> stats/ablation -> artifact writer
-- Output package:
-  - `outputs/submission_package/tables/*.csv`
-  - `outputs/submission_package/docs/*.md`
-  - `outputs/submission_package/manifest.json`
+### Safety-VLN flow
+1. Dataset input (`.json`)
+2. Validation (`min_per_track`, event/non-event balance, schema checks)
+3. Model run with gating:
+   - stage1: exam understanding
+   - stage2: situation/event understanding
+   - stage3: navigation decision (only if stage1+2 pass)
+4. Judge verdict per stage (`rule` or `llm`)
+5. Score computation (`reward - penalty`, safety/efficiency/goal weighted)
+6. Outputs (`.csv`, `.summary.json`, `.summary.txt`)
 
-## 4) Validation Status
-- Test command: `pytest -q`
-- Result: `22 passed`
+### Main output metrics
+- `general_score`
+- `safety_event_score`
+- `gap_general_minus_event`
+- stage pass rates (1/2), stage3 attempt/scored/accuracy
+- optional human-alignment score
 
-## 5) Current Generated Package Snapshot
-Generated from current local outputs:
-- package root: `outputs/submission_package`
-- decision main rows: 2
-- decision condition rows: 9
-- decision pairwise rows: 0
-- decision ablation rows: 0
-- sequence rows: 1
-- maze rows: 16
-- unified paper rows: 21
+## 4) Research-Intent Mapping
+- “시험지 이해 못하고 찍는 모델” 필터링: **stage1/2 gating**
+- “순수 내비게이션 성능” 측정: **stage3 only after comprehension pass**
+- “Safety 이벤트 영향” 측정: **event vs non-event score split + GAP**
+- “최소 데이터 규모” 제약: **dataset validator with per-track minimum**
+- “뉴립스스러운 계산 프레임워크”: **explicit scoring terms + reproducible artifacts**
 
-## 6) Why pairwise/ablation are currently zero
-Current selected decision runs have zero valid model responses (errors dominate), so there is no analyzable help-rate sample for inferential comparison.
-This is a data-availability issue, not a pipeline limitation.
+## 5) Verification Status
+- Python tests: `pytest -q` -> **30 passed**
+- Dashboard build: `npm run build` -> **success**
 
-## 7) Operational Commands
+## 6) Operational Commands
 ```bash
-# Build submission package
-python scripts/build_submission_package.py
+# 1) Generate dataset (example)
+python scripts/generate_safety_vln_dataset.py --out data/safety_vln/synthetic_v1.json --per-track 100 --event-ratio 0.5
 
-# Run full tests
-pytest -q
+# 2) Validate fairness/schema
+python scripts/validate_safety_vln_dataset.py --dataset data/safety_vln/synthetic_v1.json --min-per-track 100
+
+# 3) Run benchmark
+python scripts/run_safety_vln_benchmark.py --dataset data/safety_vln/synthetic_v1.json --provider openai --model gpt-5.2 --judge-mode rule
+
+# 4) Build submission package
+python scripts/build_submission_package.py
 ```
 
-## 8) Submission-Readiness Impact
-The code path for reproducible paper packaging is now complete and test-covered.
-Remaining risk is experimental data quality/coverage (successful decision outputs), not tooling.
+## 7) Current Remaining Risk (non-tooling)
+- Pairwise significance/ablation claims still depend on enough successful live-model responses.
+- Human 30명 alignment claim is now computable in framework, but real human annotation data ingestion is still dataset-side work.
+
+## 8) Bottom Line
+코드 레벨로는 현재 방향(3-stage Safety-VLN benchmark)으로 **실행/검증/산출 가능한 상태**까지 반영됨.
+남은 핵심은 실험 데이터 축적과 논문 서술 통합이다.

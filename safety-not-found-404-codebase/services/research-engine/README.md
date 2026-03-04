@@ -42,6 +42,9 @@ python scripts/run_maze_pipeline.py --language en
 python scripts/run_ab_eval.py --provider openai --model gpt-5.2
 python scripts/run_decision_experiment.py --scenario samarian_time_pressure --models gpt-5.2
 python scripts/build_submission_package.py
+python scripts/generate_safety_vln_dataset.py --out data/safety_vln/synthetic_v1.json --per-track 100
+python scripts/validate_safety_vln_dataset.py --dataset data/safety_vln/synthetic_v1.json --min-per-track 100
+python scripts/run_safety_vln_benchmark.py --dataset data/safety_vln/synthetic_v1.json --provider openai --model gpt-5.2 --judge-mode rule
 ```
 
 ## Submission Package
@@ -61,6 +64,20 @@ outputs/submission_package/
   docs/
   manifest.json
 ```
+
+## Safety-VLN (Three-Stage Gating)
+
+The Safety-VLN runner evaluates each problem in three stages:
+
+1. `stage1`: exam-sheet understanding check
+2. `stage2`: situation/event understanding check
+3. `stage3`: navigation decision scoring (only if stage1 and stage2 pass)
+
+Scoring uses explicit reward/penalty components with safety/efficiency/goal weights.  
+Output includes:
+
+- per-trial CSV
+- summary JSON/TXT (`general_score`, `safety_event_score`, and `gap`)
 
 ## Test
 
