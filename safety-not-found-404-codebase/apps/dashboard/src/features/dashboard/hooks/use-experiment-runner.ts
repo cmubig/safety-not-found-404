@@ -37,6 +37,7 @@ const INITIAL_TASK_PROGRESS: Record<RunTaskType, number | null> = {
   sequence: null,
   maze: null,
   decision: null,
+  safety_vln: null,
 };
 
 export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
@@ -187,9 +188,20 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     setIsRunning(true);
     resetRunState(runType);
 
+    const asString = (value: string | number | boolean | undefined) => String(value ?? "").trim();
+
     const prefersOpenAiApiKey = apiKeys.openai.trim().length > 0;
+    const safetyAction = asString(runPayload.action);
+    const safetyProvider = asString(runPayload.provider).toLowerCase();
+    const safetyJudgeMode = asString(runPayload.judgeMode).toLowerCase();
+    const safetyJudgeProvider = asString(runPayload.judgeProvider).toLowerCase();
+    const safetyRunAction = runType === "safety_vln" && (!safetyAction || safetyAction === "run_benchmark");
+
     const needsOpenAiPath =
-      runType === "decision" || (runType === "sequence" && runPayload.provider === "openai");
+      runType === "decision" ||
+      (runType === "sequence" && asString(runPayload.provider).toLowerCase() === "openai") ||
+      (safetyRunAction &&
+        (safetyProvider === "openai" || (safetyJudgeMode === "llm" && safetyJudgeProvider === "openai")));
     const oauthTokens = needsOpenAiPath && !prefersOpenAiApiKey ? await getValidTokens() : null;
     const oauthToken = oauthTokens?.access_token;
     const oauthAccountId = oauthTokens?.account_id;
@@ -204,6 +216,8 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
       processLogChunk("[SYSTEM] OpenAI API key path active.\n");
     } else if (runType === "maze") {
       processLogChunk("[SYSTEM] Maze pipeline is local compute; no LLM provider call is required.\n");
+    } else if (runType === "safety_vln" && !safetyRunAction) {
+      processLogChunk("[SYSTEM] Safety-VLN dataset action is local (no model API call).\n");
     }
 
     try {

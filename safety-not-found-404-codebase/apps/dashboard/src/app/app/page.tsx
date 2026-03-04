@@ -32,6 +32,18 @@ export default function DashboardPage() {
   const [selectedDecisionModelIds, setSelectedDecisionModelIds] = useState<string[]>([]);
   const [customDecisionModelInput, setCustomDecisionModelInput] = useState("");
   const [customDecisionModelInputError, setCustomDecisionModelInputError] = useState<string | null>(null);
+  const [safetyVlnDatasetPath, setSafetyVlnDatasetPath] = useState("data/safety_vln/synthetic_v1.json");
+  const [safetyVlnProvider, setSafetyVlnProvider] = useState("openai");
+  const [safetyVlnModel, setSafetyVlnModel] = useState("gpt-5.2");
+  const [safetyVlnJudgeMode, setSafetyVlnJudgeMode] = useState("rule");
+  const [safetyVlnJudgeProvider, setSafetyVlnJudgeProvider] = useState("openai");
+  const [safetyVlnJudgeModel, setSafetyVlnJudgeModel] = useState("gpt-4.1-mini");
+  const [safetyVlnTrialsPerProblem, setSafetyVlnTrialsPerProblem] = useState(1);
+  const [safetyVlnMinPerTrack, setSafetyVlnMinPerTrack] = useState(100);
+  const [safetyVlnStrictValidation, setSafetyVlnStrictValidation] = useState(false);
+  const [safetyVlnGeneratePerTrack, setSafetyVlnGeneratePerTrack] = useState(100);
+  const [safetyVlnGenerateEventRatio, setSafetyVlnGenerateEventRatio] = useState(0.5);
+  const [safetyVlnGenerateSeed, setSafetyVlnGenerateSeed] = useState(20260304);
 
   const {
     modelOptions: decisionModelOptions,
@@ -208,6 +220,39 @@ export default function DashboardPage() {
     });
   };
 
+  const runSafetyVlnDatasetGeneration = () => {
+    void runExperiment("safety_vln", {
+      action: "generate_dataset",
+      datasetPath: safetyVlnDatasetPath,
+      perTrack: safetyVlnGeneratePerTrack,
+      eventRatio: safetyVlnGenerateEventRatio,
+      seed: safetyVlnGenerateSeed,
+    });
+  };
+
+  const runSafetyVlnDatasetValidation = () => {
+    void runExperiment("safety_vln", {
+      action: "validate_dataset",
+      datasetPath: safetyVlnDatasetPath,
+      minPerTrack: safetyVlnMinPerTrack,
+    });
+  };
+
+  const runSafetyVlnBenchmark = () => {
+    void runExperiment("safety_vln", {
+      action: "run_benchmark",
+      datasetPath: safetyVlnDatasetPath,
+      provider: safetyVlnProvider,
+      model: safetyVlnModel,
+      trialsPerProblem: safetyVlnTrialsPerProblem,
+      judgeMode: safetyVlnJudgeMode,
+      judgeProvider: safetyVlnJudgeProvider,
+      judgeModel: safetyVlnJudgeModel,
+      minPerTrack: safetyVlnMinPerTrack,
+      strictValidation: safetyVlnStrictValidation,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-black">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-8 sm:py-8 space-y-6 font-sans">
@@ -318,6 +363,18 @@ export default function DashboardPage() {
             customDecisionModelInputError={customDecisionModelInputError}
             activeRunType={activeRunType}
             taskProgressByType={taskProgressByType}
+            safetyVlnDatasetPath={safetyVlnDatasetPath}
+            safetyVlnProvider={safetyVlnProvider}
+            safetyVlnModel={safetyVlnModel}
+            safetyVlnJudgeMode={safetyVlnJudgeMode}
+            safetyVlnJudgeProvider={safetyVlnJudgeProvider}
+            safetyVlnJudgeModel={safetyVlnJudgeModel}
+            safetyVlnTrialsPerProblem={safetyVlnTrialsPerProblem}
+            safetyVlnMinPerTrack={safetyVlnMinPerTrack}
+            safetyVlnStrictValidation={safetyVlnStrictValidation}
+            safetyVlnGeneratePerTrack={safetyVlnGeneratePerTrack}
+            safetyVlnGenerateEventRatio={safetyVlnGenerateEventRatio}
+            safetyVlnGenerateSeed={safetyVlnGenerateSeed}
             onSequenceProviderChange={setSequenceProvider}
             onMazeLanguageChange={setMazeLanguage}
             onDecisionScenarioChange={setDecisionScenario}
@@ -330,6 +387,21 @@ export default function DashboardPage() {
             onRunSequence={runSequenceExperiment}
             onRunMaze={runMazeExperiment}
             onRunDecision={runDecisionExperiment}
+            onSafetyVlnDatasetPathChange={setSafetyVlnDatasetPath}
+            onSafetyVlnProviderChange={setSafetyVlnProvider}
+            onSafetyVlnModelChange={setSafetyVlnModel}
+            onSafetyVlnJudgeModeChange={setSafetyVlnJudgeMode}
+            onSafetyVlnJudgeProviderChange={setSafetyVlnJudgeProvider}
+            onSafetyVlnJudgeModelChange={setSafetyVlnJudgeModel}
+            onSafetyVlnTrialsPerProblemChange={(value) => setSafetyVlnTrialsPerProblem(Math.max(1, Math.floor(value || 1)))}
+            onSafetyVlnMinPerTrackChange={(value) => setSafetyVlnMinPerTrack(Math.max(1, Math.floor(value || 1)))}
+            onSafetyVlnStrictValidationChange={setSafetyVlnStrictValidation}
+            onSafetyVlnGeneratePerTrackChange={(value) => setSafetyVlnGeneratePerTrack(Math.max(1, Math.floor(value || 1)))}
+            onSafetyVlnGenerateEventRatioChange={(value) => setSafetyVlnGenerateEventRatio(Math.max(0, Math.min(1, value || 0)))}
+            onSafetyVlnGenerateSeedChange={(value) => setSafetyVlnGenerateSeed(Math.max(1, Math.floor(value || 1)))}
+            onGenerateSafetyVlnDataset={runSafetyVlnDatasetGeneration}
+            onValidateSafetyVlnDataset={runSafetyVlnDatasetValidation}
+            onRunSafetyVln={runSafetyVlnBenchmark}
           />
 
           <ExecutionConsole

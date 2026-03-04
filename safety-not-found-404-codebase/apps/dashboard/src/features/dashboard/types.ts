@@ -1,6 +1,6 @@
-export type RunTaskType = "sequence" | "maze" | "decision";
+export type RunTaskType = "sequence" | "maze" | "decision" | "safety_vln";
 
-export type RunPayload = Record<string, string>;
+export type RunPayload = Record<string, string | number | boolean>;
 
 export type FeedKind = "system" | "stage" | "progress" | "saved" | "error" | "info";
 

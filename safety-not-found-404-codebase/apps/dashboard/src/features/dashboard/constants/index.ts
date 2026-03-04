@@ -41,8 +41,20 @@ export const SEQUENCE_PROVIDER_OPTIONS = [
   { value: "gemini", label: "Gemini" },
 ] as const;
 
+export const SAFETY_VLN_PROVIDER_OPTIONS = [
+  { value: "openai", label: "OpenAI" },
+  { value: "gemini", label: "Gemini" },
+  { value: "anthropic", label: "Anthropic" },
+] as const;
+
+export const SAFETY_VLN_JUDGE_MODE_OPTIONS = [
+  { value: "rule", label: "Rule Judge (Fast, deterministic)" },
+  { value: "llm", label: "LLM Judge (fairness-oriented)" },
+] as const;
+
 export const TASK_TYPE_LABELS: Record<RunTaskType, string> = {
   sequence: "Sequence",
   maze: "Maze",
   decision: "Decision",
+  safety_vln: "Safety-VLN",
 };

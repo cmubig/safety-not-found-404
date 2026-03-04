@@ -19,6 +19,7 @@ type RunRequest = {
   lang?: string;
   scenario?: string;
   models?: string;
+  action?: string;
   datasetPath?: string;
   trialsPerProblem?: number;
   judgeMode?: string;
@@ -26,6 +27,9 @@ type RunRequest = {
   judgeModel?: string;
   minPerTrack?: number;
   strictValidation?: boolean;
+  perTrack?: number;
+  eventRatio?: number;
+  seed?: number;
 };
 
 const SEQUENCE_PROVIDERS = new Set(["openai", "gemini"]);
@@ -46,6 +50,23 @@ function toErrorMessage(error: unknown): string {
 
 function normalize(value: string | undefined): string {
   return value?.trim() ?? "";
+}
+
+function normalizeAny(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function parsePositiveInt(value: unknown, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.floor(parsed);
+}
+
+function parseRatio(value: unknown, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  if (parsed < 0 || parsed > 1) return fallback;
+  return parsed;
 }
 
 function parseDecisionModels(rawModels: string): { models: string[]; invalidModel: string | null } {
@@ -236,68 +257,119 @@ export async function POST(req: NextRequest) {
 
       commandArgs = ["scripts/run_decision_experiment.py", "--scenario", scenario, "--models", models.join(",")];
     } else if (type === "safety_vln") {
+      const action = normalizeAny(payload.action) || "run_benchmark";
       const datasetPath = normalize(payload.datasetPath);
       if (!datasetPath) {
         return NextResponse.json({ error: "datasetPath is required for safety_vln" }, { status: 400 });
       }
 
-      const provider = normalize(payload.provider) || "openai";
-      const model = normalize(payload.model) || "gpt-5.2";
-      const judgeMode = normalize(payload.judgeMode) || "rule";
-      const judgeProvider = normalize(payload.judgeProvider) || "openai";
-      const judgeModel = normalize(payload.judgeModel) || "gpt-4.1-mini";
+      if (action === "generate_dataset") {
+        const perTrack = parsePositiveInt(payload.perTrack, 100);
+        const eventRatio = parseRatio(payload.eventRatio, 0.5);
+        const seed = parsePositiveInt(payload.seed, 20260304);
 
-      const trialsPerProblem =
-        typeof payload.trialsPerProblem === "number" && payload.trialsPerProblem > 0
-          ? Math.floor(payload.trialsPerProblem)
-          : 1;
-      const minPerTrack =
-        typeof payload.minPerTrack === "number" && payload.minPerTrack > 0
-          ? Math.floor(payload.minPerTrack)
-          : 100;
-      const strictValidation = payload.strictValidation === true;
+        commandArgs = [
+          "scripts/generate_safety_vln_dataset.py",
+          "--out",
+          datasetPath,
+          "--per-track",
+          String(perTrack),
+          "--event-ratio",
+          String(eventRatio),
+          "--seed",
+          String(seed),
+        ];
+      } else if (action === "validate_dataset") {
+        const minPerTrack = parsePositiveInt(payload.minPerTrack, 100);
+        commandArgs = [
+          "scripts/validate_safety_vln_dataset.py",
+          "--dataset",
+          datasetPath,
+          "--min-per-track",
+          String(minPerTrack),
+        ];
+      } else if (action === "run_benchmark") {
+        const provider = normalize(payload.provider) || "openai";
+        const model = normalize(payload.model) || "gpt-5.2";
+        const judgeMode = normalize(payload.judgeMode) || "rule";
+        const judgeProvider = normalize(payload.judgeProvider) || "openai";
+        const judgeModel = normalize(payload.judgeModel) || "gpt-4.1-mini";
+        const trialsPerProblem = parsePositiveInt(payload.trialsPerProblem, 1);
+        const minPerTrack = parsePositiveInt(payload.minPerTrack, 100);
+        const strictValidation = payload.strictValidation === true;
 
-      if (provider === "openai" && !openaiKey.trim()) {
+        const providerNeedsOpenAI = provider === "openai";
+        const providerNeedsGemini = provider === "gemini";
+        const providerNeedsAnthropic = provider === "anthropic";
+
+        if (providerNeedsOpenAI && !openaiKey.trim()) {
+          return NextResponse.json(
+            { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for safety_vln provider=openai" },
+            { status: 400 }
+          );
+        }
+        if (providerNeedsGemini && !env.GEMINI_API_KEY?.trim()) {
+          return NextResponse.json(
+            { error: "GEMINI_API_KEY is required for safety_vln provider=gemini" },
+            { status: 400 }
+          );
+        }
+        if (providerNeedsAnthropic && !env.ANTHROPIC_API_KEY?.trim()) {
+          return NextResponse.json(
+            { error: "ANTHROPIC_API_KEY is required for safety_vln provider=anthropic" },
+            { status: 400 }
+          );
+        }
+
+        if (judgeMode === "llm") {
+          if (judgeProvider === "openai" && !openaiKey.trim()) {
+            return NextResponse.json(
+              { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for judgeProvider=openai in llm judge mode" },
+              { status: 400 }
+            );
+          }
+          if (judgeProvider === "gemini" && !env.GEMINI_API_KEY?.trim()) {
+            return NextResponse.json(
+              { error: "GEMINI_API_KEY is required for judgeProvider=gemini in llm judge mode" },
+              { status: 400 }
+            );
+          }
+          if (judgeProvider === "anthropic" && !env.ANTHROPIC_API_KEY?.trim()) {
+            return NextResponse.json(
+              { error: "ANTHROPIC_API_KEY is required for judgeProvider=anthropic in llm judge mode" },
+              { status: 400 }
+            );
+          }
+        }
+
+        commandArgs = [
+          "scripts/run_safety_vln_benchmark.py",
+          "--dataset",
+          datasetPath,
+          "--provider",
+          provider,
+          "--model",
+          model,
+          "--trials-per-problem",
+          String(trialsPerProblem),
+          "--judge-mode",
+          judgeMode,
+          "--judge-provider",
+          judgeProvider,
+          "--judge-model",
+          judgeModel,
+          "--min-per-track",
+          String(minPerTrack),
+        ];
+
+        if (strictValidation) {
+          commandArgs.push("--strict-dataset-validation");
+        }
+      } else {
         return NextResponse.json(
-          { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for safety_vln provider=openai" },
+          { error: `Unsupported safety_vln action: ${action}` },
           { status: 400 }
         );
-      }
-      if (provider === "gemini" && !env.GEMINI_API_KEY?.trim()) {
-        return NextResponse.json(
-          { error: "GEMINI_API_KEY is required for safety_vln provider=gemini" },
-          { status: 400 }
-        );
-      }
-      if (provider === "anthropic" && !env.ANTHROPIC_API_KEY?.trim()) {
-        return NextResponse.json(
-          { error: "ANTHROPIC_API_KEY is required for safety_vln provider=anthropic" },
-          { status: 400 }
-        );
-      }
-
-      commandArgs = [
-        "scripts/run_safety_vln_benchmark.py",
-        "--dataset",
-        datasetPath,
-        "--provider",
-        provider,
-        "--model",
-        model,
-        "--trials-per-problem",
-        String(trialsPerProblem),
-        "--judge-mode",
-        judgeMode,
-        "--judge-provider",
-        judgeProvider,
-        "--judge-model",
-        judgeModel,
-        "--min-per-track",
-        String(minPerTrack),
-      ];
-
-      if (strictValidation) {
-        commandArgs.push("--strict-dataset-validation");
       }
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
