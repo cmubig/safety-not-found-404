@@ -42,11 +42,13 @@ class ChatGPTClient(TextProvider):
     def is_configured(self) -> bool:
         return bool(self.oauth_token)
 
-    def generate(self, prompt: str, image_path: Any = None, system_prompt: str = "") -> str:
-        # Overloaded signature to handle both Vision (sequence wrapper) and Text (decision wrapper)
-        if hasattr(self, "_call_chatgpt"):
-             return self._call_chatgpt(system_prompt=system_prompt, user_prompt=prompt, image_path=image_path)
-        return ""
+    def generate(self, system_prompt: str, user_prompt: str) -> str:
+        """Satisfy the TextProvider protocol for decision experiment usage."""
+        return self._call_chatgpt(system_prompt=system_prompt, user_prompt=user_prompt)
+
+    def generate_with_image(self, prompt: str, image_path: Any = None, system_prompt: str = "") -> str:
+        """Generate text with an optional image context (used by vision wrapper)."""
+        return self._call_chatgpt(system_prompt=system_prompt, user_prompt=prompt, image_path=image_path)
 
     def _call_chatgpt(self, system_prompt: str, user_prompt: str, image_path: Any = None) -> str:
         headers = {
@@ -161,12 +163,15 @@ class ChatGPTClient(TextProvider):
 
         return ""
 
-# Wrapper to mimic OpenAIVisionClient for the sequence/maze pipeline
 class ChatGPTOAuthVisionClientWrapper:
+    """Adapter wrapping ChatGPTClient to satisfy the VisionLLMClient protocol."""
+
     def __init__(self, model: str, oauth_token: str, account_id: str):
         self._client = ChatGPTClient(model, oauth_token, account_id)
         self.model = model
 
     def generate(self, prompt: str, image_path: Any = None) -> str:
-        system_prompt = "You are a careful reasoning assistant."
-        return self._client.generate(prompt=prompt, image_path=image_path, system_prompt=system_prompt)
+        """Generate text from prompt and optional image via the ChatGPT backend."""
+        return self._client.generate_with_image(
+            prompt=prompt, image_path=image_path, system_prompt="You are a careful reasoning assistant."
+        )

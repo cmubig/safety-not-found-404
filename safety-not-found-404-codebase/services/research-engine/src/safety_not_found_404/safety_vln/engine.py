@@ -3,10 +3,10 @@ from __future__ import annotations
 import csv
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping
 
+from safety_not_found_404.common import new_run_id, slugify, utc_now_iso
 from safety_not_found_404.decision_experiments.providers import create_provider
 from safety_not_found_404.safety_vln.dataset import load_dataset, validate_dataset
 from safety_not_found_404.safety_vln.judge import LLMStageJudge, RuleStageJudge, StageJudge
@@ -78,21 +78,6 @@ class BenchmarkArtifact:
     summary_text_path: Path
     rows_total: int
 
-
-def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _new_run_id() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-
-
-def _slug(value: str) -> str:
-    cleaned = [char.lower() if char.isalnum() else "_" for char in value]
-    normalized = "".join(cleaned)
-    while "__" in normalized:
-        normalized = normalized.replace("__", "_")
-    return normalized.strip("_") or "model"
 
 
 def _build_stage_prompt(problem: ProblemDefinition, stage: StageDefinition, stage_name: str) -> str:
@@ -290,7 +275,7 @@ def run_benchmark(
         errors_preview = " | ".join(validation.errors[:5])
         raise ValueError(f"Dataset validation failed: {errors_preview}")
 
-    effective_run_id = run_id or _new_run_id()
+    effective_run_id = run_id or new_run_id()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     model_provider = create_provider(
@@ -308,7 +293,7 @@ def run_benchmark(
         max_tokens=max_tokens,
     )
 
-    csv_path = output_dir / f"safety_vln_{_slug(provider)}_{_slug(model)}_{effective_run_id}.csv"
+    csv_path = output_dir / f"safety_vln_{slugify(provider)}_{slugify(model)}_{effective_run_id}.csv"
     summary_json_path = csv_path.with_suffix(".summary.json")
     summary_text_path = csv_path.with_suffix(".summary.txt")
 
@@ -440,7 +425,7 @@ def run_benchmark(
 
             rows.append(
                 {
-                    "timestamp_utc": _utc_now_iso(),
+                    "timestamp_utc": utc_now_iso(),
                     "run_id": effective_run_id,
                     "dataset_name": dataset.name,
                     "provider": provider,
