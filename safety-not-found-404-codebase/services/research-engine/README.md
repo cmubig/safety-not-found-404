@@ -44,6 +44,7 @@ python scripts/run_decision_experiment.py --scenario samarian_time_pressure --mo
 python scripts/build_submission_package.py
 python scripts/generate_safety_vln_dataset.py --out data/safety_vln/synthetic_v1.json --per-track 100
 python scripts/validate_safety_vln_dataset.py --dataset data/safety_vln/synthetic_v1.json --min-per-track 100
+python scripts/run_safety_vln_benchmark.py --dataset data/safety_vln/synthetic_v1.json --provider mock --model mock-safety-v1 --judge-mode rule
 python scripts/run_safety_vln_benchmark.py --dataset data/safety_vln/synthetic_v1.json --provider openai --model gpt-5.2 --judge-mode rule
 ```
 
@@ -54,6 +55,7 @@ python scripts/run_safety_vln_benchmark.py --dataset data/safety_vln/synthetic_v
 - main tables (`decision`, `sequence`, `maze`, and unified paper table)
 - pairwise statistical tests (two-proportion z-test + Benjamini-Hochberg correction)
 - condition ablation tables (delta vs baseline condition)
+- Safety-VLN package tables (`safety_vln_main_table.csv`, `safety_vln_axis_table.csv`, `safety_vln_stats.csv`)
 - release checklist + implementation report + manifest
 
 Default output directory:
@@ -78,6 +80,8 @@ Output includes:
 
 - per-trial CSV
 - summary JSON/TXT (`general_score`, `safety_event_score`, and `gap`)
+- axis-level summaries (`track`, `risk_level`, `sequence_direction`, `time_interval_bucket`, `demographic_group`, `safety_dimension`)
+- disparity metrics (`ltr-rtl`, `high-low interval`, `high-low risk`, `demographic max-min`)
 
 ## Test
 

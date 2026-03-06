@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, Protocol
@@ -218,6 +219,92 @@ class GeminiTextProvider:
         )
 
 
+@dataclass
+class MockTextProvider:
+    model: str
+
+    def is_configured(self) -> bool:
+        return True
+
+    def generate(self, system_prompt: str, user_prompt: str) -> str:
+        _ = system_prompt
+        lowered = user_prompt.lower()
+        normalized_prompt = lowered.replace("\r\n", "\n").replace("\r", "\n")
+        context_text = normalized_prompt
+        context_start = normalized_prompt.find("context:")
+        if context_start >= 0:
+            context_start += len("context:")
+            context_end = normalized_prompt.find("\n\nquestion:", context_start)
+            if context_end < 0:
+                context_end = normalized_prompt.find("\nquestion:", context_start)
+            if context_end > context_start:
+                context_text = normalized_prompt[context_start:context_end].strip()
+
+        allowed_choices_match = re.search(r"allowed choices:\s*([a-z0-9, ]+)", normalized_prompt)
+        if allowed_choices_match:
+            raw_choices = allowed_choices_match.group(1)
+            choices = [
+                choice.strip().upper()
+                for choice in raw_choices.split(",")
+                if choice.strip()
+            ]
+        else:
+            choices = ["A", "B", "C", "D"]
+        if not choices:
+            choices = ["A"]
+
+        hazard_tokens = (
+            "warning sign",
+            "do not enter",
+            "suspicious",
+            "fire risk",
+            "slip hazard",
+            "explicit safety event",
+        )
+        non_hazard_tokens = (
+            "no explicit safety hazard",
+            "normal navigation context",
+            "no emergency alert",
+            "appears normal",
+        )
+
+        choice = choices[0]
+
+        if "stage1" in normalized_prompt:
+            if "ascii" in context_text and "B" in choices:
+                choice = "B"
+            elif (
+                "meta reasoning" in context_text
+                or "uncertainty" in context_text
+                or "weak clues" in context_text
+                or "ambiguous navigation" in context_text
+                or "safest action" in context_text
+            ) and "C" in choices:
+                choice = "C"
+            elif "sequence" in context_text and "A" in choices:
+                choice = "A"
+            elif "A" in choices:
+                choice = "A"
+        elif "stage2" in normalized_prompt:
+            has_hazard = any(token in context_text for token in hazard_tokens)
+            has_non_hazard = any(token in context_text for token in non_hazard_tokens)
+            if has_hazard and "A" in choices:
+                choice = "A"
+            elif has_non_hazard and "B" in choices:
+                choice = "B"
+        elif "stage3" in normalized_prompt:
+            has_hazard = any(token in context_text for token in hazard_tokens)
+            has_non_hazard = any(token in context_text for token in non_hazard_tokens)
+            if has_hazard and "A" in choices:
+                choice = "A"
+            elif has_non_hazard and "B" in choices:
+                choice = "B"
+            elif "C" in choices:
+                choice = "C"
+
+        return f"Answer: {choice}\nReason: Mock heuristic response."
+
+
 def infer_provider_from_model(model: str) -> str:
     lowered = model.strip().lower()
     if lowered.startswith("gpt-") or lowered.startswith("o"):
@@ -236,6 +323,9 @@ def create_provider(
     max_tokens: int,
 ) -> TextProvider:
     normalized = provider.strip().lower()
+
+    if normalized == "mock":
+        return MockTextProvider(model=model)
 
     if normalized == "openai":
         api_key = os.getenv("OPENAI_API_KEY", "")

@@ -22,6 +22,7 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
     outputs_dir = engine_root / "outputs"
 
     decision_dir = outputs_dir / "decision_experiments"
+    safety_vln_dir = outputs_dir / "safety_vln"
     sequence_dir = outputs_dir / "sequence"
     maze_maps_dir = engine_root / "maze_fin" / "maps"
 
@@ -84,6 +85,65 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
     )
 
     _write_json(
+        safety_vln_dir / "safety_vln_openai_gpt-5.2_run_svln.summary.json",
+        {
+            "run_id": "run_svln",
+            "dataset_name": "synthetic-v1",
+            "provider": "openai",
+            "model": "gpt-5.2",
+            "judge_mode": "rule",
+            "judge_provider": "",
+            "judge_model": "",
+            "rows_total": 40,
+            "overall": {
+                "n_trials": 40,
+                "stage1_pass_count": 38,
+                "stage2_pass_count": 35,
+                "stage3_scored_count": 30,
+                "stage3_correct_count": 24,
+                "stage1_pass_rate": 0.95,
+                "stage2_pass_rate": 0.875,
+                "stage3_scored_rate": 0.75,
+                "stage3_accuracy": 0.8,
+                "score_mean": 0.72,
+                "human_alignment_mean": 0.68,
+            },
+            "general_non_event": {
+                "stage3_scored_count": 15,
+                "stage3_correct_count": 13,
+            },
+            "safety_event": {
+                "stage3_scored_count": 15,
+                "stage3_correct_count": 11,
+            },
+            "by_sequence_direction": {
+                "ltr": {"stage3_scored_count": 15, "stage3_correct_count": 13, "score_mean": 0.75},
+                "rtl": {"stage3_scored_count": 15, "stage3_correct_count": 11, "score_mean": 0.69},
+            },
+            "by_time_interval_bucket": {
+                "low": {"stage3_scored_count": 10, "stage3_correct_count": 9, "score_mean": 0.77},
+                "high": {"stage3_scored_count": 10, "stage3_correct_count": 7, "score_mean": 0.64},
+            },
+            "by_risk_level": {
+                "low": {"stage3_scored_count": 10, "stage3_correct_count": 9, "score_mean": 0.78},
+                "high": {"stage3_scored_count": 10, "stage3_correct_count": 7, "score_mean": 0.63},
+            },
+            "core_scores": {
+                "general_score": 0.76,
+                "safety_event_score": 0.68,
+                "gap_general_minus_event": 0.08,
+            },
+            "disparity_metrics": {
+                "ltr_minus_rtl_score_gap": 0.06,
+                "high_minus_low_time_interval_gap": -0.13,
+                "high_minus_low_risk_gap": -0.15,
+                "demographic_max_minus_min_score_gap": 0.07,
+                "demographic_max_minus_min_human_alignment_gap": 0.05,
+            },
+        },
+    )
+
+    _write_json(
         sequence_dir / "openai_gpt_4_1_masking.json",
         {
             "provider": "openai",
@@ -116,6 +176,9 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
     assert result.decision_main_table_path.exists()
     assert result.decision_stats_table_path.exists()
     assert result.decision_ablation_table_path.exists()
+    assert result.safety_vln_main_table_path.exists()
+    assert result.safety_vln_axis_table_path.exists()
+    assert result.safety_vln_stats_table_path.exists()
     assert result.sequence_main_table_path.exists()
     assert result.maze_main_table_path.exists()
     assert result.paper_main_table_path.exists()
@@ -135,6 +198,15 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
     assert len(baseline_rows) == 1
     assert "low" in baseline_rows[0]["condition_key"].lower()
 
+    safety_rows = _read_csv(result.safety_vln_main_table_path)
+    assert len(safety_rows) == 1
+    assert safety_rows[0]["dataset_name"] == "synthetic-v1"
+    assert safety_rows[0]["general_score"] == "0.76"
+
+    safety_stats_rows = _read_csv(result.safety_vln_stats_table_path)
+    assert len(safety_stats_rows) >= 1
+    assert any(row["group_a"] == "general_non_event" for row in safety_stats_rows)
+
     sequence_rows = _read_csv(result.sequence_main_table_path)
     assert len(sequence_rows) == 1
     assert sequence_rows[0]["error_count"] == "1"
@@ -145,5 +217,6 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
 
     paper_rows = _read_csv(result.paper_main_table_path)
     assert any(row["section"] == "decision" for row in paper_rows)
+    assert any(row["section"] == "safety_vln" for row in paper_rows)
     assert any(row["section"] == "sequence" for row in paper_rows)
     assert any(row["section"] == "maze" for row in paper_rows)

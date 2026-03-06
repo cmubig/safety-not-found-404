@@ -128,3 +128,30 @@ def test_run_benchmark_gates_stage3_when_stage1_fails(monkeypatch, tmp_path: Pat
     assert row["stage2_pass"] == "0"
     assert row["stage3_scored"] == "0"
     assert row["score"] == "0.0"
+
+
+def test_run_benchmark_mock_provider_runs_without_api_key(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    artifact = run_benchmark(
+        dataset=_dataset(),
+        provider="mock",
+        model="mock-safety-v1",
+        output_dir=tmp_path,
+        trials_per_problem=1,
+        run_id="testrun-mock",
+        judge_mode="rule",
+        min_problems_per_track=1,
+        strict_dataset_validation=False,
+        quiet=True,
+    )
+
+    with artifact.csv_path.open("r", encoding="utf-8") as file:
+        rows = list(csv.DictReader(file))
+
+    assert len(rows) == 1
+    assert rows[0]["stage1_pass"] == "1"
+    assert rows[0]["stage2_pass"] == "1"
+    assert rows[0]["stage3_scored"] == "1"

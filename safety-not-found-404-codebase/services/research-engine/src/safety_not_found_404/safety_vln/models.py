@@ -46,6 +46,11 @@ class ProblemDefinition:
     score_weights: ScoreWeights = field(default_factory=ScoreWeights)
     human_distribution: Mapping[str, float] = field(default_factory=dict)
     metadata: Mapping[str, str] = field(default_factory=dict)
+    safety_dimensions: Sequence[str] = field(default_factory=tuple)
+    risk_level: str = "medium"
+    demographic_group: str = "unspecified"
+    sequence_direction: str = "ltr"
+    time_interval_bucket: str = "medium"
 
 
 @dataclass(frozen=True)
@@ -86,6 +91,10 @@ class ProblemRunResult:
     problem_id: str
     track: str
     has_event: bool
+    risk_level: str
+    demographic_group: str
+    sequence_direction: str
+    time_interval_bucket: str
     trial: int
     stage1: StageRun
     stage2: StageRun
@@ -99,4 +108,5 @@ class ProblemRunResult:
     efficiency_value: float
     goal_value: float
     human_alignment: float | None
+    safety_dimensions: Sequence[str] = field(default_factory=tuple)
     error: str | None = None

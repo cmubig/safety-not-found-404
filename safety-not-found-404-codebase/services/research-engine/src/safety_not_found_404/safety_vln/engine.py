@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Dict, List, Mapping
 
 from safety_not_found_404.decision_experiments.providers import create_provider
 from safety_not_found_404.safety_vln.dataset import load_dataset, validate_dataset
@@ -37,6 +37,10 @@ RUN_COLUMNS = [
     "track",
     "has_event",
     "event_type",
+    "risk_level",
+    "demographic_group",
+    "sequence_direction",
+    "time_interval_bucket",
     "trial",
     "stage1_expected",
     "stage1_choice",
@@ -63,6 +67,7 @@ RUN_COLUMNS = [
     "human_alignment",
     "error",
     "metadata_json",
+    "safety_dimensions_json",
 ]
 
 
@@ -184,6 +189,7 @@ def _run_stage(
 
 def _format_summary_text(summary: Dict[str, Any]) -> str:
     core = summary.get("core_scores") or {}
+    disparity = summary.get("disparity_metrics") or {}
 
     lines: List[str] = []
     lines.append(f"dataset: {summary.get('dataset_name', '')}")
@@ -195,6 +201,10 @@ def _format_summary_text(summary: Dict[str, Any]) -> str:
     lines.append(f"  general_score: {core.get('general_score', 0.0):.6f}")
     lines.append(f"  safety_event_score: {core.get('safety_event_score', 0.0):.6f}")
     lines.append(f"  gap_general_minus_event: {core.get('gap_general_minus_event', 0.0):.6f}")
+    lines.append(f"  ltr_minus_rtl_score_gap: {core.get('ltr_minus_rtl_score_gap', 0.0):.6f}")
+    lines.append(f"  high_minus_low_time_interval_gap: {core.get('high_minus_low_time_interval_gap', 0.0):.6f}")
+    lines.append(f"  high_minus_low_risk_gap: {core.get('high_minus_low_risk_gap', 0.0):.6f}")
+    lines.append(f"  demographic_max_minus_min_score_gap: {core.get('demographic_max_minus_min_score_gap', 0.0):.6f}")
     lines.append("")
 
     overall = summary.get("overall") or {}
@@ -214,6 +224,38 @@ def _format_summary_text(summary: Dict[str, Any]) -> str:
             lines.append(f"  {key}: {value:.6f}")
         else:
             lines.append(f"  {key}: {value}")
+
+    lines.append("")
+    lines.append("disparity metrics:")
+    for key in (
+        "ltr_minus_rtl_score_gap",
+        "high_minus_low_time_interval_gap",
+        "high_minus_low_risk_gap",
+        "demographic_max_minus_min_score_gap",
+        "demographic_max_minus_min_human_alignment_gap",
+    ):
+        value = float(disparity.get(key, 0.0))
+        lines.append(f"  {key}: {value:.6f}")
+
+    def _append_bucket_scores(title: str, bucket: Mapping[str, Any] | None) -> None:
+        if not bucket:
+            return
+        lines.append("")
+        lines.append(f"{title}:")
+        for key in sorted(bucket.keys()):
+            item = bucket.get(key) or {}
+            score = float(item.get("score_mean", 0.0))
+            accuracy = float(item.get("stage3_accuracy", 0.0))
+            n_trials = int(item.get("n_trials", 0))
+            lines.append(
+                f"  {key}: score_mean={score:.6f} stage3_accuracy={accuracy:.6f} n={n_trials}"
+            )
+
+    _append_bucket_scores("by_track", summary.get("by_track"))
+    _append_bucket_scores("by_sequence_direction", summary.get("by_sequence_direction"))
+    _append_bucket_scores("by_time_interval_bucket", summary.get("by_time_interval_bucket"))
+    _append_bucket_scores("by_demographic_group", summary.get("by_demographic_group"))
+    _append_bucket_scores("by_risk_level", summary.get("by_risk_level"))
 
     return "\n".join(lines).strip() + "\n"
 
@@ -284,6 +326,9 @@ def run_benchmark(
             f"Missing API key for provider={provider}. "
             "Set environment variable before running."
         )
+
+    total_trials = len(dataset.problems) * trials_per_problem
+    completed_trials = 0
 
     for problem in dataset.problems:
         for trial in range(1, trials_per_problem + 1):
@@ -371,6 +416,10 @@ def run_benchmark(
                 problem_id=problem.problem_id,
                 track=problem.track,
                 has_event=problem.has_event,
+                risk_level=problem.risk_level,
+                demographic_group=problem.demographic_group,
+                sequence_direction=problem.sequence_direction,
+                time_interval_bucket=problem.time_interval_bucket,
                 trial=trial,
                 stage1=stage1_run,
                 stage2=stage2_run,
@@ -384,6 +433,7 @@ def run_benchmark(
                 efficiency_value=efficiency_value,
                 goal_value=goal_value,
                 human_alignment=human_alignment,
+                safety_dimensions=problem.safety_dimensions,
                 error=merged_error,
             )
             results.append(result)
@@ -402,6 +452,10 @@ def run_benchmark(
                     "track": problem.track,
                     "has_event": int(problem.has_event),
                     "event_type": problem.event_type,
+                    "risk_level": problem.risk_level,
+                    "demographic_group": problem.demographic_group,
+                    "sequence_direction": problem.sequence_direction,
+                    "time_interval_bucket": problem.time_interval_bucket,
                     "trial": trial,
                     "stage1_expected": problem.stage1.answer,
                     "stage1_choice": stage1_run.judged_choice or "",
@@ -428,8 +482,11 @@ def run_benchmark(
                     "human_alignment": ("" if human_alignment is None else round(float(human_alignment), 6)),
                     "error": merged_error or "",
                     "metadata_json": json.dumps(dict(problem.metadata), ensure_ascii=False, sort_keys=True),
+                    "safety_dimensions_json": json.dumps(list(problem.safety_dimensions), ensure_ascii=False),
                 }
             )
+
+            completed_trials += 1
 
             if not quiet:
                 print(
@@ -437,6 +494,7 @@ def run_benchmark(
                     f"s1={int(stage1_run.passed)} s2={int(stage2_run.passed)} "
                     f"s3={'1' if stage3_scored else '0'} score={score:.3f}"
                 )
+                print(f"progress: {completed_trials} / {total_trials}")
 
     with csv_path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=RUN_COLUMNS)

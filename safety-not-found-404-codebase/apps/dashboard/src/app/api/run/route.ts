@@ -42,6 +42,7 @@ const DECISION_SCENARIOS = new Set([
 ]);
 const MODEL_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,127}$/;
 const SUPPORTED_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
+const SAFETY_VLN_PROVIDERS = new Set(["mock", "openai", "gemini", "anthropic"]);
 
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -302,6 +303,13 @@ export async function POST(req: NextRequest) {
         const providerNeedsGemini = provider === "gemini";
         const providerNeedsAnthropic = provider === "anthropic";
 
+        if (!SAFETY_VLN_PROVIDERS.has(provider)) {
+          return NextResponse.json(
+            { error: `Unsupported safety_vln provider: ${provider}` },
+            { status: 400 }
+          );
+        }
+
         if (providerNeedsOpenAI && !openaiKey.trim()) {
           return NextResponse.json(
             { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for safety_vln provider=openai" },
@@ -322,6 +330,12 @@ export async function POST(req: NextRequest) {
         }
 
         if (judgeMode === "llm") {
+          if (!SAFETY_VLN_PROVIDERS.has(judgeProvider)) {
+            return NextResponse.json(
+              { error: `Unsupported safety_vln judgeProvider: ${judgeProvider}` },
+              { status: 400 }
+            );
+          }
           if (judgeProvider === "openai" && !openaiKey.trim()) {
             return NextResponse.json(
               { error: "OPENAI_API_KEY (or ChatGPT OAuth) is required for judgeProvider=openai in llm judge mode" },

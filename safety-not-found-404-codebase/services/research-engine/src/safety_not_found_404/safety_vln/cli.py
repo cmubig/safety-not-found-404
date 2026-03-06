@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from safety_not_found_404.safety_vln.dataset import (
@@ -76,7 +77,7 @@ def _cmd_generate(args: argparse.Namespace) -> int:
         seed=args.seed,
     )
     output_path = save_dataset(args.out, dataset)
-    print(f"Generated dataset: {output_path}")
+    print(f"Generated dataset: {output_path.resolve()}")
     print(f"Problems: {len(dataset.problems)}")
     return 0
 
@@ -85,7 +86,7 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     dataset = load_dataset(args.dataset)
     validation = validate_dataset(dataset, min_problems_per_track=args.min_per_track)
 
-    print(f"Dataset: {args.dataset}")
+    print(f"Dataset: {Path(args.dataset).resolve()}")
     print(f"Valid: {validation.is_valid}")
     print(f"Track counts: {dict(validation.track_counts)}")
     print(f"Event counts: {dict(validation.event_counts)}")
@@ -119,9 +120,22 @@ def _cmd_run(args: argparse.Namespace) -> int:
         quiet=bool(args.quiet),
     )
 
-    print(f"CSV: {artifact.csv_path}")
-    print(f"Summary JSON: {artifact.summary_json_path}")
-    print(f"Summary TXT: {artifact.summary_text_path}")
+    print(f"CSV: {artifact.csv_path.resolve()}")
+    print(f"Summary JSON: {artifact.summary_json_path.resolve()}")
+    print(f"Summary TXT: {artifact.summary_text_path.resolve()}")
+
+    summary = json.loads(artifact.summary_json_path.read_text(encoding="utf-8"))
+    core = summary.get("core_scores") or {}
+    disparity = summary.get("disparity_metrics") or {}
+    print(f"general_score: {float(core.get('general_score', 0.0)):.6f}")
+    print(f"safety_event_score: {float(core.get('safety_event_score', 0.0)):.6f}")
+    print(f"gap_general_minus_event: {float(core.get('gap_general_minus_event', 0.0)):.6f}")
+    print(f"ltr_minus_rtl_score_gap: {float(disparity.get('ltr_minus_rtl_score_gap', 0.0)):.6f}")
+    print(
+        "high_minus_low_time_interval_gap: "
+        f"{float(disparity.get('high_minus_low_time_interval_gap', 0.0)):.6f}"
+    )
+    print(f"demographic_max_minus_min_score_gap: {float(disparity.get('demographic_max_minus_min_score_gap', 0.0)):.6f}")
     return 0
 
 

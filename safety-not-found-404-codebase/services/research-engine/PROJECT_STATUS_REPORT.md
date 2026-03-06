@@ -6,6 +6,7 @@ Align the codebase with the updated research direction:
 - strict **3-stage gating** to filter out non-comprehension guesses,
 - explicit **reward/penalty + efficiency/safety/goal** scoring,
 - dataset-side fairness constraints (minimum per-task problem count),
+- axis-level disparity analysis (direction/time interval/risk/demographic),
 - reproducible submission package outputs.
 
 ## 2) What Was Implemented
@@ -28,6 +29,10 @@ Align the codebase with the updated research direction:
 ### B. Submission package pipeline (existing + retained)
 - `src/safety_not_found_404/reporting/` + `scripts/build_submission_package.py`
 - Generates tables/statistics/ablation/release docs/manifest in `outputs/submission_package/`
+- Added Safety-VLN publication tables:
+  - `safety_vln_main_table.csv`
+  - `safety_vln_axis_table.csv`
+  - `safety_vln_stats.csv` (two-proportion z + BH correction)
 
 ## 3) One-Glance Architecture
 
@@ -46,6 +51,10 @@ Align the codebase with the updated research direction:
 - `general_score`
 - `safety_event_score`
 - `gap_general_minus_event`
+- `ltr_minus_rtl_score_gap`
+- `high_minus_low_time_interval_gap`
+- `high_minus_low_risk_gap`
+- `demographic_max_minus_min_score_gap`
 - stage pass rates (1/2), stage3 attempt/scored/accuracy
 - optional human-alignment score
 
@@ -57,7 +66,7 @@ Align the codebase with the updated research direction:
 - “뉴립스스러운 계산 프레임워크”: **explicit scoring terms + reproducible artifacts**
 
 ## 5) Verification Status
-- Python tests: `pytest -q` -> **30 passed**
+- Python tests: `pytest -q` -> **31 passed**
 - Dashboard build: `npm run build` -> **success**
 
 ## 6) Operational Commands
@@ -77,7 +86,7 @@ python scripts/build_submission_package.py
 
 ## 7) Current Remaining Risk (non-tooling)
 - Pairwise significance/ablation claims still depend on enough successful live-model responses.
-- Human 30명 alignment claim is now computable in framework, but real human annotation data ingestion is still dataset-side work.
+- Human 30명 alignment claim is now computable in framework (`metadata.human_sample_size >= 30` validator warning), but real human annotation data ingestion is still dataset-side work.
 
 ## 8) Bottom Line
 코드 레벨로는 현재 방향(3-stage Safety-VLN benchmark)으로 **실행/검증/산출 가능한 상태**까지 반영됨.

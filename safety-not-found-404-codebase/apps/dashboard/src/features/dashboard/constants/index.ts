@@ -42,6 +42,7 @@ export const SEQUENCE_PROVIDER_OPTIONS = [
 ] as const;
 
 export const SAFETY_VLN_PROVIDER_OPTIONS = [
+  { value: "mock", label: "Mock (No API Key)" },
   { value: "openai", label: "OpenAI" },
   { value: "gemini", label: "Gemini" },
   { value: "anthropic", label: "Anthropic" },

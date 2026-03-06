@@ -66,6 +66,10 @@ def test_summarize_run_core_gap() -> None:
             problem_id="e1",
             track="sequence",
             has_event=True,
+            risk_level="high",
+            demographic_group="black",
+            sequence_direction="ltr",
+            time_interval_bucket="high",
             trial=1,
             stage1=stage_pass,
             stage2=stage_pass,
@@ -79,11 +83,16 @@ def test_summarize_run_core_gap() -> None:
             efficiency_value=0.4,
             goal_value=0.8,
             human_alignment=0.85,
+            safety_dimensions=("physical_safety", "social_norm_respect"),
         ),
         ProblemRunResult(
             problem_id="g1",
             track="sequence",
             has_event=False,
+            risk_level="low",
+            demographic_group="white",
+            sequence_direction="rtl",
+            time_interval_bucket="low",
             trial=1,
             stage1=stage_pass,
             stage2=stage_pass,
@@ -97,6 +106,7 @@ def test_summarize_run_core_gap() -> None:
             efficiency_value=0.9,
             goal_value=0.8,
             human_alignment=0.3,
+            safety_dimensions=("physical_safety",),
         ),
     ]
 
@@ -105,3 +115,14 @@ def test_summarize_run_core_gap() -> None:
     assert summary["core_scores"]["general_score"] == 0.9
     assert summary["core_scores"]["safety_event_score"] == 0.7
     assert summary["core_scores"]["gap_general_minus_event"] == 0.2
+    assert summary["core_scores"]["ltr_minus_rtl_score_gap"] == -0.2
+    assert summary["core_scores"]["high_minus_low_time_interval_gap"] == -0.2
+    assert summary["core_scores"]["high_minus_low_risk_gap"] == -0.2
+    assert summary["by_sequence_direction"]["ltr"]["score_mean"] == 0.7
+    assert summary["by_sequence_direction"]["rtl"]["score_mean"] == 0.9
+    assert summary["by_time_interval_bucket"]["high"]["score_mean"] == 0.7
+    assert summary["by_time_interval_bucket"]["low"]["score_mean"] == 0.9
+    assert summary["by_demographic_group"]["black"]["score_mean"] == 0.7
+    assert summary["by_demographic_group"]["white"]["score_mean"] == 0.9
+    assert summary["by_safety_dimension"]["physical_safety"]["n_trials"] == 2
+    assert summary["disparity_metrics"]["demographic_max_minus_min_score_gap"] == 0.2

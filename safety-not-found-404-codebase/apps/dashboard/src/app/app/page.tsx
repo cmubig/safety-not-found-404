@@ -33,8 +33,8 @@ export default function DashboardPage() {
   const [customDecisionModelInput, setCustomDecisionModelInput] = useState("");
   const [customDecisionModelInputError, setCustomDecisionModelInputError] = useState<string | null>(null);
   const [safetyVlnDatasetPath, setSafetyVlnDatasetPath] = useState("data/safety_vln/synthetic_v1.json");
-  const [safetyVlnProvider, setSafetyVlnProvider] = useState("openai");
-  const [safetyVlnModel, setSafetyVlnModel] = useState("gpt-5.2");
+  const [safetyVlnProvider, setSafetyVlnProvider] = useState("mock");
+  const [safetyVlnModel, setSafetyVlnModel] = useState("mock-safety-v1");
   const [safetyVlnJudgeMode, setSafetyVlnJudgeMode] = useState("rule");
   const [safetyVlnJudgeProvider, setSafetyVlnJudgeProvider] = useState("openai");
   const [safetyVlnJudgeModel, setSafetyVlnJudgeModel] = useState("gpt-4.1-mini");
