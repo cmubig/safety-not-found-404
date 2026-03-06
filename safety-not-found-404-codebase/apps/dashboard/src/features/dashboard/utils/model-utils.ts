@@ -1,9 +1,11 @@
 import { DecisionModelOption, ModelProvider } from "../types";
 
+/** Strip surrounding whitespace from a model identifier. */
 export function normalizeModelId(value: string): string {
   return value.trim();
 }
 
+/** Infer the LLM provider from a model ID prefix (defaults to "openai"). */
 export function inferModelProvider(modelId: string): ModelProvider {
   const lowered = modelId.trim().toLowerCase();
 
@@ -12,16 +14,19 @@ export function inferModelProvider(modelId: string): ModelProvider {
   return "openai";
 }
 
+/** Return a display-friendly provider label for UI badges. */
 export function providerBadgeText(modelId: string): string {
   const lowered = modelId.trim().toLowerCase();
   if (lowered.startsWith("codex")) return "openai/codex";
   return inferModelProvider(modelId);
 }
 
+/** Validate that a model ID matches the allowed character pattern (1-128 chars). */
 export function isValidModelId(modelId: string): boolean {
   return /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,127}$/.test(modelId);
 }
 
+/** Normalize and filter partial model options into valid DecisionModelOption entries. */
 export function sanitizeDecisionModelOptions(
   options: Array<Partial<DecisionModelOption>> | undefined,
   fallbackProvider: ModelProvider
@@ -42,6 +47,7 @@ export function sanitizeDecisionModelOptions(
     .filter((option): option is DecisionModelOption => option !== null);
 }
 
+/** Remove duplicate model options by value, keeping first occurrence. */
 export function dedupeDecisionModelOptions(options: DecisionModelOption[]): DecisionModelOption[] {
   const seen = new Set<string>();
   const deduped: DecisionModelOption[] = [];
@@ -55,6 +61,7 @@ export function dedupeDecisionModelOptions(options: DecisionModelOption[]): Deci
   return deduped;
 }
 
+/** Sort model options by provider order, with optional Codex prioritization within OpenAI. */
 export function sortDecisionModelOptions(options: DecisionModelOption[], prioritizeCodex: boolean): DecisionModelOption[] {
   const providerOrder: Record<ModelProvider, number> = {
     openai: 0,

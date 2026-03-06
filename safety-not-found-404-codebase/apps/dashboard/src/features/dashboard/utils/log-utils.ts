@@ -1,10 +1,12 @@
 import { FailureInsight, FeedKind } from "../types";
 
+/** Extract a human-readable message from an unknown thrown value. */
 export function toErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
 }
 
+/** Classify a single log line into a semantic feed category. */
 export function classifyLogLine(line: string): FeedKind {
   const lowered = line.toLowerCase();
   const exitMatch = lowered.match(/\[process exited with code\s+(-?\d+)\]/);
@@ -42,6 +44,7 @@ export function classifyLogLine(line: string): FeedKind {
   return "info";
 }
 
+/** Map an error log line to a structured failure insight with actionable hint. */
 export function categorizeFailureLine(line: string): FailureInsight {
   const lowered = line.toLowerCase();
 
@@ -144,13 +147,14 @@ export function categorizeFailureLine(line: string): FailureInsight {
   };
 }
 
+/** Detect a pipeline stage label from a log line (supports Korean and English formats). */
 export function detectStageLabel(line: string): string | null {
   const trimmed = line.trim();
   const lowered = trimmed.toLowerCase();
-  const koStageMatch = trimmed.match(/^(\d+)단계:\s*(.+)$/);
+  const koreanStageMatch = trimmed.match(/^(\d+)단계:\s*(.+)$/);
 
-  if (koStageMatch) {
-    return `${koStageMatch[1]}단계: ${koStageMatch[2]}`;
+  if (koreanStageMatch) {
+    return `${koreanStageMatch[1]}단계: ${koreanStageMatch[2]}`;
   }
 
   if (lowered.startsWith("scenario:")) {
@@ -172,11 +176,13 @@ export function detectStageLabel(line: string): string | null {
   return null;
 }
 
+/** Extract a scope label (e.g. grid dimensions) from a "Processing NxN..." log line. */
 export function extractScopeLabel(line: string): string | null {
   const match = line.match(/^Processing\s+([0-9]+x[0-9]+)\.\.\./i);
   return match ? match[1] : null;
 }
 
+/** Parse a "Progress: N/M" line into structured current/total/percent values. */
 export function extractProgressValue(line: string): { current: number; total: number; percent: number } | null {
   const match = line.match(/progress:\s*(\d+)\s*\/\s*(\d+)/i);
   if (!match) return null;
@@ -195,6 +201,7 @@ export function extractProgressValue(line: string): { current: number; total: nu
   };
 }
 
+/** Extract an absolute artifact file path from a "Saved:..." or "CSV:..." log line. */
 export function extractArtifactPath(line: string): string | null {
   const match = line.match(/^(saved(?: report)?|csv|summary json|summary txt|output):\s*(.+)$/i);
   if (!match) return null;
@@ -203,6 +210,7 @@ export function extractArtifactPath(line: string): string | null {
   return cleaned.startsWith("/") ? cleaned : null;
 }
 
+/** Convert an absolute file path to a `file://` URI for browser links. */
 export function toFileHref(path: string): string {
   return `file://${encodeURI(path)}`;
 }

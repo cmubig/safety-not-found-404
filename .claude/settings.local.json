@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/services/research-engine && .venv/bin/python -m pytest -q 2>&1 | tail -20)",
+      "Bash(git -C /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase ls-files services/research-engine/legacy/section_3/.venv/ | head -5)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/apps/dashboard && npm run build 2>&1 | tail -30)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/services/research-engine && .venv/bin/python -m pytest -q 2>&1)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/apps/dashboard && npx next build 2>&1 | tail -30)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/services/research-engine && python -m pytest -q 2>&1 | tail -20)",
+      "Bash(.venv/bin/python -m pytest -q 2>&1 | tail -20)",
+      "Bash(which node && node --version)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/apps/dashboard && npm run dev)",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/apps/dashboard && npx tsc --noEmit 2>&1 | head -30)",
+      "Bash(python3 --version && python3 -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(cd /Users/chan/paper-project-page/404-safty-not-found/safety-not-found-404-codebase/services/research-engine && .venv/bin/pip list --format=columns 2>&1 | grep -iE \"openai|google|matplotlib|opencv|numpy|requests|pytest\")",
+      "Bash(brew list python*)",
+      "Read(//opt/homebrew/opt/**)",
+      "Read(//usr/bin/**)",
+      "Bash(node --version && npm --version)",
+      "Bash(.venv/bin/python -c \"import cv2; print\\(cv2.__version__\\)\" 2>&1)"
+    ]
+  }
+}

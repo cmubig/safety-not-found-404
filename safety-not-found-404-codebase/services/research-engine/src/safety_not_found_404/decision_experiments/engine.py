@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import csv
 import json
-import re
 import time
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
+from safety_not_found_404.common import new_run_id, slugify, utc_now_iso
 from safety_not_found_404.decision_experiments.models import ModelTarget, ScenarioDefinition
 from safety_not_found_404.decision_experiments.parsing import parse_choice
 from safety_not_found_404.decision_experiments.providers import ProviderError, create_provider
@@ -49,21 +48,6 @@ class RunArtifact:
     def successful_rows(self) -> int:
         return max(0, self.rows_total - self.errors - self.unknown)
 
-
-def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _new_run_id() -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    random_suffix = datetime.now(timezone.utc).strftime("%f")[-6:]
-    return f"{stamp}_{random_suffix}"
-
-
-def _slugify(value: str) -> str:
-    normalized = re.sub(r"[^A-Za-z0-9._-]+", "-", value.strip())
-    normalized = normalized.strip("-_")
-    return normalized or "model"
 
 
 def _ensure_csv_header(path: Path) -> None:
@@ -155,7 +139,7 @@ def run_scenario(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     effective_trials = trials_per_case or scenario.default_trials_per_case
-    effective_run_id = run_id or _new_run_id()
+    effective_run_id = run_id or new_run_id()
 
     artifacts: List[RunArtifact] = []
 
@@ -167,7 +151,7 @@ def run_scenario(
             max_tokens=max_tokens,
         )
 
-        model_slug = _slugify(target.model)
+        model_slug = slugify(target.model)
         csv_path = output_dir / f"{scenario.key}_{target.provider}_{model_slug}_{effective_run_id}.csv"
         summary_json_path = csv_path.with_suffix(".summary.json")
         summary_text_path = csv_path.with_suffix(".summary.txt")
@@ -235,7 +219,7 @@ def run_scenario(
                     condition_row["choice_counts"][choice] += 1
 
                 row = {
-                    "timestamp_utc": _utc_now_iso(),
+                    "timestamp_utc": utc_now_iso(),
                     "run_id": effective_run_id,
                     "scenario_key": scenario.key,
                     "scenario_title": scenario.title,

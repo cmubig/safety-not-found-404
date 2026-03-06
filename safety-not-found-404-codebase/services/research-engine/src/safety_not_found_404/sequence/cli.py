@@ -5,11 +5,11 @@ from pathlib import Path
 
 from safety_not_found_404.sequence.models import SequenceExperiment
 from safety_not_found_404.sequence.prompts import DEFAULT_TASK_PROMPTS
+from safety_not_found_404.common import slugify
 from safety_not_found_404.sequence.service import (
     build_default_experiments,
     parse_experiments_config,
     run_experiments,
-    slugify,
 )
 
 

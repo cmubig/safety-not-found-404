@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from safety_not_found_404.maze.cli import main as maze_main
 
+# test 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

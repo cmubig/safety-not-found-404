@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FEED_FILTER_OPTIONS, FEED_KIND_STYLE, FAILURE_STYLE } from "../constants";
 import { FailureInsight, FeedKind, FeedStats, LogFeedItem, PipelineProgress, RunTaskType } from "../types";
 import { toFileHref } from "../utils/log-utils";
+import { ArtifactViewer } from "./artifact-viewer";
 
 type ExecutionConsoleProps = {
   isRunning: boolean;
@@ -39,6 +40,7 @@ export function ExecutionConsole({
   rawLogs,
 }: ExecutionConsoleProps) {
   const logViewportRef = useRef<HTMLDivElement>(null);
+  const [viewingArtifactPath, setViewingArtifactPath] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -171,6 +173,13 @@ export function ExecutionConsole({
               <div key={path} className="border border-neutral-800 p-2 text-xs font-mono text-neutral-400 space-y-2">
                 <p className="break-all">{path}</p>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setViewingArtifactPath(path)}
+                    className="px-2 py-1 border border-emerald-800 hover:border-emerald-500 text-emerald-300 hover:text-emerald-200"
+                  >
+                    View
+                  </button>
                   <a
                     href={toFileHref(path)}
                     target="_blank"
@@ -221,6 +230,8 @@ export function ExecutionConsole({
           <pre className="text-xs text-neutral-500 whitespace-pre-wrap">{rawLogs || "(empty)"}</pre>
         </div>
       </details>
+
+      <ArtifactViewer path={viewingArtifactPath} onClose={() => setViewingArtifactPath(null)} />
     </div>
   );
 }

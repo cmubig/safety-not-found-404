@@ -11,6 +11,15 @@ import {
   toErrorMessage,
 } from "../utils/log-utils";
 
+/** Maximum number of feed items retained in memory to prevent unbounded growth. */
+const MAX_FEED_ITEMS = 800;
+/** Maximum number of artifact paths tracked per session. */
+const MAX_ARTIFACT_PATHS = 200;
+/** Number of recent artifacts shown in the console UI. */
+const RECENT_ARTIFACTS_COUNT = 20;
+/** Duration (ms) the "Copied" indicator stays visible after clipboard write. */
+const COPY_FEEDBACK_DURATION_MS = 1200;
+
 type UseExperimentRunnerArgs = {
   apiKeys: ApiKeys;
 };
@@ -107,7 +116,7 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     }
 
     if (nextFeedItems.length > 0) {
-      setLogFeedItems((previousItems) => [...previousItems, ...nextFeedItems].slice(-800));
+      setLogFeedItems((previousItems) => [...previousItems, ...nextFeedItems].slice(-MAX_FEED_ITEMS));
     }
 
     if (discoveredArtifacts.length > 0) {
@@ -118,7 +127,7 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
             merged.push(artifactPath);
           }
         }
-        return merged.slice(-200);
+        return merged.slice(-MAX_ARTIFACT_PATHS);
       });
     }
 
@@ -278,7 +287,7 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     try {
       await navigator.clipboard.writeText(path);
       setCopiedArtifactPath(path);
-      setTimeout(() => setCopiedArtifactPath((currentPath) => (currentPath === path ? null : currentPath)), 1200);
+      setTimeout(() => setCopiedArtifactPath((currentPath) => (currentPath === path ? null : currentPath)), COPY_FEEDBACK_DURATION_MS);
     } catch {
       setCopiedArtifactPath(null);
     }
@@ -307,7 +316,7 @@ export function useExperimentRunner({ apiKeys }: UseExperimentRunnerArgs) {
     return `${((runFinishedAt - runStartedAt) / 1000).toFixed(1)}s`;
   }, [isRunning, runFinishedAt, runStartedAt]);
 
-  const recentArtifacts = useMemo(() => artifactPaths.slice(-20).reverse(), [artifactPaths]);
+  const recentArtifacts = useMemo(() => artifactPaths.slice(-RECENT_ARTIFACTS_COUNT).reverse(), [artifactPaths]);
   const activeTaskPercent = activeRunType ? taskProgressByType[activeRunType] : null;
 
   return {

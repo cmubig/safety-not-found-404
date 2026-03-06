@@ -1,20 +1,13 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 from typing import Iterable, List
 
-from safety_not_found_404.common import ensure_directory, list_image_files
+from safety_not_found_404.common import ensure_directory, list_image_files, slugify
 from safety_not_found_404.llm import create_vision_client
 from safety_not_found_404.sequence.models import SequenceExperiment, SequenceResultItem
 from safety_not_found_404.sequence.prompts import DEFAULT_TASK_PROMPTS
-
-
-def slugify(value: str) -> str:
-    normalized = re.sub(r"[^a-zA-Z0-9]+", "_", value.strip())
-    normalized = normalized.strip("_")
-    return normalized.lower() or "model"
 
 
 def build_default_experiments(

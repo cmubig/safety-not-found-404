@@ -8,12 +8,14 @@ SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 
 
 def ensure_directory(path: str | Path) -> Path:
+    """Create directory (and parents) if it does not exist, then return the Path."""
     directory = Path(path)
     directory.mkdir(parents=True, exist_ok=True)
     return directory
 
 
 def list_image_files(folder: str | Path, recursive: bool = True) -> List[Path]:
+    """List all supported image files in a directory, sorted alphabetically."""
     root = Path(folder)
     if not root.exists():
         raise FileNotFoundError(f"Folder not found: {root}")
@@ -34,11 +36,13 @@ def list_image_files(folder: str | Path, recursive: bool = True) -> List[Path]:
 
 
 def encode_image_base64(image_path: str | Path) -> str:
+    """Read an image file and return its contents as a base64-encoded string."""
     data = Path(image_path).read_bytes()
     return base64.b64encode(data).decode("utf-8")
 
 
 def guess_image_mime_type(image_path: str | Path) -> str:
+    """Infer the MIME type of an image from its file extension."""
     extension = Path(image_path).suffix.lower()
     if extension in {".jpg", ".jpeg"}:
         return "image/jpeg"

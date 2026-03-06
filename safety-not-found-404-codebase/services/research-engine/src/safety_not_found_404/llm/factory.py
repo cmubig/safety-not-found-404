@@ -7,6 +7,7 @@ from safety_not_found_404.llm.openai_client import OpenAIVisionClient
 
 
 def create_vision_client(provider: str, model: str) -> VisionLLMClient:
+    """Instantiate the appropriate VisionLLMClient for the given provider name."""
     normalized = provider.strip().lower()
 
     if normalized == "openai":

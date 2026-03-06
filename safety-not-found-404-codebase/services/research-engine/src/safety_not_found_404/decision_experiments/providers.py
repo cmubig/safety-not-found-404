@@ -15,6 +15,8 @@ class ProviderError(RuntimeError):
 
 
 class TextProvider(Protocol):
+    """Provider-agnostic interface for text-only LLM generation."""
+
     def is_configured(self) -> bool:
         ...
 
@@ -305,14 +307,24 @@ class MockTextProvider:
         return f"Answer: {choice}\nReason: Mock heuristic response."
 
 
+_MODEL_PREFIX_TO_PROVIDER: dict[str, str] = {
+    "gpt-": "openai",
+    "o1": "openai",
+    "o3": "openai",
+    "o4": "openai",
+    "codex": "openai",
+    "chatgpt": "openai",
+    "claude": "anthropic",
+    "gemini": "gemini",
+}
+
+
 def infer_provider_from_model(model: str) -> str:
+    """Map a model ID to its provider name using prefix matching."""
     lowered = model.strip().lower()
-    if lowered.startswith("gpt-") or lowered.startswith("o"):
-        return "openai"
-    if lowered.startswith("claude"):
-        return "anthropic"
-    if lowered.startswith("gemini"):
-        return "gemini"
+    for prefix, provider in _MODEL_PREFIX_TO_PROVIDER.items():
+        if lowered.startswith(prefix):
+            return provider
     return "openai"
 
 
@@ -322,6 +334,7 @@ def create_provider(
     temperature: float,
     max_tokens: int,
 ) -> TextProvider:
+    """Instantiate the appropriate TextProvider implementation for the given provider name."""
     normalized = provider.strip().lower()
 
     if normalized == "mock":
