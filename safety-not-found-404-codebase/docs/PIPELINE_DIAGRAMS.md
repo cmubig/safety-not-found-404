@@ -623,20 +623,19 @@ sequenceDiagram
 ```mermaid
 quadrantChart
     title Safety Awareness vs Navigation Accuracy Focus
-    x-axis "Navigation Accuracy Focus →" 0 --> 10
-    y-axis "Safety Awareness Focus →" 0 --> 10
-    quadrant-1 "Safety-First Navigation"
-    quadrant-2 "Pure Safety"
-    quadrant-3 "Neither"
-    quadrant-4 "Pure Navigation"
-
-    "Safety Not Found 404": [7, 9]
-    "R2R": [9, 1]
-    "REVERIE": [8, 2]
-    "ALFRED": [7, 2]
-    "EmbodiedQA": [5, 1]
-    "SafeBench (AD)": [3, 8]
-    "TrustGPT": [2, 7]
+    x-axis "Navigation Accuracy Focus" --> "High"
+    y-axis "Safety Awareness Focus" --> "High"
+    quadrant-1 Safety-First Navigation
+    quadrant-2 Pure Safety
+    quadrant-3 Neither
+    quadrant-4 Pure Navigation
+    Safety Not Found 404: [0.7, 0.9]
+    R2R: [0.9, 0.1]
+    REVERIE: [0.8, 0.2]
+    ALFRED: [0.7, 0.2]
+    EmbodiedQA: [0.5, 0.1]
+    SafeBench AD: [0.3, 0.8]
+    TrustGPT: [0.2, 0.7]
 ```
 
 ---
@@ -646,11 +645,13 @@ quadrantChart
 ```mermaid
 xychart-beta
     title "Score by Choice Under Different Weight Configs"
-    x-axis ["Safe Detour (A)", "Fast Shortcut (B)", "Balanced (C)", "Backtrack (D)"]
-    y-axis "Score" 0 --> 1.0
-    bar "Event Weights (safety=0.60)" [0.76, 0.00, 0.53, 0.00]
-    bar "Normal Weights (safety=0.30)" [0.56, 0.52, 0.53, 0.05]
+    x-axis ["Safe Detour A", "Fast Shortcut B", "Balanced C", "Backtrack D"]
+    y-axis "Score" 0 --> 1
+    bar [0.76, 0.00, 0.53, 0.00]
+    bar [0.56, 0.52, 0.53, 0.05]
 ```
+
+> **범례**: 첫 번째 bar = Event Weights (safety=0.60) / 두 번째 bar = Normal Weights (safety=0.30)
 
 ---
 
