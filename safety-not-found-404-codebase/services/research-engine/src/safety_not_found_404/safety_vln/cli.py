@@ -11,6 +11,7 @@ from safety_not_found_404.safety_vln.dataset import (
     validate_dataset,
 )
 from safety_not_found_404.safety_vln.engine import run_benchmark_from_path
+from safety_not_found_404.safety_vln.evaluate import evaluate_predictions, validate_predictions
 
 
 def _build_generate_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -41,7 +42,7 @@ def _build_run_parser(subparsers: argparse._SubParsersAction) -> None:
     )
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--provider", default="openai")
-    parser.add_argument("--model", default="gpt-5.2")
+    parser.add_argument("--model", default="gpt-4.1")
     parser.add_argument("--output-dir", default="outputs/safety_vln")
     parser.add_argument("--trials-per-problem", type=int, default=1)
     parser.add_argument("--run-id", default="")
@@ -58,6 +59,18 @@ def _build_run_parser(subparsers: argparse._SubParsersAction) -> None:
     parser.add_argument("--quiet", action="store_true")
 
 
+def _build_evaluate_submission_parser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(
+        "evaluate-submission",
+        help="Evaluate a predictions file offline (no LLM API calls)",
+    )
+    parser.add_argument("--dataset", required=True, help="Path to dataset JSON (with answers)")
+    parser.add_argument("--predictions", required=True, help="Path to predictions JSON")
+    parser.add_argument("--output-dir", default="outputs/evaluation", help="Output directory")
+    parser.add_argument("--run-id", default="", help="Optional run ID")
+    parser.add_argument("--validate-only", action="store_true", help="Only validate, do not score")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Safety-VLN benchmark toolkit")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -65,6 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
     _build_generate_parser(subparsers)
     _build_validate_parser(subparsers)
     _build_run_parser(subparsers)
+    _build_evaluate_submission_parser(subparsers)
 
     return parser
 
@@ -139,6 +153,48 @@ def _cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_evaluate_submission(args: argparse.Namespace) -> int:
+    dataset = load_dataset(args.dataset)
+    predictions_path = Path(args.predictions)
+
+    if args.validate_only:
+        report = validate_predictions(dataset=dataset, predictions_path=predictions_path)
+        print(f"Valid: {report.is_valid}")
+        for w in report.warnings:
+            print(f"WARNING: {w}")
+        for e in report.errors:
+            print(f"ERROR: {e}")
+        return 0 if report.is_valid else 1
+
+    artifact = evaluate_predictions(
+        dataset=dataset,
+        predictions_path=predictions_path,
+        output_dir=Path(args.output_dir),
+        run_id=args.run_id or None,
+    )
+
+    print(f"CSV: {artifact.csv_path.resolve()}")
+    print(f"Summary JSON: {artifact.summary_json_path.resolve()}")
+    print(f"Summary TXT: {artifact.summary_text_path.resolve()}")
+
+    summary = json.loads(artifact.summary_json_path.read_text(encoding="utf-8"))
+    core = summary.get("core_scores") or {}
+    disparity = summary.get("disparity_metrics") or {}
+    print(f"general_score: {float(core.get('general_score', 0.0)):.6f}")
+    print(f"safety_event_score: {float(core.get('safety_event_score', 0.0)):.6f}")
+    print(f"gap_general_minus_event: {float(core.get('gap_general_minus_event', 0.0)):.6f}")
+    print(f"ltr_minus_rtl_score_gap: {float(disparity.get('ltr_minus_rtl_score_gap', 0.0)):.6f}")
+    print(
+        "high_minus_low_time_interval_gap: "
+        f"{float(disparity.get('high_minus_low_time_interval_gap', 0.0)):.6f}"
+    )
+    print(
+        "demographic_max_minus_min_score_gap: "
+        f"{float(disparity.get('demographic_max_minus_min_score_gap', 0.0)):.6f}"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -149,6 +205,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_validate(args)
     if args.command == "run-benchmark":
         return _cmd_run(args)
+    if args.command == "evaluate-submission":
+        return _cmd_evaluate_submission(args)
 
     parser.error("Unknown command")
     return 1

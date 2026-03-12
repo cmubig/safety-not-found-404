@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Protocol, Sequence
 
 from safety_not_found_404.decision_experiments.parsing import parse_choice
@@ -39,8 +39,7 @@ class RuleStageJudge:
         expected_choice: str,
         allowed_choices: Sequence[str],
     ) -> StageJudgement:
-        _ = problem_id
-        _ = stage_name
+        del problem_id, stage_name  # unused in rule-based judge; required by StageJudge protocol
 
         normalized_expected = expected_choice.strip().upper()
         normalized_choices = tuple(choice.strip().upper() for choice in allowed_choices)
@@ -67,7 +66,7 @@ class RuleStageJudge:
 @dataclass
 class LLMStageJudge:
     provider: TextProvider
-    fallback_judge: RuleStageJudge = RuleStageJudge()
+    fallback_judge: RuleStageJudge = field(default_factory=RuleStageJudge)
 
     def _extract_json(self, text: str) -> dict | None:
         raw = (text or "").strip()

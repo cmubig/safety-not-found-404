@@ -18,9 +18,9 @@ def build_default_experiments(
     provider_key = provider.lower().strip()
 
     if provider_key == "openai":
-        models = ["gpt-4.1", "gpt-5.2"]
+        models = ["gpt-4.1", "gpt-4.1-mini"]
     elif provider_key == "gemini":
-        models = ["gemini-3-flash-preview"]
+        models = ["gemini-2.0-flash"]
     else:
         raise ValueError(f"Unknown provider: {provider}")
 

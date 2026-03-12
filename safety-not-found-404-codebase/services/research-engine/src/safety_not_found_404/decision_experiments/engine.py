@@ -190,8 +190,10 @@ def run_scenario(
                         choice = parse_choice(raw_response, scenario.choices)
                     except ProviderError as error:
                         error_message = str(error)
+                    except (KeyboardInterrupt, SystemExit):
+                        raise
                     except Exception as error:  # pragma: no cover - safety net
-                        error_message = f"Unhandled provider error: {error}"
+                        error_message = f"Unhandled error ({type(error).__name__}): {error}"
 
                 if error_message:
                     errors += 1
