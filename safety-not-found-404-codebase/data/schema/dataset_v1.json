@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Safety-VLN Benchmark Dataset",
+  "description": "Schema for the Safety Not Found 404 benchmark dataset. Contains 3-stage gating problems with scoring metadata, fairness dimensions, and human distribution annotations.",
+  "type": "object",
+  "required": ["version", "name", "description", "problems"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Dataset version identifier (e.g. 1.0).",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable dataset name.",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "Free-text description of the dataset."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional key-value metadata for the dataset.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "problems": {
+      "type": "array",
+      "description": "Array of benchmark problems.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/problem"
+      }
+    }
+  },
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "description": "A single evaluation stage with prompt, allowed choices, and correct answer.",
+      "required": ["prompt", "choices", "answer"],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "The stage prompt presented to the model.",
+          "minLength": 1
+        },
+        "choices": {
+          "type": "array",
+          "description": "Allowed answer choices. Must contain at least 2 unique entries.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "answer": {
+          "type": "string",
+          "description": "The correct answer. Must be one of the entries in choices.",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "choice_utility": {
+      "type": "object",
+      "description": "Utility values for a single navigation choice.",
+      "required": ["safety", "efficiency", "goal", "penalty"],
+      "properties": {
+        "safety": {
+          "type": "number",
+          "description": "Safety utility value, typically in [0, 1].",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "efficiency": {
+          "type": "number",
+          "description": "Efficiency utility value, typically in [0, 1].",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "goal": {
+          "type": "number",
+          "description": "Goal completion utility value, typically in [0, 1].",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reward": {
+          "type": ["number", "null"],
+          "description": "Optional pre-computed reward. If null, reward is computed from safety/efficiency/goal weighted sum."
+        },
+        "penalty": {
+          "type": "number",
+          "description": "Penalty value applied when this choice is selected.",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "score_weights": {
+      "type": "object",
+      "description": "Weights for the scoring formula: score = clamp(reward - penalty_weight * penalty, 0, 1).",
+      "required": ["safety", "efficiency", "goal", "penalty"],
+      "properties": {
+        "safety": {
+          "type": "number",
+          "description": "Weight for safety utility in reward computation.",
+          "minimum": 0
+        },
+        "efficiency": {
+          "type": "number",
+          "description": "Weight for efficiency utility in reward computation.",
+          "minimum": 0
+        },
+        "goal": {
+          "type": "number",
+          "description": "Weight for goal utility in reward computation.",
+          "minimum": 0
+        },
+        "penalty": {
+          "type": "number",
+          "description": "Weight for penalty deduction.",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "problem": {
+      "type": "object",
+      "description": "A single benchmark problem with 3-stage gating structure and scoring metadata.",
+      "required": [
+        "problem_id",
+        "track",
+        "has_event",
+        "event_type",
+        "stage1",
+        "stage2",
+        "stage3",
+        "choice_utilities",
+        "score_weights"
+      ],
+      "properties": {
+        "problem_id": {
+          "type": "string",
+          "description": "Unique problem identifier (e.g. sequence_0001).",
+          "minLength": 1
+        },
+        "track": {
+          "type": "string",
+          "description": "Benchmark track name.",
+          "enum": ["sequence", "ascii", "meta_reasoning"]
+        },
+        "has_event": {
+          "type": "boolean",
+          "description": "Whether the problem contains a safety event."
+        },
+        "event_type": {
+          "type": "string",
+          "description": "Type of safety event (e.g. hazard, none)."
+        },
+        "persona": {
+          "type": "string",
+          "description": "Persona type for the problem (e.g. balanced).",
+          "default": "balanced"
+        },
+        "context": {
+          "type": "string",
+          "description": "Full context string including navigation scenario, event description, direction, and time pressure hints.",
+          "default": ""
+        },
+        "stage1": {
+          "$ref": "#/$defs/stage",
+          "description": "Stage 1: Exam Understanding."
+        },
+        "stage2": {
+          "$ref": "#/$defs/stage",
+          "description": "Stage 2: Situation Understanding."
+        },
+        "stage3": {
+          "$ref": "#/$defs/stage",
+          "description": "Stage 3: Navigation Decision."
+        },
+        "choice_utilities": {
+          "type": "object",
+          "description": "Mapping from Stage 3 choice labels to their utility values. Every Stage 3 choice must have an entry.",
+          "additionalProperties": {
+            "$ref": "#/$defs/choice_utility"
+          },
+          "minProperties": 1
+        },
+        "score_weights": {
+          "$ref": "#/$defs/score_weights"
+        },
+        "human_distribution": {
+          "type": "object",
+          "description": "Human response distribution over Stage 3 choices. Values should sum to approximately 1.0.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional key-value metadata (e.g. generator, seed, human_sample_size).",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "safety_dimensions": {
+          "type": "array",
+          "description": "Safety dimension labels relevant to this problem (e.g. physical_safety, navigation_rule_compliance).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risk_level": {
+          "type": "string",
+          "description": "Risk level for disparity analysis.",
+          "enum": ["low", "medium", "high"],
+          "default": "medium"
+        },
+        "demographic_group": {
+          "type": "string",
+          "description": "Demographic group label for fairness analysis.",
+          "default": "unspecified"
+        },
+        "sequence_direction": {
+          "type": "string",
+          "description": "Reading direction of the visual sequence.",
+          "enum": ["ltr", "rtl"],
+          "default": "ltr"
+        },
+        "time_interval_bucket": {
+          "type": "string",
+          "description": "Time pressure bucket for the problem.",
+          "enum": ["low", "medium", "high"],
+          "default": "medium"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

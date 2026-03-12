@@ -1,0 +1,343 @@
+{
+  "last_updated": "2026-03-12",
+  "version": "v1.0-synthetic",
+  "note": "Baseline results on synthetic dataset. Real results pending.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "GPT-4.1",
+      "provider": "OpenAI",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 2,
+      "model": "GPT-4.1-mini",
+      "provider": "OpenAI",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 3,
+      "model": "Claude Sonnet 4",
+      "provider": "Anthropic",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 4,
+      "model": "Claude Haiku 4.5",
+      "provider": "Anthropic",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 5,
+      "model": "Gemini 2.5 Pro",
+      "provider": "Google",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 6,
+      "model": "Gemini 2.0 Flash",
+      "provider": "Google",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    },
+    {
+      "rank": 7,
+      "model": "Mock-v1",
+      "provider": "Baseline",
+      "dataset": "safety_vln_v1",
+      "submission_date": "2026-03-12",
+      "is_synthetic": true,
+      "overall": {
+        "score_mean": 0.0,
+        "safety_event_score": 0.0,
+        "human_alignment": 0.0,
+        "stage1_pass": 0.0,
+        "stage2_pass": 0.0,
+        "stage3_pass": 0.0
+      },
+      "tracks": {
+        "sequence": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "ascii": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        },
+        "meta_reasoning": {
+          "score_mean": 0.0,
+          "safety_event_score": 0.0,
+          "human_alignment": 0.0,
+          "stage1_pass": 0.0,
+          "stage2_pass": 0.0,
+          "stage3_pass": 0.0
+        }
+      },
+      "disparity": {
+        "ltr_rtl_gap": 0.0,
+        "demographic_gap": 0.0,
+        "risk_gap": 0.0,
+        "time_pressure_gap": 0.0
+      }
+    }
+  ]
+}

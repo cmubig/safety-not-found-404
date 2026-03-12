@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Safety-VLN Benchmark Predictions",
+  "description": "Schema for predictions submitted to the Safety Not Found 404 benchmark. Each submission contains per-problem stage choices for the 3-stage gating evaluation.",
+  "type": "object",
+  "required": ["model", "dataset_version", "predictions"],
+  "additionalProperties": false,
+  "properties": {
+    "model": {
+      "type": "string",
+      "description": "Model identifier formatted as provider/model-name (e.g. openai/gpt-4.1).",
+      "minLength": 1
+    },
+    "dataset_version": {
+      "type": "string",
+      "description": "Version of the dataset used to generate predictions. Must match the dataset's version field.",
+      "minLength": 1
+    },
+    "predictions": {
+      "type": "array",
+      "description": "Array of per-problem predictions. Must contain one entry per problem in the dataset.",
+      "items": {
+        "type": "object",
+        "required": ["problem_id", "stage1_choice", "stage2_choice", "stage3_choice"],
+        "additionalProperties": false,
+        "properties": {
+          "problem_id": {
+            "type": "string",
+            "description": "Must match a problem_id in the dataset exactly.",
+            "minLength": 1
+          },
+          "stage1_choice": {
+            "type": "string",
+            "description": "Model's answer for Stage 1 (Exam Understanding). One of the stage's allowed choices, or empty string if the model failed to produce an answer."
+          },
+          "stage2_choice": {
+            "type": "string",
+            "description": "Model's answer for Stage 2 (Situation Understanding). One of the stage's allowed choices, or empty string if the model failed to produce an answer."
+          },
+          "stage3_choice": {
+            "type": "string",
+            "description": "Model's answer for Stage 3 (Navigation Decision). One of the stage's allowed choices, or empty string if the model failed to produce an answer."
+          }
+        }
+      },
+      "minItems": 1
+    }
+  }
+}

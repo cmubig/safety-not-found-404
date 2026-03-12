@@ -9,6 +9,7 @@ export function Navbar() {
 
   const navItems = [
     { name: "Dashboard", href: "/app" },
+    { name: "Leaderboard", href: "/leaderboard" },
     { name: "Docs", href: "/docs" },
   ];
 
