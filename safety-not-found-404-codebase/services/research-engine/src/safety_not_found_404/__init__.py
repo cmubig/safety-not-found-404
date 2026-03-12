@@ -1,4 +1,6 @@
-"""Safety Not Found 404 research toolkit."""
+"""Safety Not Found 404 — A benchmark for evaluating safety-aware decision making in VLN."""
+
+__version__ = "0.1.0"
 
 __all__ = [
     "common",
@@ -8,4 +10,6 @@ __all__ = [
     "evaluation",
     "video",
     "decision_experiments",
+    "safety_vln",
+    "reporting",
 ]

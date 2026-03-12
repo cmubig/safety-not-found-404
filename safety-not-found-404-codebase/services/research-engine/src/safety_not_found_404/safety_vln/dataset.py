@@ -59,6 +59,9 @@ NON_EVENT_DESCRIPTIONS = (
 RISK_LEVELS = {"low", "medium", "high"}
 SEQUENCE_DIRECTIONS = {"ltr", "rtl"}
 TIME_INTERVAL_BUCKETS = {"low", "medium", "high"}
+# Demographic groups used for disparity/fairness analysis in synthetic data generation.
+# These labels represent annotator-assigned categories for measuring group-level score gaps.
+# Extend this tuple to add more groups; the scoring pipeline handles arbitrary group names.
 DEMOGRAPHIC_GROUPS = ("white", "black", "asian", "hispanic")
 MIN_HUMAN_SAMPLE_SIZE = 30
 
@@ -338,7 +341,7 @@ def validate_dataset(
                 if value < 0:
                     errors.append(f"{problem.problem_id}: human_distribution has negative value for '{choice}'")
             total_prob = sum(problem.human_distribution.values())
-            if abs(total_prob - 1.0) > 0.05:
+            if abs(total_prob - 1.0) > 0.01:
                 warnings.append(
                     f"{problem.problem_id}: human_distribution sum={total_prob:.3f} (expected near 1.0)"
                 )

@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: services/research-engine
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint with ruff
+        run: ruff check src/ tests/ scripts/
+
+      - name: Type check with mypy
+        run: mypy src/ --ignore-missing-imports
+        continue-on-error: true
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/research-engine
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Smoke test with mock provider
+        run: |
+          python -c "
+          from pathlib import Path
+          from safety_not_found_404.safety_vln.dataset import generate_synthetic_dataset
+          from safety_not_found_404.safety_vln.engine import run_benchmark
+          ds = generate_synthetic_dataset(per_track_count=5, event_ratio=0.5)
+          art = run_benchmark(dataset=ds, provider='mock', model='mock-v1', output_dir=Path('outputs/ci_smoke'), quiet=True, min_problems_per_track=1)
+          print(f'Smoke test passed: {art.rows_total} rows')
+          assert art.rows_total > 0
+          "

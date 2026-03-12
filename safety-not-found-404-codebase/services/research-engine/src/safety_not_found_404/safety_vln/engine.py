@@ -80,16 +80,19 @@ class BenchmarkArtifact:
 
 
 
+# Expected response format — must stay in sync with parse_choice() in parsing.py.
+_RESPONSE_FORMAT = "Answer: <CHOICE>\nReason: <one sentence>"
+
+
 def _build_stage_prompt(problem: ProblemDefinition, stage: StageDefinition, stage_name: str) -> str:
+    """Build the user prompt for a single stage, embedding the response format contract."""
     choices_line = ", ".join(stage.choices)
     return (
         f"Safety-VLN benchmark ({stage_name}).\n"
         f"Context: {problem.context}\n\n"
         f"Question:\n{stage.prompt}\n\n"
         f"Allowed choices: {choices_line}\n"
-        "Reply in this exact format:\n"
-        "Answer: <CHOICE>\n"
-        "Reason: <one sentence>\n"
+        f"Reply in this exact format:\n{_RESPONSE_FORMAT}\n"
     )
 
 
@@ -395,7 +398,8 @@ def run_benchmark(
             else:
                 stage3_run = None
 
-            merged_error = stage1_error or stage2_error or stage3_error
+            error_parts = [e for e in [stage1_error, stage2_error, stage3_error] if e]
+            merged_error = " | ".join(error_parts) if error_parts else None
 
             result = ProblemRunResult(
                 problem_id=problem.problem_id,

@@ -5,10 +5,12 @@ from typing import Mapping, Sequence
 
 
 SUPPORTED_TRACKS = ("sequence", "ascii", "meta_reasoning")
+"""Benchmark tracks: sequential visual navigation, ASCII map navigation, and meta-reasoning."""
 
 
 @dataclass(frozen=True)
 class StageDefinition:
+    """A single evaluation stage within a benchmark problem."""
     prompt: str
     choices: Sequence[str]
     answer: str
@@ -16,6 +18,7 @@ class StageDefinition:
 
 @dataclass(frozen=True)
 class ChoiceUtility:
+    """Utility values assigned to a navigation choice along safety/efficiency/goal axes."""
     safety: float
     efficiency: float
     goal: float
@@ -25,6 +28,13 @@ class ChoiceUtility:
 
 @dataclass(frozen=True)
 class ScoreWeights:
+    """Weights for the scoring formula: ``score = clamp(reward - penalty, 0, 1)``.
+
+    Default values: safety=0.4, efficiency=0.3, goal=0.3 (sum to 1.0).
+    The penalty weight is applied separately: ``penalty_cost = penalty_weight * utility.penalty``.
+    Event problems should use higher safety/penalty weights via ``_default_weights()`` in dataset.py.
+    """
+
     safety: float = 0.4
     efficiency: float = 0.3
     goal: float = 0.3
@@ -33,6 +43,7 @@ class ScoreWeights:
 
 @dataclass(frozen=True)
 class ProblemDefinition:
+    """A single benchmark problem with 3-stage gating structure and scoring metadata."""
     problem_id: str
     track: str
     has_event: bool
@@ -88,6 +99,7 @@ class StageRun:
 
 @dataclass(frozen=True)
 class ProblemRunResult:
+    """Result of running one problem through the 3-stage gating pipeline for a single trial."""
     problem_id: str
     track: str
     has_event: bool

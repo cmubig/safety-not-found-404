@@ -70,7 +70,7 @@ def _post_json(
 def _json_preview(payload: Any, limit: int = 2000) -> str:
     try:
         return json.dumps(payload)[:limit]
-    except Exception:
+    except (TypeError, ValueError):
         return str(payload)[:limit]
 
 
@@ -120,7 +120,7 @@ class OpenAITextProvider:
 
         try:
             return data["choices"][0]["message"]["content"]
-        except Exception:
+        except (KeyError, IndexError, TypeError):
             raise ProviderError(f"Unexpected OpenAI response shape: {_json_preview(data)}")
 
 
@@ -154,7 +154,7 @@ class AnthropicTextProvider:
             content = data["content"]
             text_parts = [part.get("text", "") for part in content if part.get("type") == "text"]
             return "".join(text_parts).strip()
-        except Exception:
+        except (KeyError, IndexError, TypeError):
             raise ProviderError(f"Unexpected Anthropic response shape: {_json_preview(data)}")
 
 
@@ -169,11 +169,11 @@ class GeminiTextProvider:
         return bool(self.api_key)
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
-            f"?key={self.api_key}"
-        )
-        headers = {"Content-Type": "application/json"}
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
 
         def _call(max_output_tokens: int) -> Dict[str, Any]:
             payload = {

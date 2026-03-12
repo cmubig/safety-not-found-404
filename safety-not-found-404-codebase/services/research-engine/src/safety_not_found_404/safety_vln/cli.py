@@ -41,7 +41,7 @@ def _build_run_parser(subparsers: argparse._SubParsersAction) -> None:
     )
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--provider", default="openai")
-    parser.add_argument("--model", default="gpt-5.2")
+    parser.add_argument("--model", default="gpt-4.1")
     parser.add_argument("--output-dir", default="outputs/safety_vln")
     parser.add_argument("--trials-per-problem", type=int, default=1)
     parser.add_argument("--run-id", default="")

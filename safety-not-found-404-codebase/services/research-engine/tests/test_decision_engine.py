@@ -9,8 +9,8 @@ from safety_not_found_404.decision_experiments.models import ModelTarget, Prompt
 class _FakeProvider:
     def __init__(self) -> None:
         self._responses = iter([
-            "Answer: A\\nReason: first",
-            "Answer: B\\nReason: second",
+            "Answer: A\nReason: first",
+            "Answer: B\nReason: second",
         ])
 
     def is_configured(self) -> bool:
