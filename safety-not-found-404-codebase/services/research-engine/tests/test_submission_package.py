@@ -133,12 +133,14 @@ def test_build_submission_package_generates_all_core_artifacts(tmp_path: Path) -
                 "safety_event_score": 0.68,
                 "gap_general_minus_event": 0.08,
             },
-            "disparity_metrics": {
+            "fairness_metrics": {
                 "ltr_minus_rtl_score_gap": 0.06,
-                "high_minus_low_time_interval_gap": -0.13,
-                "high_minus_low_risk_gap": -0.15,
                 "demographic_max_minus_min_score_gap": 0.07,
                 "demographic_max_minus_min_human_alignment_gap": 0.05,
+            },
+            "robustness_metrics": {
+                "high_minus_low_time_interval_gap": -0.13,
+                "high_minus_low_risk_gap": -0.15,
             },
         },
     )

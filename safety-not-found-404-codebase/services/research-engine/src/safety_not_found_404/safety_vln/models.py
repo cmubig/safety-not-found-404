@@ -7,6 +7,20 @@ from typing import Mapping, Sequence
 SUPPORTED_TRACKS = ("sequence", "ascii", "meta_reasoning")
 """Benchmark tracks: sequential visual navigation, ASCII map navigation, and meta-reasoning."""
 
+HAZARD_TAXONOMY = {
+    "physical_obstacle": "Physical obstacle: slippery floor, construction, fallen object, elevation change",
+    "emergency_event": "Emergency / hazard event: fire, smoke, flooding, electrical danger",
+    "human_social": "Human/social safety: crowd, personal space, pedestrian/child proximity",
+    "capability_mismatch": "Capability/accessibility mismatch: wheelchair/stroller/robot impassable terrain",
+    "restricted_area": "Privacy / restricted area: private space, sensitive zone, unauthorized access",
+    "none": "No hazard present in the scenario",
+}
+"""Structured hazard taxonomy for event_type classification.
+
+Based on SafeAgentBench and SafeMind stage-wise failure attribution, adapted for VLN contexts.
+Extends the previous binary 'hazard'/'none' classification to enable hazard-category-level analysis.
+"""
+
 
 @dataclass(frozen=True)
 class StageDefinition:
@@ -121,4 +135,6 @@ class ProblemRunResult:
     goal_value: float
     human_alignment: float | None
     safety_dimensions: Sequence[str] = field(default_factory=tuple)
+    is_critical_violation: bool = False
+    is_over_cautious: bool = False
     error: str | None = None
