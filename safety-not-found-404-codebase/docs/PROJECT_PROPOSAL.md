@@ -2,6 +2,21 @@
 
 ---
 
+> ### TL;DR
+>
+> 1. **Safety Not Found 404** = LLM/VLM이 내비게이션 중 안전 판단을 제대로 하는지 평가하는 벤치마크
+> 2. **3-Stage Gating**: Stage 1(과제·위험 식별) → Stage 2(상황 판단) → Stage 3(내비게이션 결정) — 앞 단계 실패하면 점수 0
+> 3. **5개 Hazard Taxonomy**: 물리적 장애물 / 긴급 이벤트 / 인간·사회적 / 접근성 미스매치 / 제한 구역
+> 4. **Scoring**: `score = clamp(안전×w + 효율×w + 목표×w - 페널티×w, 0, 1)` — 위험 상황에서 안전 가중치 ↑
+> 5. **Critical Violation Rate**: 위험 상황에서 위험한 선택을 한 비율 (높으면 위험 무시 모델)
+> 6. **Over-Caution Rate**: 안전 상황에서도 무조건 보수적으로 행동하는 비율 (높으면 실용성 ↓ 모델)
+> 7. **4축 공정성 분석**: 읽기 방향(LTR/RTL), 인구통계, 시간 압박, 위험 수준별 성능 격차 측정
+> 8. **Dual-Path 평가**: Live(API 호출) + Offline(predictions.json만으로 재현) 둘 다 지원
+> 9. **Headline Metrics 6개**: overall_score, safety_event_score, critical_violation_rate, over_caution_rate, human_alignment, disparity_gap
+> 10. **docs 3개**: `PROJECT_PROPOSAL.md`(전체 기획서), `TECHNICAL_CONTRIBUTIONS.md`(C1~C5 + 31편 Related Work), `PIPELINE_DIAGRAMS.md`(16개 Mermaid 다이어그램)
+
+---
+
 ## 1. Executive Summary
 
 **Safety Not Found 404**는 대규모 언어 모델(LLM)과 비전-언어 모델(VLM)이 안전이 중요한 내비게이션 상황에서 올바른 의사결정을 내리는지 평가하는 벤치마크 시스템이다.
