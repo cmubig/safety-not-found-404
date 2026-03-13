@@ -4,6 +4,102 @@
 
 ---
 
+## 0. Full Pipeline Overview (전체 한눈에 보기)
+
+> **이 다이어그램 하나로 Safety Not Found 404의 전체 흐름을 파악할 수 있습니다.**
+
+```mermaid
+flowchart TB
+    %% ========== INPUT ==========
+    SEED["🌱 Seed (정수)"] --> GEN["generate_synthetic_dataset()"]
+    GEN --> DS[("📦 Dataset JSON<br/>300 Problems<br/>3 Tracks × Event/Non-event<br/>5 Hazard Categories")]
+    DS --> VAL{"✅ validate_dataset()<br/>9 constraints"}
+    VAL -->|Invalid| GEN
+    VAL -->|Valid| SPLIT
+
+    %% ========== EVALUATION PATHS ==========
+    SPLIT(("Evaluation Path")) --> LIVE
+    SPLIT --> OFFLINE
+
+    subgraph LIVE["🔴 Live Path (API 호출)"]
+        direction TB
+        L_MODEL["Select Model<br/>OpenAI / Anthropic / Gemini"] --> L_RUN["run_benchmark()"]
+    end
+
+    subgraph OFFLINE["🟢 Offline Path (API 불필요)"]
+        direction TB
+        O_PRED["predictions.json<br/>(사전 생성된 선택지)"] --> O_EVAL["evaluate_predictions()"]
+    end
+
+    %% ========== 3-STAGE GATING ==========
+    LIVE --> GATING
+    OFFLINE --> GATING
+
+    subgraph GATING["⚡ 3-Stage Gating (per Problem × Trial)"]
+        direction LR
+        S1["Stage 1<br/>Task & Hazard<br/>Grounding<br/>━━━━━━━━━━<br/>과제 + 위험 식별"] -->|PASS| S2["Stage 2<br/>Situation<br/>Judgment<br/>━━━━━━━━━━<br/>이벤트 인식"]
+        S2 -->|PASS| S3["Stage 3<br/>Navigation<br/>Decision<br/>━━━━━━━━━━<br/>A 안전우회<br/>B 지름길<br/>C 균형<br/>D 후퇴"]
+        S1 -->|FAIL| ZERO1["score = 0"]
+        S2 -->|FAIL| ZERO2["score = 0"]
+    end
+
+    %% ========== SCORING ==========
+    S3 --> SCORING
+
+    subgraph SCORING["📊 Scoring Engine"]
+        direction TB
+        SC1["compute_choice_score()<br/>score = clamp(reward - penalty, 0, 1)"]
+        SC2["compute_human_alignment()<br/>alignment = human_dist[choice]"]
+        SC3["Behavioral Flags<br/>🚨 is_critical_violation<br/>⚠️ is_over_cautious"]
+        SC1 --> RESULT
+        SC2 --> RESULT
+        SC3 --> RESULT
+    end
+
+    RESULT["ProblemRunResult<br/>score + alignment + flags"]
+
+    %% ========== AGGREGATION ==========
+    RESULT --> AGG
+    ZERO1 --> AGG
+    ZERO2 --> AGG
+
+    subgraph AGG["📈 Aggregation & Analysis"]
+        direction TB
+        CORE["Core Scores<br/>general_score<br/>safety_event_score<br/>gap"]
+        DISP["Disparity Metrics<br/>LTR↔RTL gap<br/>Demographic gap<br/>Time pressure gap<br/>Risk level gap"]
+        HEAD["Headline Metrics<br/>━━━━━━━━━━━━━━<br/>overall_gated_score<br/>safety_event_score<br/>critical_violation_rate<br/>over_caution_rate<br/>human_alignment_mean<br/>disparity_max_gap"]
+        CORE --> HEAD
+        DISP --> HEAD
+    end
+
+    %% ========== OUTPUT ==========
+    HEAD --> OUT
+
+    subgraph OUT["📁 Outputs"]
+        CSV[("results.csv")]
+        JSON[("summary.json")]
+        TXT[("summary.txt")]
+        LB[("leaderboard.json")]
+    end
+
+    OUT --> DASH["🌐 Dashboard<br/>Next.js Leaderboard"]
+
+    %% ========== STYLES ==========
+    style DS fill:#3498db,stroke:#fff,color:#fff
+    style GATING fill:#0d1b2a,stroke:#e94560,color:#eee
+    style SCORING fill:#0d1b2a,stroke:#2ecc71,color:#eee
+    style AGG fill:#0d1b2a,stroke:#f39c12,color:#eee
+    style LIVE fill:#1a1a2e,stroke:#e94560,color:#eee
+    style OFFLINE fill:#1a1a2e,stroke:#2ecc71,color:#eee
+    style OUT fill:#1a1a2e,stroke:#533483,color:#eee
+    style HEAD fill:#533483,stroke:#fff,color:#fff
+    style DASH fill:#533483,stroke:#fff,color:#fff
+```
+
+**요약**: Seed → Dataset 생성 → 검증 → Live/Offline 평가 → 3-Stage Gating → Scoring(점수 + 행동 플래그) → Aggregation(Headline Metrics 6개) → Leaderboard
+
+---
+
 ## 1. End-to-End Benchmark Pipeline (전체 파이프라인)
 
 ```mermaid
@@ -26,10 +122,12 @@ flowchart TB
 
     subgraph Phase3["Phase 3: Scoring & Analysis"]
         C1["compute_choice_score()<br/>per Stage 3 answer"] --> C2["compute_human_alignment()<br/>vs human distribution"]
-        C2 --> C3["summarize_run()"]
+        C2 --> C2B["Behavioral Flags<br/>critical_violation / over_cautious"]
+        C2B --> C3["summarize_run()"]
         C3 --> C4["Core Scores<br/>general / event / gap"]
         C3 --> C5["Disparity Metrics<br/>LTR-RTL / demographic / time / risk"]
         C3 --> C6["Group Breakdowns<br/>by track / direction / demographic"]
+        C3 --> C7["Headline Metrics<br/>6 key indicators"]
     end
 
     subgraph Phase4["Phase 4: Publication"]
@@ -59,7 +157,7 @@ flowchart TB
 flowchart TD
     START(["Problem Input<br/>context + 3 stages + utilities"]) --> S1
 
-    subgraph STAGE1["Stage 1: Exam Understanding"]
+    subgraph STAGE1["Stage 1: Task & Hazard Grounding"]
         S1["LLM receives:<br/>system_prompt + stage1.prompt"]
         S1 --> S1R["LLM Response:<br/>'Answer: A\nReason: ...'"]
         S1R --> S1J{"judge.evaluate()<br/>parse_choice()"}
@@ -67,7 +165,7 @@ flowchart TD
         S1J -->|"mismatch or unparseable"| S1F["FAIL ✗"]
     end
 
-    subgraph STAGE2["Stage 2: Situation Understanding"]
+    subgraph STAGE2["Stage 2: Situation Judgment"]
         S2["LLM receives:<br/>system_prompt + stage2.prompt"]
         S2 --> S2R["LLM Response"]
         S2R --> S2J{"judge.evaluate()"}
@@ -92,7 +190,7 @@ flowchart TD
     S3SCORE --> RESULT
     S3ALIGN --> RESULT
 
-    RESULT(["ProblemRunResult<br/>score: 0.0 ~ 1.0<br/>human_alignment: 0.0 ~ 1.0"])
+    RESULT(["ProblemRunResult<br/>score: 0.0 ~ 1.0<br/>human_alignment: 0.0 ~ 1.0<br/>is_critical_violation | is_over_cautious"])
     ZERO1 --> RESULT
     ZERO2 --> RESULT
 
@@ -204,7 +302,7 @@ erDiagram
         string problem_id "sequence_0001"
         enum track "sequence | ascii | meta_reasoning"
         bool has_event "true | false"
-        string event_type "hazard | none"
+        enum event_type "physical_obstacle | emergency_event | human_social | capability_mismatch | restricted_area | none"
         string persona "balanced"
         string context "scenario text"
         enum risk_level "low | medium | high"
@@ -589,13 +687,13 @@ sequenceDiagram
 
     DS->>ENG: ProblemDefinition (problem_id, context, stages, utilities)
 
-    Note over ENG: Stage 1: Exam Understanding
+    Note over ENG: Stage 1: Task & Hazard Grounding
     ENG->>LLM: generate(system_prompt, stage1.prompt)
     LLM-->>ENG: "Answer: A\nReason: sequence reading"
     ENG->>JDG: evaluate(response, expected="A", allowed=["A","B","C"])
     JDG-->>ENG: StageJudgement(passed=true, choice="A")
 
-    Note over ENG: Stage 2: Situation Understanding
+    Note over ENG: Stage 2: Situation Judgment
     ENG->>LLM: generate(system_prompt, stage2.prompt)
     LLM-->>ENG: "Answer: A\nReason: fire risk present"
     ENG->>JDG: evaluate(response, expected="A", allowed=["A","B"])
@@ -613,7 +711,7 @@ sequenceDiagram
     SCR-->>ENG: 0.45
 
     ENG->>CSV: append_row(ProblemRunResult)
-    Note over CSV: score=0.76, alignment=0.45, all 46 columns
+    Note over CSV: score=0.76, alignment=0.45, critical_violation=false, over_cautious=false
 ```
 
 ---
