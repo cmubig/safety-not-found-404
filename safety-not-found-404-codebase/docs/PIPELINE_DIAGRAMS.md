@@ -43,32 +43,18 @@ flowchart TB
     %% ================================================================
     %% PHASE 2: EVALUATION PATH
     %% ================================================================
-    READY --> PATH
+    READY --> L1
 
-    subgraph PH2["PHASE 2: Evaluation Path (평가 경로 선택)"]
-        PATH(("어떤 경로?"))
-
-        subgraph LIVE["Live Path (API 호출)"]
-            direction TB
-            L1["모델 선택<br/>━━━━━━━━━━━━━━<br/>OpenAI: gpt-4.1, gpt-4.1-mini<br/>Anthropic: claude-sonnet<br/>Google: gemini-2.5-flash"]
-            L1 --> L2["run_benchmark()<br/>━━━━━━━━━━━━━━<br/>API 실시간 호출<br/>원본 응답 텍스트 보존<br/>비용 발생"]
-        end
-
-        subgraph OFFLINE["Offline Path (API 불필요)"]
-            direction TB
-            O1["predictions.json 로드<br/>━━━━━━━━━━━━━━<br/>사전 생성된 선택지만<br/>API 비용 = 0<br/>누구나 동일 결과 재현"]
-            O1 --> O2["evaluate_predictions()<br/>━━━━━━━━━━━━━━<br/>동일한 scoring 함수 사용<br/>공정한 비교 보장"]
-        end
-
-        PATH --> LIVE
-        PATH --> OFFLINE
+    subgraph PH2["PHASE 2: Evaluation (모델 평가)"]
+        direction TB
+        L1["모델 선택<br/>━━━━━━━━━━━━━━<br/>OpenAI: gpt-4.1, gpt-4.1-mini<br/>Anthropic: claude-sonnet<br/>Google: gemini-2.5-flash"]
+        L1 --> L2["run_benchmark()<br/>━━━━━━━━━━━━━━<br/>API 실시간 호출<br/>원본 응답 텍스트 보존"]
     end
 
     %% ================================================================
     %% PHASE 3: 3-STAGE GATING (핵심)
     %% ================================================================
-    LIVE --> GATING
-    OFFLINE --> GATING
+    L2 --> GATING
 
     subgraph PH3["PHASE 3: 3-Stage Gating (문제당 × 시행당 반복)"]
         subgraph GATING["핵심: 앞 단계 실패 시 다음 단계 진입 불가"]
@@ -146,11 +132,15 @@ flowchart TB
             CS3["gap: general - event (차이)"]
         end
 
-        subgraph DISPARITY["4-Axis Fairness Disparity (4축 공정성)"]
-            D1["LTR vs RTL gap<br/>읽기 방향 편향<br/>(아랍어/히브리어 차별?)"]
-            D2["Demographic gap<br/>인구통계 편향<br/>(인종/민족별 차이?)"]
-            D3["Time pressure gap<br/>시간 압박 편향<br/>(긴급 시 안전 포기?)"]
-            D4["Risk level gap<br/>위험 수준 편향<br/>(고위험 시 성능 저하?)"]
+        subgraph DISPARITY["Fairness + Robustness Disparity"]
+            subgraph FAIR["Fairness (공정성)"]
+                D1["LTR vs RTL gap<br/>읽기 방향 편향"]
+                D2["Demographic gap<br/>인구통계 편향"]
+            end
+            subgraph ROBUST["Robustness (강건성)"]
+                D3["Time pressure gap<br/>시간 압박 하 성능"]
+                D4["Risk level gap<br/>위험 수준 하 성능"]
+            end
         end
 
         subgraph BY_GROUP["Group Breakdowns"]
@@ -160,14 +150,15 @@ flowchart TB
             BG4["by_safety_dimension: hazard category별"]
         end
 
-        subgraph HEADLINE["Headline Metrics (6개 핵심 — 이것만 보면 됨)"]
+        subgraph HEADLINE["Headline Metrics (7개 핵심 — 이것만 보면 됨)"]
             direction LR
             HM1["overall_gated_score<br/>━━━━━━━━━━<br/>전체 평균 점수<br/>(높을수록 좋음)"]
             HM2["safety_event_score<br/>━━━━━━━━━━<br/>위험 문제 점수<br/>(높을수록 좋음)"]
+            HM2B["event_failure_rate<br/>━━━━━━━━━━<br/>이벤트 이해 실패 비율<br/>(0에 가까울수록 좋음)"]
             HM3["critical_violation_rate<br/>━━━━━━━━━━<br/>위험 위반 비율<br/>(0에 가까울수록 좋음)"]
             HM4["over_caution_rate<br/>━━━━━━━━━━<br/>과잉 보수 비율<br/>(0에 가까울수록 좋음)"]
-            HM5["human_alignment_mean<br/>━━━━━━━━━━<br/>인간 정렬도<br/>(높을수록 좋음)"]
-            HM6["disparity_max_gap<br/>━━━━━━━━━━<br/>최대 공정성 격차<br/>(0에 가까울수록 좋음)"]
+            HM6["fairness_max_gap<br/>━━━━━━━━━━<br/>공정성 최대 격차<br/>(0에 가까울수록 좋음)"]
+            HM7["robustness_max_gap<br/>━━━━━━━━━━<br/>강건성 최대 격차<br/>(0에 가까울수록 좋음)"]
         end
 
         CORE_SCORES --> HEADLINE
@@ -202,13 +193,11 @@ flowchart TB
 
     %% ========== STYLES ==========
     style PH1 fill:#0d1b2a,stroke:#3498db,color:#eee
-    style PH2 fill:#0d1b2a,stroke:#1abc9c,color:#eee
+    style PH2 fill:#0d1b2a,stroke:#e94560,color:#eee
     style PH3 fill:#0d1b2a,stroke:#e94560,color:#eee
     style PH4 fill:#0d1b2a,stroke:#2ecc71,color:#eee
     style PH5 fill:#0d1b2a,stroke:#f39c12,color:#eee
     style PH6 fill:#0d1b2a,stroke:#533483,color:#eee
-    style LIVE fill:#1a1a2e,stroke:#e94560,color:#eee
-    style OFFLINE fill:#1a1a2e,stroke:#2ecc71,color:#eee
     style HEADLINE fill:#533483,stroke:#fff,color:#fff
     style FLAGS fill:#1a1a2e,stroke:#e74c3c,color:#eee
     style GATING fill:#16213e,stroke:#e94560,color:#eee
@@ -216,7 +205,7 @@ flowchart TB
     style ZERO2 fill:#e74c3c,stroke:#fff,color:#fff
 ```
 
-**한 문장 요약**: Seed 하나로 데이터셋을 결정론적으로 생성하고, 3단계 게이팅으로 이해 없는 정답을 구조적으로 제거한 뒤, 4차원 효용 점수와 행동 플래그(위험 위반/과잉 보수)로 모델을 평가하여, 6개 Headline Metric으로 "안전한가, 과잉보수적인가, 공정한가, 인간과 정렬되는가"를 한눈에 판단한다.
+**한 문장 요약**: Seed 하나로 데이터셋을 결정론적으로 생성하고, 3단계 게이팅으로 이해 없는 정답을 구조적으로 제거한 뒤, 4차원 효용 점수와 행동 지표(위험 위반/이벤트 실패/과잉 보수)로 모델을 평가하여, 7개 Headline Metric으로 "안전한가, 위험을 이해하는가, 과잉보수적인가, 공정한가, 스트레스에 강건한가"를 한눈에 판단한다.
 
 ---
 
@@ -245,9 +234,9 @@ flowchart TB
         C2 --> C2B["Behavioral Flags<br/>critical_violation / over_cautious"]
         C2B --> C3["summarize_run()"]
         C3 --> C4["Core Scores<br/>general / event / gap"]
-        C3 --> C5["Disparity Metrics<br/>LTR-RTL / demographic / time / risk"]
+        C3 --> C5["Disparity Metrics<br/>Fairness (LTR-RTL, demographic)<br/>Robustness (time, risk)"]
         C3 --> C6["Group Breakdowns<br/>by track / direction / demographic"]
-        C3 --> C7["Headline Metrics<br/>6 key indicators"]
+        C3 --> C7["Headline Metrics<br/>7 key indicators"]
     end
 
     subgraph Phase4["Phase 4: Publication"]
@@ -363,39 +352,50 @@ flowchart LR
 
 ---
 
-## 4. Disparity Metrics Computation (공정성 지표 계산)
+## 4. Disparity Metrics Computation (공정성 & 강건성 지표 계산)
 
 ```mermaid
 flowchart TD
     RESULTS[("All ProblemRunResults<br/>(n problems × trials)")] --> GROUP
 
     subgraph GROUP["Group by Axis"]
-        G1["by sequence_direction<br/>LTR vs RTL"]
-        G2["by demographic_group<br/>white / black / asian / hispanic"]
-        G3["by time_interval_bucket<br/>low / medium / high"]
-        G4["by risk_level<br/>low / medium / high"]
+        subgraph FAIRNESS["Fairness Axes (공정성)"]
+            G1["by sequence_direction<br/>LTR vs RTL"]
+            G2["by demographic_group<br/>white / black / asian / hispanic"]
+        end
+        subgraph ROBUSTNESS["Robustness Axes (강건성)"]
+            G3["by time_interval_bucket<br/>low / medium / high"]
+            G4["by risk_level<br/>low / medium / high"]
+        end
     end
 
     subgraph COMPUTE["Compute Gaps"]
         G1 --> D1["ltr_minus_rtl_gap<br/>= mean(LTR) - mean(RTL)"]
         G2 --> D2["demographic_gap<br/>= max(group means) - min(group means)"]
+        D1 --> FMG["fairness_max_gap<br/>= max(|D1|, D2)"]
+        D2 --> FMG
+
         G3 --> D3["time_interval_gap<br/>= mean(high) - mean(low)"]
         G4 --> D4["risk_gap<br/>= mean(high risk) - mean(low risk)"]
+        D3 --> RMG["robustness_max_gap<br/>= max(|D3|, |D4|)"]
+        D4 --> RMG
     end
 
     subgraph INTERPRET["Interpretation"]
-        D1 --> I1{"gap ≈ 0?"}
-        I1 -->|Yes| F1["Fair: 읽기 방향에<br/>무관하게 공정"]
-        I1 -->|No| B1["Biased: 방향에 따라<br/>성능 차이 존재"]
+        FMG --> I1{"fairness_max_gap ≈ 0?"}
+        I1 -->|Yes| F1["Fair: 인구통계/방향에<br/>무관하게 공정"]
+        I1 -->|No| B1["Biased: 하위 그룹에서<br/>체계적 성능 차이"]
 
-        D2 --> I2{"gap ≈ 0?"}
-        I2 -->|Yes| F2["Fair: 인구통계에<br/>무관하게 공정"]
-        I2 -->|No| B2["Biased: 특정 그룹에서<br/>체계적 성능 차이"]
+        RMG --> I2{"robustness_max_gap ≈ 0?"}
+        I2 -->|Yes| F2["Robust: 스트레스 조건에서도<br/>안정적 성능"]
+        I2 -->|No| B2["Fragile: 압박/고위험 시<br/>성능 저하"]
     end
 
     style GROUP fill:#0d1b2a,stroke:#3498db,color:#eee
     style COMPUTE fill:#0d1b2a,stroke:#e94560,color:#eee
     style INTERPRET fill:#0d1b2a,stroke:#2ecc71,color:#eee
+    style FAIRNESS fill:#16213e,stroke:#3498db,color:#eee
+    style ROBUSTNESS fill:#16213e,stroke:#f39c12,color:#eee
 ```
 
 ---
@@ -623,39 +623,7 @@ flowchart TD
 
 ---
 
-## 9. Live vs Offline Evaluation (라이브 vs 오프라인)
-
-```mermaid
-flowchart LR
-    subgraph LIVE["Live Benchmark (run-benchmark)"]
-        direction TB
-        L1["Dataset JSON"] --> L2["LLM API Call<br/>(per stage × problem × trial)"]
-        L2 --> L3["judge.evaluate()"]
-        L3 --> L4["scoring + alignment"]
-        L4 --> L5["CSV + Summary"]
-
-        L_NOTE["API 비용 발생<br/>실시간 모델 응답<br/>원본 응답 텍스트 보존"]
-    end
-
-    subgraph OFFLINE["Offline Evaluation (evaluate-submission)"]
-        direction TB
-        O1["Dataset JSON"] --> O2["predictions.json<br/>(사전 생성된 선택지)"]
-        O2 --> O3["3-Stage Gating<br/>(choice match only)"]
-        O3 --> O4["scoring + alignment"]
-        O4 --> O5["CSV + Summary"]
-
-        O_NOTE["API 비용 없음<br/>재현 가능<br/>누구나 동일 결과"]
-    end
-
-    LIVE -.->|"Same scoring<br/>Same metrics<br/>Same output format"| OFFLINE
-
-    style LIVE fill:#0d1b2a,stroke:#e94560,color:#eee
-    style OFFLINE fill:#0d1b2a,stroke:#2ecc71,color:#eee
-```
-
----
-
-## 10. Statistical Analysis Pipeline (통계 분석)
+## 9. Statistical Analysis Pipeline (통계 분석)
 
 ```mermaid
 flowchart TD
@@ -705,7 +673,7 @@ flowchart TD
 
 ---
 
-## 11. System Architecture Overview (시스템 아키텍처)
+## 10. System Architecture Overview (시스템 아키텍처)
 
 ```mermaid
 graph TB
@@ -794,7 +762,7 @@ graph TB
 
 ---
 
-## 12. Problem Lifecycle (문제 하나의 생명주기)
+## 11. Problem Lifecycle (문제 하나의 생명주기)
 
 ```mermaid
 sequenceDiagram
@@ -836,7 +804,7 @@ sequenceDiagram
 
 ---
 
-## 13. Benchmark Comparison Matrix (벤치마크 비교)
+## 12. Benchmark Comparison Matrix (벤치마크 비교)
 
 ```mermaid
 quadrantChart
@@ -858,7 +826,7 @@ quadrantChart
 
 ---
 
-## 14. Weight Configuration Impact (가중치 설정의 영향)
+## 13. Weight Configuration Impact (가중치 설정의 영향)
 
 ```mermaid
 xychart-beta
@@ -873,20 +841,16 @@ xychart-beta
 
 ---
 
-## 15. Data Flow Summary (데이터 흐름 요약)
+## 14. Data Flow Summary (데이터 흐름 요약)
 
 ```mermaid
 flowchart LR
     A["Seed<br/>(integer)"] -->|deterministic| B["Dataset<br/>(300 JSON problems)"]
-    B -->|+ LLM API| C["Live Results<br/>(CSV + JSON)"]
-    B -->|+ predictions.json| D["Offline Results<br/>(CSV + JSON)"]
+    B -->|+ LLM API| C["Results<br/>(CSV + JSON)"]
     C --> E["Summary Stats"]
-    D --> E
-    E --> F["Disparity Analysis"]
+    E --> F["Fairness +<br/>Robustness Analysis"]
     F --> G["Publication Tables"]
     G --> H["Leaderboard"]
-
-    C -.->|"same format"| D
 
     style A fill:#e94560,stroke:#fff,color:#fff
     style B fill:#3498db,stroke:#fff,color:#fff

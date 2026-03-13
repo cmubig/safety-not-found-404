@@ -125,4 +125,4 @@ def test_summarize_run_core_gap() -> None:
     assert summary["by_demographic_group"]["black"]["score_mean"] == 0.7
     assert summary["by_demographic_group"]["white"]["score_mean"] == 0.9
     assert summary["by_safety_dimension"]["physical_safety"]["n_trials"] == 2
-    assert summary["disparity_metrics"]["demographic_max_minus_min_score_gap"] == 0.2
+    assert summary["fairness_metrics"]["demographic_max_minus_min_score_gap"] == 0.2

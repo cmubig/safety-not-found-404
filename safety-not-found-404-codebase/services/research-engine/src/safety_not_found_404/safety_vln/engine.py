@@ -179,7 +179,6 @@ def _run_stage(
 
 def _format_summary_text(summary: Dict[str, Any]) -> str:
     core = summary.get("core_scores") or {}
-    disparity = summary.get("disparity_metrics") or {}
 
     lines: List[str] = []
     lines.append(f"dataset: {summary.get('dataset_name', '')}")
@@ -191,10 +190,11 @@ def _format_summary_text(summary: Dict[str, Any]) -> str:
     lines.append("headline metrics:")
     lines.append(f"  overall_gated_score: {headline.get('overall_gated_score', 0.0):.6f}")
     lines.append(f"  safety_event_score: {headline.get('safety_event_score', 0.0):.6f}")
+    lines.append(f"  event_failure_rate: {headline.get('event_failure_rate', 0.0):.6f}")
     lines.append(f"  critical_violation_rate: {headline.get('critical_violation_rate', 0.0):.6f}")
     lines.append(f"  over_caution_rate: {headline.get('over_caution_rate', 0.0):.6f}")
-    lines.append(f"  human_alignment_mean: {headline.get('human_alignment_mean', 0.0):.6f}")
-    lines.append(f"  disparity_max_gap: {headline.get('disparity_max_gap', 0.0):.6f}")
+    lines.append(f"  fairness_max_gap: {headline.get('fairness_max_gap', 0.0):.6f}")
+    lines.append(f"  robustness_max_gap: {headline.get('robustness_max_gap', 0.0):.6f}")
     lines.append("")
     lines.append("core scores:")
     lines.append(f"  general_score: {core.get('general_score', 0.0):.6f}")
@@ -210,11 +210,14 @@ def _format_summary_text(summary: Dict[str, Any]) -> str:
     lines.append("overall:")
     for key in (
         "n_trials",
+        "n_event_trials",
+        "n_non_event_trials",
         "stage1_pass_rate",
         "stage2_pass_rate",
         "stage3_attempt_rate",
         "stage3_scored_rate",
         "stage3_accuracy",
+        "event_failure_rate",
         "critical_violation_rate",
         "over_caution_rate",
         "score_mean",
@@ -226,16 +229,25 @@ def _format_summary_text(summary: Dict[str, Any]) -> str:
         else:
             lines.append(f"  {key}: {value}")
 
+    fairness = summary.get("fairness_metrics") or {}
     lines.append("")
-    lines.append("disparity metrics:")
+    lines.append("fairness metrics:")
     for key in (
         "ltr_minus_rtl_score_gap",
-        "high_minus_low_time_interval_gap",
-        "high_minus_low_risk_gap",
         "demographic_max_minus_min_score_gap",
         "demographic_max_minus_min_human_alignment_gap",
     ):
-        value = float(disparity.get(key, 0.0))
+        value = float(fairness.get(key, 0.0))
+        lines.append(f"  {key}: {value:.6f}")
+
+    robustness = summary.get("robustness_metrics") or {}
+    lines.append("")
+    lines.append("robustness metrics:")
+    for key in (
+        "high_minus_low_time_interval_gap",
+        "high_minus_low_risk_gap",
+    ):
+        value = float(robustness.get(key, 0.0))
         lines.append(f"  {key}: {value:.6f}")
 
     def _append_bucket_scores(title: str, bucket: Mapping[str, Any] | None) -> None:
