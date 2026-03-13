@@ -51,11 +51,11 @@ flowchart TD
 
 | 기존 연구 분야 | 무엇을 측정하는가 | 무엇을 놓치는가 |
 |---|---|---|
-| **LLM Safety Benchmarks** (SafetyBench, SALAD-Bench, HarmBench 등) | 유해 콘텐츠 생성, jailbreak 방어, 독성 | 공간 추론, 내비게이션 맥락, 시각 정보 기반 판단 |
-| **VLN Benchmarks** (R2R, REVERIE, ALFRED 등) | 경로 정확도, SPL, Task Completion | 안전 위험 인식, 위험 상황 회피, 윤리적 판단 |
-| **Fairness Benchmarks** (TrustGPT, HALF, TrustLLM 등) | 텍스트 편향, 인구통계적 공정성 | 공간적 맥락에서의 편향 (읽기 방향, 시간 압박) |
-| **Safety in Embodied AI** (SafeEmbodAI, SAFER 등) | 로봇 안전 프레임워크 | 체계적 벤치마크가 아닌 방어 기법; VLN 미적용 |
-| **HA-VLN** (NeurIPS 2024) | 사회적 내비게이션 (개인 공간) | 안전 위험 판단 (화재, 장애물), 공정성 분석 |
+| **LLM Safety Benchmarks** ([SafetyBench](https://arxiv.org/abs/2309.07045), [SALAD-Bench](https://arxiv.org/abs/2402.05044), [HarmBench](https://arxiv.org/abs/2402.04249) 등) | 유해 콘텐츠 생성, jailbreak 방어, 독성 | 공간 추론, 내비게이션 맥락, 시각 정보 기반 판단 |
+| **VLN Benchmarks** ([R2R](https://arxiv.org/abs/1711.07280), [REVERIE](https://arxiv.org/abs/1904.10151), [ALFRED](https://arxiv.org/abs/1912.01734) 등) | 경로 정확도, SPL, Task Completion | 안전 위험 인식, 위험 상황 회피, 윤리적 판단 |
+| **Fairness Benchmarks** ([TrustGPT](https://arxiv.org/abs/2306.11507), [HALF](https://arxiv.org/abs/2510.12217), [TrustLLM](https://arxiv.org/abs/2401.05561) 등) | 텍스트 편향, 인구통계적 공정성 | 공간적 맥락에서의 편향 (읽기 방향, 시간 압박) |
+| **Safety in Embodied AI** ([SafeEmbodAI](https://arxiv.org/abs/2409.01630), [SAFER](https://arxiv.org/abs/2503.15707) 등) | 로봇 안전 프레임워크 | 체계적 벤치마크가 아닌 방어 기법; VLN 미적용 |
+| **[HA-VLN](https://arxiv.org/abs/2406.19236)** (NeurIPS 2024) | 사회적 내비게이션 (개인 공간) | 안전 위험 판단 (화재, 장애물), 공정성 분석 |
 
 **핵심 발견: Safety + VLN + Fairness를 동시에 다루는 벤치마크는 존재하지 않는다.**
 
@@ -67,7 +67,7 @@ flowchart TD
 
 **기존 문제:**
 - 기존 벤치마크는 단일 정확도(accuracy, SPL)로 평가하여, 모델이 "문제를 이해했는지"와 "안전하게 판단했는지"를 분리할 수 없다.
-- R-Judge(EMNLP 2024)는 에이전트 로그를 사후 판정하지만, 모델의 실시간 이해도를 검증하지 않는다.
+- [R-Judge](https://arxiv.org/abs/2401.10019)(EMNLP 2024)는 에이전트 로그를 사후 판정하지만, 모델의 실시간 이해도를 검증하지 않는다.
 
 **우리의 기여:**
 
@@ -102,9 +102,9 @@ Safety Not Found 404:
 ### Contribution 2: Multi-Axis Fairness Disparity Framework for Navigation
 
 **기존 문제:**
-- TrustGPT, HALF 등은 텍스트 편향만 측정 (독성, 감정, 스테레오타입)
-- VLN 벤치마크는 공정성을 전혀 측정하지 않음
-- **내비게이션 맥락에서의 편향**(읽기 방향, 시간 압박, 인구통계)은 미탐구 영역
+- [TrustGPT](https://arxiv.org/abs/2306.11507), [HALF](https://arxiv.org/abs/2510.12217) 등은 텍스트 편향만 측정 (독성, 감정, 스테레오타입)
+- VLN 벤치마크([R2R](https://arxiv.org/abs/1711.07280), [VLNVerse](https://arxiv.org/abs/2512.19021))는 공정성을 전혀 측정하지 않음
+- **내비게이션 맥락에서의 편향**(읽기 방향, 시간 압박, 인구통계)은 미탐구 영역. [HA-VLN](https://arxiv.org/abs/2406.19236)은 사회적 거리만 다루고 인구통계/방향 편향은 미탐구
 
 **우리의 기여:**
 
@@ -179,10 +179,10 @@ score = clamp(w_s·u_s + w_e·u_e + w_g·u_g - w_p·u_p, 0, 1)
 
 | Framework | Score Type | Safety 반영 | Trade-off 모델링 | Behavioral Flags |
 |---|---|---|---|---|
-| R2R SPL | 연속 (거리 기반) | 없음 | 없음 | 없음 |
-| SafetyBench | 이진 (정답/오답) | 유해성만 | 없음 | 없음 |
-| R-Judge | 이진 (safe/unsafe) | 있음 | 없음 | 없음 |
-| OR-Bench | Over-refusal 비율 | 거부만 | 없음 | Over-refusal만 |
+| [R2R](https://arxiv.org/abs/1711.07280) SPL | 연속 (거리 기반) | 없음 | 없음 | 없음 |
+| [SafetyBench](https://arxiv.org/abs/2309.07045) | 이진 (정답/오답) | 유해성만 | 없음 | 없음 |
+| [R-Judge](https://arxiv.org/abs/2401.10019) | 이진 (safe/unsafe) | 있음 | 없음 | 없음 |
+| [OR-Bench](https://arxiv.org/abs/2405.20947) | Over-refusal 비율 | 거부만 | 없음 | Over-refusal만 |
 | **Ours** | **연속 (효용 기반)** | **가중치 적응** | **4차원 효용 trade-off** | **Critical Violation + Over-Caution** |
 
 ---
@@ -252,48 +252,48 @@ score = clamp(w_s·u_s + w_e·u_e + w_g·u_g - w_p·u_p, 0, 1)
 
 | Paper | Venue | Focus | vs Ours |
 |---|---|---|---|
-| SafetyBench (Zhang et al.) | ACL 2024 | 11K MC across 7 safety categories | 텍스트 전용, 내비게이션 없음 |
-| SALAD-Bench (Li et al.) | ACL Findings 2024 | 21K questions, hierarchical taxonomy | 텍스트 전용, 공정성 미측정 |
-| HarmBench (Mazeika et al.) | 2024 | Red teaming standardization | 공격/방어 평가, VLN 없음 |
-| JailbreakBench (Chao et al.) | NeurIPS 2024 | Jailbreak robustness | Adversarial 전용 |
-| WildGuard (Han et al.) | NeurIPS 2024 | Moderation tool | 도구지 벤치마크가 아님 |
-| TrustLLM (Huang et al.) | ICML 2024 | 6 trustworthiness dimensions | 포괄적이나 텍스트 전용 |
-| R-Judge (Yuan et al.) | EMNLP 2024 | Agent safety risk judgment | 텍스트 에이전트 로그, VLN 아님 |
-| MLCommons AI Safety v1.0 | 2025 | Industry standard, 43K prompts | 산업 표준이나 텍스트 전용 |
-| OR-Bench (Cui et al.) | ICML 2025 | Over-refusal measurement | 거부 편향 전용 |
-| HALF | 2025 | Harm-aware LLM fairness | 가장 유사하나 텍스트 전용, VLN 없음 |
-| CASE-Bench (Sun et al.) | 2025 | Context-aware safety | 맥락 이론 기반이나 비시각적 |
+| [SafetyBench](https://arxiv.org/abs/2309.07045) (Zhang et al.) | ACL 2024 | 11K MC across 7 safety categories | 텍스트 전용, 내비게이션 없음 |
+| [SALAD-Bench](https://arxiv.org/abs/2402.05044) (Li et al.) | ACL Findings 2024 | 21K questions, hierarchical taxonomy | 텍스트 전용, 공정성 미측정 |
+| [HarmBench](https://arxiv.org/abs/2402.04249) (Mazeika et al.) | 2024 | Red teaming standardization | 공격/방어 평가, VLN 없음 |
+| [JailbreakBench](https://arxiv.org/abs/2404.01318) (Chao et al.) | NeurIPS 2024 | Jailbreak robustness | Adversarial 전용 |
+| [WildGuard](https://arxiv.org/abs/2406.18495) (Han et al.) | NeurIPS 2024 | Moderation tool | 도구지 벤치마크가 아님 |
+| [TrustLLM](https://arxiv.org/abs/2401.05561) (Huang et al.) | ICML 2024 | 6 trustworthiness dimensions | 포괄적이나 텍스트 전용 |
+| [R-Judge](https://arxiv.org/abs/2401.10019) (Yuan et al.) | EMNLP 2024 | Agent safety risk judgment | 텍스트 에이전트 로그, VLN 아님 |
+| [MLCommons AI Safety v1.0](https://arxiv.org/abs/2404.12241) | 2025 | Industry standard, 43K prompts | 산업 표준이나 텍스트 전용 |
+| [OR-Bench](https://arxiv.org/abs/2405.20947) (Cui et al.) | ICML 2025 | Over-refusal measurement | 거부 편향 전용 |
+| [HALF](https://arxiv.org/abs/2510.12217) | 2025 | Harm-aware LLM fairness | 가장 유사하나 텍스트 전용, VLN 없음 |
+| [CASE-Bench](https://hasp-lab.github.io/pubs/sun2025case.pdf) (Sun et al.) | 2025 | Context-aware safety | 맥락 이론 기반이나 비시각적 |
 
 ### 3.2 Vision-Language Navigation
 
 | Paper | Venue | Focus | vs Ours |
 |---|---|---|---|
-| R2R (Anderson et al.) | CVPR 2018 | 최초의 VLN, Matterport3D | 안전 차원 없음 |
-| REVERIE (Qi et al.) | CVPR 2020 | 고수준 지시 + 객체 위치 | 안전 없음 |
-| ALFRED (Shridhar et al.) | CVPR 2020 | 상호작용 기반 태스크 | 안전 없음 |
-| TEACh (Padmakumar et al.) | AAAI 2022 | 대화 기반 임바디드 태스크 | 안전 없음 |
-| VLN-CE (Krantz et al.) | ECCV 2020 | 연속 환경 VLN | 물리 현실감만, 안전 없음 |
-| NavGPT (Zhou et al.) | AAAI 2024 | LLM 기반 VLN 에이전트 | 방법론, 벤치마크 아님 |
-| NaVid (Zhang et al.) | RSS 2024 | 비디오 기반 VLM 내비게이션 | 방법론, 안전 없음 |
-| HA-VLN (Lee et al.) | NeurIPS 2024 | 인간 인식 VLN, 사회적 거리 | **가장 유사**: 사회적 내비게이션이나 안전 위험 판단 없음, 공정성 분석 없음 |
-| VLNVerse | 2025 | 통합 VLN, 263 환경 | 포괄적이나 안전 없음 |
-| Long-Horizon VLN (Song et al.) | CVPR 2025 | 장기 내비게이션 계획 | 규모 확장, 안전 없음 |
+| [R2R](https://arxiv.org/abs/1711.07280) (Anderson et al.) | CVPR 2018 | 최초의 VLN, Matterport3D | 안전 차원 없음 |
+| [REVERIE](https://arxiv.org/abs/1904.10151) (Qi et al.) | CVPR 2020 | 고수준 지시 + 객체 위치 | 안전 없음 |
+| [ALFRED](https://arxiv.org/abs/1912.01734) (Shridhar et al.) | CVPR 2020 | 상호작용 기반 태스크 | 안전 없음 |
+| [TEACh](https://arxiv.org/abs/2110.00534) (Padmakumar et al.) | AAAI 2022 | 대화 기반 임바디드 태스크 | 안전 없음 |
+| [VLN-CE](https://arxiv.org/abs/2004.02857) (Krantz et al.) | ECCV 2020 | 연속 환경 VLN | 물리 현실감만, 안전 없음 |
+| [NavGPT](https://arxiv.org/abs/2312.15241) (Zhou et al.) | AAAI 2024 | LLM 기반 VLN 에이전트 | 방법론, 벤치마크 아님 |
+| [NaVid](https://arxiv.org/abs/2402.15852) (Zhang et al.) | RSS 2024 | 비디오 기반 VLM 내비게이션 | 방법론, 안전 없음 |
+| [HA-VLN](https://arxiv.org/abs/2406.19236) (Lee et al.) | NeurIPS 2024 | 인간 인식 VLN, 사회적 거리 | **가장 유사**: 사회적 내비게이션이나 안전 위험 판단 없음, 공정성 분석 없음 |
+| [VLNVerse](https://arxiv.org/abs/2512.19021) | 2025 | 통합 VLN, 263 환경 | 포괄적이나 안전 없음 |
+| [Long-Horizon VLN](https://openaccess.thecvf.com/content/CVPR2025/papers/Song_Towards_Long-Horizon_Vision-Language_Navigation_Platform_Benchmark_and_Method_CVPR_2025_paper.pdf) (Song et al.) | CVPR 2025 | 장기 내비게이션 계획 | 규모 확장, 안전 없음 |
 
 ### 3.3 Safety in Embodied AI / Navigation
 
 | Paper | Venue | Focus | vs Ours |
 |---|---|---|---|
-| SafeEmbodAI (Zhang et al.) | 2024 | 로봇 안전 프레임워크 | 방어 기법, 벤치마크 아님 |
-| SAFER | 2025 | Multi-LLM 안전 계획 | 계획 방법론, 벤치마크 아님 |
-| Safety Chip (Yang et al.) | 2024 | 제약 조건 강제 | 강제 메커니즘, 평가 아님 |
-| SafeVL (Ma et al., NVIDIA) | 2025 | 자율주행 안전 VLM | **주행 도메인 전용**, 실내 VLN 아님, 공정성 없음 |
-| Safety of Embodied Navigation Survey (Wang et al.) | IJCAI 2025 | 서베이 | 공백을 명시적으로 식별 — 우리 연구가 채우는 공백 |
+| [SafeEmbodAI](https://arxiv.org/abs/2409.01630) (Zhang et al.) | 2024 | 로봇 안전 프레임워크 | 방어 기법, 벤치마크 아님 |
+| [SAFER](https://arxiv.org/abs/2503.15707) | 2025 | Multi-LLM 안전 계획 | 계획 방법론, 벤치마크 아님 |
+| [Safety Chip](https://h2r.cs.brown.edu/wp-content/uploads/yang24.pdf) (Yang et al.) | 2024 | 제약 조건 강제 | 강제 메커니즘, 평가 아님 |
+| [SafeVL](https://research.nvidia.com/labs/avg/publication/ma.cao.etal.arxiv2025/) (Ma et al., NVIDIA) | 2025 | 자율주행 안전 VLM | **주행 도메인 전용**, 실내 VLN 아님, 공정성 없음 |
+| [Safety of Embodied Navigation Survey](https://www.ijcai.org/proceedings/2025/1189) (Wang et al.) | IJCAI 2025 | 서베이 | 공백을 명시적으로 식별 — 우리 연구가 채우는 공백 |
 
 ### 3.4 Precursor Work
 
 | Paper | Venue | Relationship |
 |---|---|---|
-| Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making | arXiv 2025 (2601.05529) | **본 연구의 선행 논문**. 7개 태스크로 LLM 로보틱스 의사결정의 안전 위험을 발견. 본 벤치마크는 이 발견을 체계적 평가 프레임워크로 발전시킨 것 |
+| [Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making](https://arxiv.org/abs/2601.05529) | arXiv 2025 | **본 연구의 선행 논문**. 7개 태스크로 LLM 로보틱스 의사결정의 안전 위험을 발견. 본 벤치마크는 이 발견을 체계적 평가 프레임워크로 발전시킨 것 |
 
 ---
 
@@ -301,9 +301,9 @@ score = clamp(w_s·u_s + w_e·u_e + w_g·u_g - w_p·u_p, 0, 1)
 
 | # | Contribution | Novelty | Related Work Gap |
 |---|---|---|---|
-| **C1** | Three-Stage Gating Evaluation (Task & Hazard Grounding → Situation Judgment → Navigation Decision) | 이해-인식-판단을 분리하여 "이해 없는 정답"을 구조적으로 제거 + 5-category Hazard Taxonomy로 세분화된 위험 분류 | R2R/REVERIE: 단일 정확도, R-Judge: 사후 판정, SafetyBench: 단일 MC |
-| **C2** | Multi-Axis Fairness Disparity Framework | 내비게이션 맥락에서 4개 축(방향/인구통계/시간압박/위험수준)의 공정성을 측정하는 최초의 프레임워크 | HALF: 텍스트만, TrustGPT: 텍스트만, HA-VLN: 사회적 거리만 |
-| **C3** | Utility-Weighted Scoring + Behavioral Flags + Headline Bundle | 4차원 효용 trade-off + Critical Violation Rate(위험 위반) + Over-Caution Rate(과잉 보수) + 6개 Headline Metrics | R2R SPL: 거리만, SafetyBench: 이진, R-Judge: 이진, OR-Bench: 텍스트 over-refusal만 |
+| **C1** | Three-Stage Gating Evaluation (Task & Hazard Grounding → Situation Judgment → Navigation Decision) | 이해-인식-판단을 분리하여 "이해 없는 정답"을 구조적으로 제거 + 5-category Hazard Taxonomy로 세분화된 위험 분류 | [R2R](https://arxiv.org/abs/1711.07280)/[REVERIE](https://arxiv.org/abs/1904.10151): 단일 정확도, [R-Judge](https://arxiv.org/abs/2401.10019): 사후 판정, [SafetyBench](https://arxiv.org/abs/2309.07045): 단일 MC |
+| **C2** | Multi-Axis Fairness Disparity Framework | 내비게이션 맥락에서 4개 축(방향/인구통계/시간압박/위험수준)의 공정성을 측정하는 최초의 프레임워크 | [HALF](https://arxiv.org/abs/2510.12217): 텍스트만, [TrustGPT](https://arxiv.org/abs/2306.11507): 텍스트만, [HA-VLN](https://arxiv.org/abs/2406.19236): 사회적 거리만 |
+| **C3** | Utility-Weighted Scoring + Behavioral Flags + Headline Bundle | 4차원 효용 trade-off + Critical Violation Rate(위험 위반) + Over-Caution Rate(과잉 보수) + 6개 Headline Metrics | [R2R](https://arxiv.org/abs/1711.07280) SPL: 거리만, [SafetyBench](https://arxiv.org/abs/2309.07045): 이진, [R-Judge](https://arxiv.org/abs/2401.10019): 이진, [OR-Bench](https://arxiv.org/abs/2405.20947): 텍스트 over-refusal만 |
 | **C4** | Dual-Path Evaluation (Live + Offline) | API 없이 predictions 파일만으로 동일 결과 재현 가능한 오프라인 평가 경로 제공 | 대부분 벤치마크: API 필수, 재현성 보장 없음 |
 | **C5** | Configurable Judge with Fallback | Rule/LLM 이중 판정 + 자동 fallback으로 비용과 정확도 균형 | 기존: 단일 판정 방식 고정 |
 
@@ -456,34 +456,34 @@ flowchart BT
 
 ## Appendix: Full Reference List
 
-1. Zhang et al. "SafetyBench: Evaluating the Safety of Large Language Models." ACL 2024.
-2. Li et al. "SALAD-Bench: A Hierarchical and Comprehensive Safety Benchmark for Large Language Models." Findings of ACL 2024.
-3. Mazeika et al. "HarmBench: A Standardized Evaluation Framework for Automated Red Teaming." 2024.
-4. Chao et al. "JailbreakBench: An Open Robustness Benchmark for Jailbreaking LLMs." NeurIPS 2024.
-5. Han et al. "WildGuard: Open One-Stop Moderation Tools for Safety Risks." NeurIPS 2024.
-6. Huang et al. "TrustGPT: A Benchmark for Trustworthy and Responsible LLMs." 2023.
-7. Huang et al. "TrustLLM: Trustworthiness in Large Language Models." ICML 2024.
-8. Ji et al. "BeaverTails: Towards Improved Safety Alignment of LLM via a Human-Preference Dataset." NeurIPS 2023.
-9. Wang et al. "Do-Not-Answer: A Dataset for Evaluating Safeguards in LLMs." Findings of EACL 2024.
-10. Cui et al. "OR-Bench: An Over-Refusal Benchmark for Large Language Models." ICML 2025.
-11. Yuan et al. "R-Judge: Benchmarking Safety Risk Awareness for LLM Agents." EMNLP 2024.
-12. Vidgen et al. "Introducing v0.5 of the AI Safety Benchmark from MLCommons." 2024.
-13. Sun et al. "CASE-Bench: Context-Aware Safety Benchmark for LLMs." 2025.
-14. "HALF: Harm-Aware LLM Fairness Evaluation Aligned with Deployment." 2025.
-15. Anderson et al. "Vision-and-Language Navigation: Interpreting visually-grounded navigation instructions." CVPR 2018.
-16. Qi et al. "REVERIE: Remote Embodied Visual Referring Expression in Real Indoor Environments." CVPR 2020.
-17. Shridhar et al. "ALFRED: A Benchmark for Interpreting Grounded Instructions for Everyday Tasks." CVPR 2020.
-18. Padmakumar et al. "TEACh: Task-driven Embodied Agents that Chat." AAAI 2022.
-19. Krantz et al. "Beyond the Nav-Graph: Vision-and-Language Navigation in Continuous Environments." ECCV 2020.
-20. Zhou et al. "NavGPT: Explicit Reasoning in Vision-and-Language Navigation with LLMs." AAAI 2024.
-21. Zhang et al. "NaVid: Video-based VLM Plans the Next Step for VLN." RSS 2024.
-22. Paul et al. "AVLEN: Audio-Visual-Language Embodied Navigation in 3D Environments." NeurIPS 2022.
-23. Lee et al. "Human-Aware Vision-and-Language Navigation." NeurIPS 2024.
-24. "VLNVerse: A Benchmark for VLN with Versatile, Embodied, Realistic Simulation." 2025.
-25. Song et al. "Towards Long-Horizon Vision-Language Navigation." CVPR 2025.
-26. Zhang et al. "SafeEmbodAI: A Safety Framework for Mobile Robots in Embodied AI Systems." 2024.
-27. "SAFER: Safety Aware Task Planning via LLMs in Robotics." 2025.
-28. Yang et al. "Plug in the Safety Chip: Enforcing Constraints for LLM-driven Robot Agents." 2024.
-29. Ma, Cao et al. "SafeVL: Driving Safety Evaluation via Meticulous Reasoning in VLMs." NVIDIA, 2025.
-30. Wang, Hu, Mu. "Safety of Embodied Navigation: A Survey." IJCAI 2025.
-31. Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making. arXiv 2601.05529, 2025.
+1. Zhang et al. "[SafetyBench: Evaluating the Safety of Large Language Models](https://arxiv.org/abs/2309.07045)." ACL 2024.
+2. Li et al. "[SALAD-Bench: A Hierarchical and Comprehensive Safety Benchmark for LLMs](https://arxiv.org/abs/2402.05044)." Findings of ACL 2024.
+3. Mazeika et al. "[HarmBench: A Standardized Evaluation Framework for Automated Red Teaming](https://arxiv.org/abs/2402.04249)." 2024.
+4. Chao et al. "[JailbreakBench: An Open Robustness Benchmark for Jailbreaking LLMs](https://arxiv.org/abs/2404.01318)." NeurIPS 2024.
+5. Han et al. "[WildGuard: Open One-Stop Moderation Tools for Safety Risks](https://arxiv.org/abs/2406.18495)." NeurIPS 2024.
+6. Huang et al. "[TrustGPT: A Benchmark for Trustworthy and Responsible LLMs](https://arxiv.org/abs/2306.11507)." 2023.
+7. Huang et al. "[TrustLLM: Trustworthiness in Large Language Models](https://arxiv.org/abs/2401.05561)." ICML 2024.
+8. Ji et al. "[BeaverTails: Towards Improved Safety Alignment of LLM via a Human-Preference Dataset](https://arxiv.org/abs/2307.04657)." NeurIPS 2023.
+9. Wang et al. "[Do-Not-Answer: A Dataset for Evaluating Safeguards in LLMs](https://arxiv.org/abs/2308.13387)." Findings of EACL 2024.
+10. Cui et al. "[OR-Bench: An Over-Refusal Benchmark for Large Language Models](https://arxiv.org/abs/2405.20947)." ICML 2025.
+11. Yuan et al. "[R-Judge: Benchmarking Safety Risk Awareness for LLM Agents](https://arxiv.org/abs/2401.10019)." EMNLP 2024.
+12. Vidgen et al. "[Introducing v0.5 of the AI Safety Benchmark from MLCommons](https://arxiv.org/abs/2404.12241)." 2024.
+13. Sun et al. "[CASE-Bench: Context-Aware Safety Benchmark for LLMs](https://hasp-lab.github.io/pubs/sun2025case.pdf)." 2025.
+14. "[HALF: Harm-Aware LLM Fairness Evaluation Aligned with Deployment](https://arxiv.org/abs/2510.12217)." 2025.
+15. Anderson et al. "[Vision-and-Language Navigation: Interpreting visually-grounded navigation instructions](https://arxiv.org/abs/1711.07280)." CVPR 2018.
+16. Qi et al. "[REVERIE: Remote Embodied Visual Referring Expression in Real Indoor Environments](https://arxiv.org/abs/1904.10151)." CVPR 2020.
+17. Shridhar et al. "[ALFRED: A Benchmark for Interpreting Grounded Instructions for Everyday Tasks](https://arxiv.org/abs/1912.01734)." CVPR 2020.
+18. Padmakumar et al. "[TEACh: Task-driven Embodied Agents that Chat](https://arxiv.org/abs/2110.00534)." AAAI 2022.
+19. Krantz et al. "[Beyond the Nav-Graph: Vision-and-Language Navigation in Continuous Environments](https://arxiv.org/abs/2004.02857)." ECCV 2020.
+20. Zhou et al. "[NavGPT: Explicit Reasoning in Vision-and-Language Navigation with LLMs](https://arxiv.org/abs/2312.15241)." AAAI 2024.
+21. Zhang et al. "[NaVid: Video-based VLM Plans the Next Step for VLN](https://arxiv.org/abs/2402.15852)." RSS 2024.
+22. Paul et al. "[AVLEN: Audio-Visual-Language Embodied Navigation in 3D Environments](https://arxiv.org/abs/2210.07940)." NeurIPS 2022.
+23. Lee et al. "[Human-Aware Vision-and-Language Navigation](https://arxiv.org/abs/2406.19236)." NeurIPS 2024.
+24. "[VLNVerse: A Benchmark for VLN with Versatile, Embodied, Realistic Simulation](https://arxiv.org/abs/2512.19021)." 2025.
+25. Song et al. "[Towards Long-Horizon Vision-Language Navigation](https://openaccess.thecvf.com/content/CVPR2025/papers/Song_Towards_Long-Horizon_Vision-Language_Navigation_Platform_Benchmark_and_Method_CVPR_2025_paper.pdf)." CVPR 2025.
+26. Zhang et al. "[SafeEmbodAI: A Safety Framework for Mobile Robots in Embodied AI Systems](https://arxiv.org/abs/2409.01630)." 2024.
+27. "[SAFER: Safety Aware Task Planning via LLMs in Robotics](https://arxiv.org/abs/2503.15707)." 2025.
+28. Yang et al. "[Plug in the Safety Chip: Enforcing Constraints for LLM-driven Robot Agents](https://h2r.cs.brown.edu/wp-content/uploads/yang24.pdf)." 2024.
+29. Ma, Cao et al. "[SafeVL: Driving Safety Evaluation via Meticulous Reasoning in VLMs](https://research.nvidia.com/labs/avg/publication/ma.cao.etal.arxiv2025/)." NVIDIA, 2025.
+30. Wang, Hu, Mu. "[Safety of Embodied Navigation: A Survey](https://www.ijcai.org/proceedings/2025/1189)." IJCAI 2025.
+31. "[Safety Not Found (404): Hidden Risks of LLM-Based Robotics Decision Making](https://arxiv.org/abs/2601.05529)." arXiv 2025.
